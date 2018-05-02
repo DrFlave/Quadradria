@@ -20,7 +20,7 @@ namespace Quadradria
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, _postion, Color.White);
+            spriteBatch.Draw(_texture, _position, Color.White);
         }
     }
 }
