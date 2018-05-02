@@ -10,26 +10,29 @@ namespace Quadradria
 {
     class Camera
     {
-        public float zoom;
         public Matrix transform;
-        public Vector2 pos;
-        public Vector2 size;
-        public float rotation;
+        public Vector2 center;
+        public Viewport viewport;
 
-        public Camera(float x, float y, float width, float height)
+        public float zoom = 1;
+        public float rotation = 0;
+
+        public float x;
+        public float y;
+
+        public Camera(Viewport viewport)
         {
-            zoom = 1.0f;
-            rotation = 0.0f;
-            pos = new Vector2(x, y);
-            size = new Vector2(width, height);
+            this.viewport = viewport;
         }
 
-        public Matrix getTransformation(GraphicsDevice graphicsDevice)
+        public void Update(Vector2 position)
         {
-            return Matrix.CreateTranslation(new Vector3(-pos.X, -pos.Y, 0)) *
-                                            Matrix.CreateRotationZ(rotation) *
-                                            Matrix.CreateScale(new Vector3(zoom, zoom, 1)) *
-                                            Matrix.CreateTranslation(new Vector3(size.Y * 0.5f, size.Y * 0.5f, 0));
+            center = new Vector2(position.X, position.Y);
+
+            transform = Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) * 
+                        Matrix.CreateRotationZ(rotation) * 
+                        Matrix.CreateScale(new Vector3(zoom, zoom, 0)) *
+                        Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
         }
 
     }

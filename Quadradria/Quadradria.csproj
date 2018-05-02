@@ -45,6 +45,7 @@
     <Compile Include="Block.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Quadradria.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
