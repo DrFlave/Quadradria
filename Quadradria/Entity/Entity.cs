@@ -9,7 +9,7 @@ namespace Entity
 {
     class Entity
     {
-        public Vector2 _postion;
+        public Vector2 _position;
 
         public void Update()
         {
@@ -17,6 +17,11 @@ namespace Entity
         }
 
         public void Tick()
+        {
+
+        }
+
+        public void Draw()
         {
 
         }

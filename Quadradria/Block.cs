@@ -11,14 +11,14 @@ namespace Quadradria
     class Block
     {
         private Texture2D _texture;
-        public Vector2 _postion;
+        public Vector2 _position;
 
         public void Update()
         {
 
         }
 
-        public void draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _postion, Color.White);
         }
