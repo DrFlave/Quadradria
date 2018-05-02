@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quadradria", "Quadradria\Quadradria.csproj", "{F055BC31-FC6F-4D21-A3DF-463952A40FC7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F055BC31-FC6F-4D21-A3DF-463952A40FC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F055BC31-FC6F-4D21-A3DF-463952A40FC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F055BC31-FC6F-4D21-A3DF-463952A40FC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F055BC31-FC6F-4D21-A3DF-463952A40FC7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FFA434B4-47F7-4CE1-8FD3-78A932A261FF}
+	EndGlobalSection
+EndGlobal
