@@ -42,7 +42,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Block.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Entity\BaseEntity.cs" />
     <Compile Include="Entity\Human.cs" />
@@ -52,6 +51,9 @@
     <Compile Include="Quadradria.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Textures.cs" />
+    <Compile Include="World\Block.cs" />
+    <Compile Include="World\Chunk.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
@@ -113,6 +115,8 @@
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Block.png" />
+    <Content Include="Content\Error.png" />
     <Content Include="Content\terrain_atlas.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

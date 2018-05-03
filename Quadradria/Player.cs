@@ -12,24 +12,25 @@ namespace Quadradria
 
         public void Load(ContentManager content)
         {
-            texture = content.Load<Texture2D>("terrain_atlas");
+            texture = content.Load<Texture2D>("Block");
         }
 
         public void Update()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                position.Y -= 1;
+                position.Y -= 0.2f;
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                position.Y += 1;
+                position.Y += 0.2f;
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                position.X -= 1;
+                position.X -= 0.2f;
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                position.X += 1;
+                position.X += 0.2f;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, Color.White);
+            float scale = 1.0f / texture.Width;
+            spriteBatch.Draw(Textures.Blocks.Dirt, position, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
     }
 }

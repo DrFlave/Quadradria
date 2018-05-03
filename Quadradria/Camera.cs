@@ -15,6 +15,7 @@ namespace Quadradria
         public Viewport viewport;
 
         public float zoom = 1;
+        private float zoomScale = 32;
         public float rotation = 0;
 
         public float x;
@@ -31,7 +32,7 @@ namespace Quadradria
 
             transform = Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) * 
                         Matrix.CreateRotationZ(rotation) * 
-                        Matrix.CreateScale(new Vector3(zoom, zoom, 0)) *
+                        Matrix.CreateScale(new Vector3(zoom, zoom, 0) * zoomScale) *
                         Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
         }
 

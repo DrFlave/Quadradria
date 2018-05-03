@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Quadradria.World;
 
 namespace Quadradria
 {
@@ -15,7 +16,10 @@ namespace Quadradria
         Camera camera;
 
         Vector2 pos = new Vector2(0, 0);
-        
+
+        Chunk chunk;
+        Chunk chunk2;
+
         public Quadradria()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -26,7 +30,11 @@ namespace Quadradria
         protected override void Initialize()
         {
             player = new Player();
-            
+            Textures.Load(Content);
+
+            chunk = new Chunk(0, 0, GraphicsDevice);
+            chunk2 = new Chunk(1, 1, GraphicsDevice);
+
             base.Initialize();
 
         }
@@ -37,6 +45,7 @@ namespace Quadradria
 
             player.Load(Content);
             camera = new Camera(GraphicsDevice.Viewport);
+            
         }
         
         protected override void UnloadContent()
@@ -53,11 +62,9 @@ namespace Quadradria
             if (Keyboard.GetState().IsKeyDown(Keys.S))
                 camera.zoom -= 0.02f;
             if (Keyboard.GetState().IsKeyDown(Keys.A))
-                camera.rotation -= 0.01f;
+                camera.rotation -= 0.02f;
             if (Keyboard.GetState().IsKeyDown(Keys.D))
-                camera.rotation += 0.01f;
-
-
+                camera.rotation += 0.02f;
 
             player.Update();
             camera.Update(player.position);
@@ -67,14 +74,16 @@ namespace Quadradria
         
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            chunk.Render(spriteBatch);
+            chunk2.Render(spriteBatch);
+
+            graphics.GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
-
-            spriteBatch.Draw(player.texture, pos, Color.White);
-
-            player.Draw(spriteBatch);
-
+            
+            chunk.Draw(spriteBatch);
+            chunk2.Draw(spriteBatch);
+            
             spriteBatch.End();
 
             base.Draw(gameTime);
