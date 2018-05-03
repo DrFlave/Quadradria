@@ -5,11 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity
+namespace Quadradria.Entity
 {
-    class Entity
+    abstract class BaseEntity
     {
-        public Vector2 _position;
+        public Vector2 position;
+
+        public BaseEntity(Vector2 position)
+        {
+            this.position = position;
+        }
 
         public void Update()
         {

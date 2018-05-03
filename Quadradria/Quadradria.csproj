@@ -45,6 +45,9 @@
     <Compile Include="Block.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Entity\Human.cs" />
+    <Compile Include="Entity\Mob.cs" />
+    <Compile Include="Entity\Physical.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Quadradria.cs" />
     <Compile Include="Program.cs" />
