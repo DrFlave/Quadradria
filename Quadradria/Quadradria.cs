@@ -26,7 +26,9 @@ namespace Quadradria
         protected override void Initialize()
         {
             player = new Player();
+            
             base.Initialize();
+
         }
         
         protected override void LoadContent()
@@ -67,7 +69,7 @@ namespace Quadradria
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
 
             spriteBatch.Draw(player.texture, pos, Color.White);
 
