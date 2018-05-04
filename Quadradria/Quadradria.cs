@@ -29,7 +29,7 @@ namespace Quadradria
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
-        
+
         protected override void Initialize()
         {
             player = new Player();
@@ -42,16 +42,18 @@ namespace Quadradria
             base.Initialize();
 
         }
-        
+
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             player.Load(Content);
-            camera = new Camera(GraphicsDevice.Viewport);
-            
+            camera = new Camera(GraphicsDevice.Viewport, Window);
+
+            Window.AllowUserResizing = true;
+            Window.ClientSizeChanged += camera.OnResize;
         }
-        
+
         protected override void UnloadContent()
         {
         }
