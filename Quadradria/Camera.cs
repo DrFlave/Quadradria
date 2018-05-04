@@ -36,6 +36,11 @@ namespace Quadradria
                         Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
         }
 
+        public Rectangle GetRect()
+        {
+            return new Rectangle((int)(center.X - viewport.Width / zoomScale / 2), (int)(center.Y - viewport.Height / zoomScale / 2), (int)(viewport.Width / zoomScale), (int)(viewport.Height / zoomScale));
+        }
+
         public void Resize(Viewport viewport)
         {
             this.viewport = viewport;
