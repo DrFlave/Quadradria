@@ -10,9 +10,8 @@ namespace Quadradria.Enviroment
 {
     class Chunk
     {
-        public const int SIZE = 4;
+        public const int SIZE = 16;
         public const int BLOCK_SIZE = 16;
-        public const int BLOCK_SCALE = 2;
 
         public Block[,] blocks = new Block[SIZE, SIZE];
         public Vector2 pos;
@@ -62,7 +61,7 @@ namespace Quadradria.Enviroment
         }
 
         public void Draw(SpriteBatch spriteBatch) {
-            //spriteBatch.Draw(renderTarget, drawPos, Color.White);
+            spriteBatch.Draw(renderTarget, drawPos, Color.White);
 
             float scale = 1.0f / BLOCK_SIZE;
             spriteBatch.Draw(renderTarget, drawPos, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
