@@ -17,10 +17,22 @@ namespace Quadradria
         public static class Blocks
         {
             public static Texture2D Dirt;
+            public static Texture2D Stone;
+            public static Texture2D WoolRed;
+            public static Texture2D WoolYellow;
+            public static Texture2D WoolGreen;
+            public static Texture2D WoolCyan;
+            public static Texture2D WoolPurple;
 
             public static void Load(ContentManager content)
             {
                 Dirt = content.Load<Texture2D>("Dirt");
+                Stone = content.Load<Texture2D>("Stone");
+                WoolRed = content.Load<Texture2D>("WoolRed");
+                WoolYellow = content.Load<Texture2D>("WoolYellow");
+                WoolGreen = content.Load<Texture2D>("WoolGreen");
+                WoolCyan = content.Load<Texture2D>("WoolCyan");
+                WoolPurple = content.Load<Texture2D>("WoolPurple");
             }
         }
 
@@ -44,7 +56,7 @@ namespace Quadradria
             }
         }
 
-        public static Texture2D Solid; //A 1x1 pixel white texture (set in Quadradian.cs)
+        public static Texture2D Solid; //A 1x1 pixel white texture
 
         public static void Load(ContentManager content)
         {
