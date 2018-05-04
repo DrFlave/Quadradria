@@ -11,7 +11,8 @@ namespace Quadradria.World
     class Chunk
     {
         public const int SIZE = 4;
-        public const int BLOCK_SIZE = 32;
+        public const int BLOCK_SIZE = 16;
+        public const int BLOCK_SCALE = 2;
 
         public Block[,] blocks = new Block[SIZE, SIZE];
         public Vector2 pos;

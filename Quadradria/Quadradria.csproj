@@ -115,9 +115,8 @@
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Block.png" />
+    <Content Include="Content\Dirt.png" />
     <Content Include="Content\Error.png" />
-    <Content Include="Content\terrain_atlas.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

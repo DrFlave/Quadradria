@@ -15,7 +15,7 @@ namespace Quadradria
         public Viewport viewport;
 
         public float zoom = 1;
-        private float zoomScale = 32;
+        private float zoomScale = 16;
         public float rotation = 0;
 
         public float x;
