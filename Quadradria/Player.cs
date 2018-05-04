@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -15,16 +16,16 @@ namespace Quadradria
             texture = content.Load<Texture2D>("Dirt");
         }
 
-        public void Update()
+        public void Update(float dt)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                position.Y -= 0.2f;
+                position.Y -= 15f * dt;
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                position.Y += 0.2f;
+                position.Y += 15f * dt;
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                position.X -= 0.2f;
+                position.X -= 15f * dt;
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                position.X += 0.2f;
+                position.X += 15f * dt;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -32,5 +33,6 @@ namespace Quadradria
             float scale = 1.0f / texture.Width;
             spriteBatch.Draw(Textures.Blocks.Dirt, position, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
+
     }
 }

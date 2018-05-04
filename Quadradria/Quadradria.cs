@@ -70,7 +70,8 @@ namespace Quadradria
             if (Keyboard.GetState().IsKeyDown(Keys.D))
                 camera.rotation += 0.02f;
 
-            player.Update();
+            
+            player.Update(gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
             camera.Update(player.position);
 
             base.Update(gameTime);
