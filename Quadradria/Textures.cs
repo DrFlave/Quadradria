@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -46,12 +47,16 @@ namespace Quadradria
 
         public static Texture2D Solid; //A 1x1 pixel white texture (set in Quadradian.cs)
 
-        public static void Load(ContentManager content)
+        public static void Load(ContentManager content, GraphicsDevice graphicsDevice)
         {
+            Error = content.Load<Texture2D>("Error");
+
+            Textures.Solid = new Texture2D(graphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            Textures.Solid.SetData<Color>(new Color[1] { Color.White });
+
             Blocks.Load(content);
             Fonts.Load(content);
             Items.Load(content);
-            Error = content.Load<Texture2D>("Error");
         }
     }
 }

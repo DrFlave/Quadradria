@@ -36,9 +36,7 @@ namespace Quadradria
         protected override void Initialize()
         {
             player = new Player();
-            Textures.Load(Content);
-            Textures.Solid = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            Textures.Solid.SetData<Color>(new Color[1] { Color.White });
+            Textures.Load(Content, GraphicsDevice);
 
             chunk = new Chunk(0, 0, GraphicsDevice);
             chunk2 = new Chunk(1, 1, GraphicsDevice);

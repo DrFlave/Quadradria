@@ -61,8 +61,6 @@ namespace Quadradria.Enviroment
         }
 
         public void Draw(SpriteBatch spriteBatch) {
-            spriteBatch.Draw(renderTarget, drawPos, Color.White);
-
             float scale = 1.0f / BLOCK_SIZE;
             spriteBatch.Draw(renderTarget, drawPos, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 

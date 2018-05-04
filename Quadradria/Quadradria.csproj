@@ -48,6 +48,7 @@
     <Compile Include="Entity\IInventory.cs" />
     <Compile Include="Entity\Mob.cs" />
     <Compile Include="Entity\Physical.cs" />
+    <Compile Include="Enviroment\World.cs" />
     <Compile Include="Inventory\Storage.cs" />
     <Compile Include="Inventory\Item.cs" />
     <Compile Include="Inventory\Slot.cs" />
