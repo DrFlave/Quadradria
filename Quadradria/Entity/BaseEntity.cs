@@ -10,6 +10,7 @@ namespace Quadradria.Entity
     abstract class BaseEntity
     {
         public Vector2 position;
+        public int id;
 
         public BaseEntity(Vector2 position)
         {
