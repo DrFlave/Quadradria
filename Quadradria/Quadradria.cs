@@ -19,8 +19,6 @@ namespace Quadradria
 
         Camera camera;
 
-        Vector2 pos = new Vector2(0, 0);
-
         Chunk chunk;
         Chunk chunk2;
 
@@ -31,6 +29,7 @@ namespace Quadradria
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            
         }
 
         protected override void Initialize()
@@ -50,6 +49,16 @@ namespace Quadradria
             UIInner.color = Color.Blue;
             UIContainer UIAbsolute = new UIContainer(10, 10, 100, 50, UIInner, UIContainer.SizeMethod.Pixel);
 
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.ApplyChanges();
+
+            camera = new Camera(GraphicsDevice.Viewport);
+
+            Window.AllowUserResizing = true;
+            Window.ClientSizeChanged += OnResize;
+
+
             base.Initialize();
 
         }
@@ -57,12 +66,8 @@ namespace Quadradria
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
             player.Load(Content);
-            camera = new Camera(GraphicsDevice.Viewport, Window);
 
-            Window.AllowUserResizing = true;
-            Window.ClientSizeChanged += camera.OnResize;
         }
 
         protected override void UnloadContent()
@@ -101,11 +106,11 @@ namespace Quadradria
             
             chunk.Draw(spriteBatch);
             chunk2.Draw(spriteBatch);
-
             
+
             spriteBatch.End();
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
             UIMaster.Draw(spriteBatch);
             testItem.Draw(spriteBatch, 32, 32, 4);
@@ -114,6 +119,11 @@ namespace Quadradria
 
 
             base.Draw(gameTime);
+        }
+
+        public void OnResize(Object sender, EventArgs e)
+        {
+            camera.Resize(GraphicsDevice.Viewport);
         }
     }
 }
