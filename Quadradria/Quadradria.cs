@@ -20,8 +20,9 @@ namespace Quadradria
 
         Camera camera;
 
-        Chunk chunk;
-        Chunk chunk2;
+        //Chunk chunk;
+        //Chunk chunk2;
+        World world;
 
         UIContainer UIMaster;
 
@@ -38,8 +39,12 @@ namespace Quadradria
             player = new Player();
             Textures.Load(Content, GraphicsDevice);
 
-            chunk = new Chunk(0, 0, GraphicsDevice);
-            chunk2 = new Chunk(1, 1, GraphicsDevice);
+            //chunk = new Chunk(0, 0, GraphicsDevice);
+            //chunk2 = new Chunk(1, 1, GraphicsDevice);
+            world = new World(GraphicsDevice);
+
+
+
             testItem = new Item(new ItemType("item.sword", 1, Textures.Items.Sword));
 
             UIMaster = new UIContainer(20, 20, 300, 300);
@@ -101,16 +106,20 @@ namespace Quadradria
         
         protected override void Draw(GameTime gameTime)
         {
-            chunk.Render(spriteBatch);
-            chunk2.Render(spriteBatch);
+            //chunk.Render(spriteBatch);
+            //chunk2.Render(spriteBatch);
+
+            world.Render(spriteBatch);
 
             graphics.GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
-            
-            chunk.Draw(spriteBatch);
-            chunk2.Draw(spriteBatch);
-            
+
+            //chunk.Draw(spriteBatch);
+            //chunk2.Draw(spriteBatch);
+
+            world.Draw(spriteBatch);
+
 
             spriteBatch.End();
 

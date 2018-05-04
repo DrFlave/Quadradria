@@ -13,9 +13,10 @@ namespace Quadradria.Enviroment
     {
         private Texture2D texture;
 
-        public Block()
+        public Block(Texture2D texture)
         {
-            texture = Textures.Blocks.Dirt;
+            //texture = Textures.Blocks.Dirt;
+            this.texture = texture;
         }
 
         public void Draw(SpriteBatch spriteBatch, int x, int y)

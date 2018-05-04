@@ -25,16 +25,18 @@ namespace Quadradria.Enviroment
         public Chunk(int x, int y, GraphicsDevice graphicsDevice) {
             this.pos = new Vector2(x, y);
             this.drawPos = new Vector2(x * SIZE, y * SIZE);
-
             this.graphicsDevice = graphicsDevice;
+            this.renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
+            
+            Texture2D[] textures = { Textures.Blocks.Dirt, Textures.Blocks.Stone, Textures.Blocks.WoolCyan, Textures.Blocks.WoolGreen, Textures.Blocks.WoolPurple, Textures.Blocks.WoolRed, Textures.Blocks.WoolYellow };
+            Texture2D texture = textures[new Random(x + y * 100).Next(0, textures.Length)];
 
-            renderTarget = new RenderTarget2D(graphicsDevice, SIZE* BLOCK_SIZE, SIZE * BLOCK_SIZE);
 
             for (int i = 0; i < SIZE; i++)
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    blocks[i, j] = new Block();
+                    blocks[i, j] = new Block(texture);
                 }
             }
         }
