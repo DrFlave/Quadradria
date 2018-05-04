@@ -24,9 +24,31 @@ namespace Quadradria
             }
         }
 
+        public static class Fonts
+        {
+            public static SpriteFont Inventory;
+
+            public static void Load(ContentManager content)
+            {
+                Inventory = content.Load<SpriteFont>("fontInventory");
+            }
+        }
+
+        public static class Items
+        {
+            public static Texture2D Sword;
+
+            public static void Load(ContentManager content)
+            {
+                Sword = content.Load<Texture2D>("itemSword");
+            }
+        }
+
         public static void Load(ContentManager content)
         {
             Blocks.Load(content);
+            Fonts.Load(content);
+            Items.Load(content);
             Error = content.Load<Texture2D>("Error");
         }
     }

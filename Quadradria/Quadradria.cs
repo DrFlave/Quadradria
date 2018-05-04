@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Quadradria.Entity;
+using Quadradria.Inventory;
 using Quadradria.World;
 
 namespace Quadradria
@@ -10,6 +12,7 @@ namespace Quadradria
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Item testItem;
 
         Player player;
 
@@ -34,6 +37,7 @@ namespace Quadradria
 
             chunk = new Chunk(0, 0, GraphicsDevice);
             chunk2 = new Chunk(1, 1, GraphicsDevice);
+            testItem = new Item();
 
             base.Initialize();
 
@@ -83,8 +87,16 @@ namespace Quadradria
             
             chunk.Draw(spriteBatch);
             chunk2.Draw(spriteBatch);
+
             
             spriteBatch.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+
+            testItem.Draw(spriteBatch, 32, 32, 4);
+       
+            spriteBatch.End();
+
 
             base.Draw(gameTime);
         }
