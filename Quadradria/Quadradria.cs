@@ -25,6 +25,7 @@ namespace Quadradria
         World world;
 
         UIContainer UIMaster;
+        UILabel frameCounter;
 
         public Quadradria()
         {
@@ -47,7 +48,8 @@ namespace Quadradria
 
             testItem = new Item(new ItemType("item.sword", 1, Textures.Items.Sword));
 
-            UIMaster = new UIContainer(20, 20, 300, 300);
+            UIMaster = new UIContainer(0, 0, 300, 300);
+            /*
             new UILabel(0, 0, 1, 1, "Center", UIMaster, UISizeMethod.UV, UIAlignment.Center);
             new UILabel(0, 0, 1, 1, "Top", UIMaster, UISizeMethod.UV, UIAlignment.Top);
             new UILabel(0, 0, 1, 1, "Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Bottom);
@@ -56,7 +58,11 @@ namespace Quadradria
             new UILabel(0, 0, 1, 1, "Right Top", UIMaster, UISizeMethod.UV, UIAlignment.Right | UIAlignment.Top);
             new UILabel(0, 0, 1, 1, "Right Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Right | UIAlignment.Bottom);
             new UILabel(0, 0, 1, 1, "Left Top", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Top);
-            new UILabel(0, 0, 1, 1, "Left Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Bottom);
+            new UILabel(0, 0, 1, 1, "Left Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Bottom);*/
+
+            frameCounter = new UILabel(0, 0, 1, 1, "FPS: -", UIMaster, UISizeMethod.UV, UIAlignment.Top | UIAlignment.Left);
+
+
 
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
@@ -85,6 +91,10 @@ namespace Quadradria
 
         protected override void Update(GameTime gameTime)
         {
+
+            if (gameTime.ElapsedGameTime.Milliseconds != 0)
+                frameCounter.Text = "FPS: " + (1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 

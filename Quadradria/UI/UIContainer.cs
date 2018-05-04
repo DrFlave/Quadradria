@@ -18,6 +18,7 @@ namespace Quadradria.UI
         private float y;
         private float width;
         private float height;
+        private bool visible = true;
         private UIContainer parent;
         private List<UIContainer> children;
 
@@ -112,8 +113,19 @@ namespace Quadradria.UI
             child.parent = null;
         }
 
+        public void Show()
+        {
+            visible = true;
+        }
+
+        public void Hide()
+        {
+            visible = false;
+        }
+
         public virtual void Draw(SpriteBatch spriteBatch)
         {
+            if (!visible) return;
             foreach (UIContainer element in children)
             {
                 element.Draw(spriteBatch);
