@@ -12,9 +12,7 @@ namespace Quadradria
     {
         public Matrix transform;
         public Vector2 center;
-        public Viewport viewport;
-
-        private GameWindow window;
+        private Viewport viewport;
 
         public float zoom = 1;
         private float zoomScale = 16;
@@ -23,10 +21,9 @@ namespace Quadradria
         public float x;
         public float y;
 
-        public Camera(Viewport viewport, GameWindow window)
+        public Camera(Viewport viewport)
         {
             this.viewport = viewport;
-            this.window = window;
         }
 
         public void Update(Vector2 position)
@@ -39,13 +36,11 @@ namespace Quadradria
                         Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
         }
 
-        public void OnResize(Object sender, EventArgs e)
+        public void Resize(Viewport viewport)
         {
-            viewport.Width = window.ClientBounds.Width;
-            viewport.Height = window.ClientBounds.Height;
+            this.viewport = viewport;
 
-            center = new Vector2(viewport.Width / 2, viewport.Height / 2);
-            Console.WriteLine(viewport.Width);
+            center = new Vector2(this.viewport.Width / 2, this.viewport.Height / 2);
         }
 
     }
