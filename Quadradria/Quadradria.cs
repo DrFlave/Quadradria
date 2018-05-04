@@ -92,8 +92,7 @@ namespace Quadradria
         protected override void Update(GameTime gameTime)
         {
 
-            if (gameTime.ElapsedGameTime.Milliseconds != 0)
-                frameCounter.Text = "FPS: " + (1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
+
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -116,6 +115,9 @@ namespace Quadradria
         
         protected override void Draw(GameTime gameTime)
         {
+            if (gameTime.ElapsedGameTime.Milliseconds != 0)
+                frameCounter.Text = "FPS: " + (1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
+
             //chunk.Render(spriteBatch);
             //chunk2.Render(spriteBatch);
 
