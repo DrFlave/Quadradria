@@ -3,7 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Quadradria.Entity;
 using Quadradria.Inventory;
-using Quadradria.World;
+using Quadradria.UI;
+using Quadradria.Enviroment;
 
 namespace Quadradria
 {
@@ -23,6 +24,8 @@ namespace Quadradria
         Chunk chunk;
         Chunk chunk2;
 
+        UIContainer UIMaster;
+
         public Quadradria()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -34,10 +37,18 @@ namespace Quadradria
         {
             player = new Player();
             Textures.Load(Content);
+            Textures.Solid = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            Textures.Solid.SetData<Color>(new Color[1] { Color.White });
 
             chunk = new Chunk(0, 0, GraphicsDevice);
             chunk2 = new Chunk(1, 1, GraphicsDevice);
-            testItem = new Item();
+            testItem = new Item(new ItemType("item.sword", 1, Textures.Items.Sword));
+
+            UIMaster = new UIContainer(0, 0, 200, 200);
+            UIMaster.color = Color.Orange;
+            UIContainer UIInner = new UIContainer(0.1f, 0.1f, 0.8f, 0.8f, UIMaster);
+            UIInner.color = Color.Blue;
+            UIContainer UIAbsolute = new UIContainer(10, 10, 100, 50, UIInner, UIContainer.SizeMethod.Pixel);
 
             base.Initialize();
 
@@ -96,6 +107,7 @@ namespace Quadradria
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
 
+            UIMaster.Draw(spriteBatch);
             testItem.Draw(spriteBatch, 32, 32, 4);
        
             spriteBatch.End();

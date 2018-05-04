@@ -44,6 +44,8 @@ namespace Quadradria
             }
         }
 
+        public static Texture2D Solid; //A 1x1 pixel white texture (set in Quadradian.cs)
+
         public static void Load(ContentManager content)
         {
             Blocks.Load(content);

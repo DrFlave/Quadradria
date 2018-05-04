@@ -8,23 +8,38 @@ using System.Threading.Tasks;
 
 namespace Quadradria.Inventory
 {
+    struct ItemType
+    {
+        public string name;
+        public int maxStackSize;
+        public Texture2D texture;
+
+        public ItemType(string name, int stacksize, Texture2D texture)
+        {
+            this.name = name;
+            this.maxStackSize = stacksize;
+            this.texture = texture;
+        }
+    }
+
     class Item
     {
-        private int maxStackSize = 64;
+        private ItemType itemType;
         private int stackSize = 1;
-
-        private Texture2D texture = Textures.Items.Sword;
         private SpriteFont font = Textures.Fonts.Inventory;
-
         public Slot slot = null;
-        public string Name = "Item.Generic";
+
+        public Item(ItemType type)
+        {
+            this.itemType = type;
+        }
 
         public int StackSize
         {
             get { return stackSize; }
             set
             {
-                if (StackSize > 0 && StackSize < maxStackSize)
+                if (StackSize > 0 && StackSize < itemType.maxStackSize)
                 {
                     stackSize = value;
                 }
@@ -40,7 +55,7 @@ namespace Quadradria.Inventory
 
             amount = Math.Min(stackSize, amount);
 
-            Item item = new Item();
+            Item item = new Item(itemType);
             item.stackSize = amount;
             stackSize -= amount;
 
@@ -51,7 +66,7 @@ namespace Quadradria.Inventory
         {
             if (item.GetType() == GetType())
             {
-                int transfer = Math.Min(maxStackSize - stackSize, item.stackSize);
+                int transfer = Math.Min(itemType.maxStackSize - stackSize, item.stackSize);
                 stackSize += transfer;
                 item.stackSize -= transfer;
             }
@@ -67,7 +82,7 @@ namespace Quadradria.Inventory
 
         public void Draw(SpriteBatch spriteBatch, int x, int y, float scale = 1)
         {
-            spriteBatch.Draw(texture, new Vector2(x, y), color: Color.White, scale: new Vector2(scale, scale));
+            spriteBatch.Draw(itemType.texture, new Vector2(x, y), color: Color.White, scale: new Vector2(scale, scale));
             spriteBatch.DrawString(font, "" + stackSize, new Vector2(x + 8 * scale, y + 8 * scale), Color.White, 0, Vector2.Zero, scale / 2, SpriteEffects.None, 0);
         }
     }

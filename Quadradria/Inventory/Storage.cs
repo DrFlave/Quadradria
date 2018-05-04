@@ -13,8 +13,6 @@ namespace Quadradria.Inventory
         public Storage(int size) {
             if (size < 0) size = 1;
             slots = new Slot[size];
-
-            Console.WriteLine("Created Storage with {0} slots!", size);
         }
 
         public void Give(Item item)
