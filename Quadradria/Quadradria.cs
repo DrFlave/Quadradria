@@ -44,11 +44,16 @@ namespace Quadradria
             chunk2 = new Chunk(1, 1, GraphicsDevice);
             testItem = new Item(new ItemType("item.sword", 1, Textures.Items.Sword));
 
-            UIMaster = new UIContainer(0, 0, 200, 200);
-            UIMaster.color = Color.Orange;
-            UIContainer UIInner = new UIContainer(0.1f, 0.1f, 0.8f, 0.8f, UIMaster);
-            UIInner.color = Color.Blue;
-            UIContainer UIAbsolute = new UIContainer(10, 10, 100, 50, UIInner, UIContainer.SizeMethod.Pixel);
+            UIMaster = new UIContainer(20, 20, 300, 300);
+            new UILabel(0, 0, 1, 1, "Center", UIMaster, UISizeMethod.UV, UIAlignment.Center);
+            new UILabel(0, 0, 1, 1, "Top", UIMaster, UISizeMethod.UV, UIAlignment.Top);
+            new UILabel(0, 0, 1, 1, "Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Bottom);
+            new UILabel(0, 0, 1, 1, "Left", UIMaster, UISizeMethod.UV, UIAlignment.Left);
+            new UILabel(0, 0, 1, 1, "Right", UIMaster, UISizeMethod.UV, UIAlignment.Right);
+            new UILabel(0, 0, 1, 1, "Right Top", UIMaster, UISizeMethod.UV, UIAlignment.Right | UIAlignment.Top);
+            new UILabel(0, 0, 1, 1, "Right Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Right | UIAlignment.Bottom);
+            new UILabel(0, 0, 1, 1, "Left Top", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Top);
+            new UILabel(0, 0, 1, 1, "Left Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Bottom);
 
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;

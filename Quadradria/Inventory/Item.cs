@@ -14,10 +14,10 @@ namespace Quadradria.Inventory
         public int maxStackSize;
         public Texture2D texture;
 
-        public ItemType(string name, int stacksize, Texture2D texture)
+        public ItemType(string name, int maxStackSize, Texture2D texture)
         {
             this.name = name;
-            this.maxStackSize = stacksize;
+            this.maxStackSize = maxStackSize;
             this.texture = texture;
         }
     }

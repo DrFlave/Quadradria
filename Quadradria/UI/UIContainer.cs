@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 
 namespace Quadradria.UI
 {
+    public enum UISizeMethod { UV, Pixel }
+
     class UIContainer
     {
-        public enum SizeMethod { UV, Pixel }
 
-        private SizeMethod sizing;
+        private UISizeMethod sizing;
         private float x;
         private float y;
         private float width;
@@ -20,11 +21,9 @@ namespace Quadradria.UI
         private UIContainer parent;
         private List<UIContainer> children;
 
-        public Color color = Color.White;
+        protected Rectangle globalRect;
 
-        private Rectangle globalRect;
-
-        public UIContainer(float x, float y, float width, float height, UIContainer parent = null, SizeMethod sizing = SizeMethod.UV)
+        public UIContainer(float x, float y, float width, float height, UIContainer parent = null, UISizeMethod sizing = UISizeMethod.UV)
         {
             children = new List<UIContainer>();
 
@@ -42,43 +41,52 @@ namespace Quadradria.UI
             }
         }
 
+        public void Resize(float width, float height)
+        {
+            if (width < 0 || height < 0) return;
+            this.width = width;
+            this.height = height;
+            RecalcGlobals();
+        }
+
+        public void SetPosition(float x, float y)
+        {
+            this.x = x;
+            this.y = y;
+            RecalcGlobals();
+        }
+
         protected void RecalcGlobals()
         {
             if (parent == null)
             {
-
                 globalRect.X = (int)x;
                 globalRect.Y = (int)y;
                 globalRect.Width = (int)width;
                 globalRect.Height = (int)height;
-
-                /*
-                if (sizing == SizeMethod.UV)
-                {
-                    globalX = x;
-                    globalY = y;
-                    globalWidth = width;
-                    globalHeight = height;
-                }*/
-
                 return;
             }
 
             switch (sizing)
             {
-                case SizeMethod.Pixel:
+                case UISizeMethod.Pixel:
                     globalRect.X = (int)(parent.globalRect.X + x);
                     globalRect.Y = (int)(parent.globalRect.Y + y);
                     globalRect.Width = (int)width;
                     globalRect.Height = (int)height;
                     break;
 
-                case SizeMethod.UV:
+                case UISizeMethod.UV:
                     globalRect.X = (int)(parent.globalRect.X + parent.globalRect.Width * x);
                     globalRect.Y = (int)(parent.globalRect.Y + parent.globalRect.Height * y);
                     globalRect.Width = (int)(parent.globalRect.Width * width);
                     globalRect.Height = (int)(parent.globalRect.Height * height);
                     break;
+            }
+
+            foreach (UIContainer element in children)
+            {
+                element.RecalcGlobals();
             }
         }
 
@@ -104,11 +112,8 @@ namespace Quadradria.UI
             child.parent = null;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
-
-            spriteBatch.Draw(Textures.Solid, globalRect, color);
-
             foreach (UIContainer element in children)
             {
                 element.Draw(spriteBatch);
