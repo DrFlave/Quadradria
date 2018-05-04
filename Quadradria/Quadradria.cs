@@ -93,18 +93,13 @@ namespace Quadradria
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
-                camera.zoom += 0.02f;
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-                camera.zoom -= 0.02f;
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-                camera.rotation -= 0.02f;
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-                camera.rotation += 0.02f;
-
             
             player.Update(gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
             camera.Update(player.position);
+
+            Rectangle rect = camera.GetRect();
+
+            world.Update(rect.X, rect.Y, rect.Width, rect.Height);
 
             base.Update(gameTime);
         }
