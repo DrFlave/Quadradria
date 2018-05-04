@@ -14,7 +14,6 @@ namespace Quadradria
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Item testItem;
 
         Player player;
 
@@ -44,12 +43,9 @@ namespace Quadradria
             //chunk2 = new Chunk(1, 1, GraphicsDevice);
             world = new World(GraphicsDevice);
 
-
-
-            testItem = new Item(new ItemType("item.sword", 1, Textures.Items.Sword));
-
             UIMaster = new UIContainer(0, 0, 300, 300);
-            /*
+            
+            
             new UILabel(0, 0, 1, 1, "Center", UIMaster, UISizeMethod.UV, UIAlignment.Center);
             new UILabel(0, 0, 1, 1, "Top", UIMaster, UISizeMethod.UV, UIAlignment.Top);
             new UILabel(0, 0, 1, 1, "Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Bottom);
@@ -58,9 +54,9 @@ namespace Quadradria
             new UILabel(0, 0, 1, 1, "Right Top", UIMaster, UISizeMethod.UV, UIAlignment.Right | UIAlignment.Top);
             new UILabel(0, 0, 1, 1, "Right Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Right | UIAlignment.Bottom);
             new UILabel(0, 0, 1, 1, "Left Top", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Top);
-            new UILabel(0, 0, 1, 1, "Left Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Bottom);*/
+            new UILabel(0, 0, 1, 1, "Left Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Bottom);
 
-            frameCounter = new UILabel(0, 0, 1, 1, "FPS: -", UIMaster, UISizeMethod.UV, UIAlignment.Top | UIAlignment.Left);
+            frameCounter = new UILabel(0, 20, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
 
 
 
@@ -116,7 +112,7 @@ namespace Quadradria
         protected override void Draw(GameTime gameTime)
         {
             if (gameTime.ElapsedGameTime.Milliseconds != 0)
-                frameCounter.Text = "FPS: " + (1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
+                frameCounter.Text = "FPS: " + Math.Round(1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
 
             //chunk.Render(spriteBatch);
             //chunk2.Render(spriteBatch);
@@ -138,8 +134,7 @@ namespace Quadradria
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
             UIMaster.Draw(spriteBatch);
-            testItem.Draw(spriteBatch, 32, 32, 4);
-       
+
             spriteBatch.End();
 
 
@@ -149,6 +144,7 @@ namespace Quadradria
         public void OnResize(Object sender, EventArgs e)
         {
             camera.Resize(GraphicsDevice.Viewport);
+            UIMaster.Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
         }
     }
 }

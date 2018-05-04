@@ -14,7 +14,7 @@ namespace Quadradria.UI
     {
 
 
-        private float scale = 1;
+        private Vector2 scale = new Vector2(1, 1);
         private SpriteFont font = Textures.Fonts.Inventory;
         private Vector2 textDimension;
         private string text;
@@ -23,9 +23,19 @@ namespace Quadradria.UI
         public string Text {
             set {
                 text = value;
-                textDimension = font.MeasureString(value);
+                textDimension = font.MeasureString(value) * scale;
             }
             get{ return text; }
+        }
+
+        public float Scale
+        {
+            set
+            {
+                scale.X = value;
+                scale.Y = value;
+            }
+            get { return scale.X; }
         }
 
         public UILabel(float x, float y, float width, float height, string text, UIContainer parent = null, UISizeMethod sizing = UISizeMethod.UV, UIAlignment alignment = UIAlignment.Center) : base(x, y, width, height, parent, sizing)
@@ -37,14 +47,14 @@ namespace Quadradria.UI
         public override void Draw(SpriteBatch spriteBatch)
         {
             Vector2 origin = textDimension * scale * 0.5f;
-            Vector2 center = new Vector2(globalRect.Left + globalRect.Width / 2, globalRect.Top + globalRect.Height / 2);
+            Vector2 center = globalRect.Center.ToVector2();
 
             if (alignment.HasFlag(UIAlignment.Left)) origin.X += globalRect.Width / 2 - textDimension.X / 2;
             if (alignment.HasFlag(UIAlignment.Right)) origin.X -= globalRect.Width / 2 - textDimension.X / 2;
             if (alignment.HasFlag(UIAlignment.Top)) origin.Y += globalRect.Height / 2 - textDimension.Y / 2;
             if (alignment.HasFlag(UIAlignment.Bottom)) origin.Y -= globalRect.Height / 2 - textDimension.Y / 2;
 
-            spriteBatch.DrawString(font, text, center, Color.White, 0, origin, new Vector2(scale, scale), SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, text, center, Color.White, 0, origin, scale, SpriteEffects.None, 0);
             base.Draw(spriteBatch);
         }
     }

@@ -47,6 +47,7 @@ namespace Quadradria.UI
             if (width < 0 || height < 0) return;
             this.width = width;
             this.height = height;
+
             RecalcGlobals();
         }
 
@@ -59,30 +60,32 @@ namespace Quadradria.UI
 
         protected void RecalcGlobals()
         {
+
             if (parent == null)
             {
                 globalRect.X = (int)x;
                 globalRect.Y = (int)y;
                 globalRect.Width = (int)width;
                 globalRect.Height = (int)height;
-                return;
             }
-
-            switch (sizing)
+            else
             {
-                case UISizeMethod.Pixel:
-                    globalRect.X = (int)(parent.globalRect.X + x);
-                    globalRect.Y = (int)(parent.globalRect.Y + y);
-                    globalRect.Width = (int)width;
-                    globalRect.Height = (int)height;
-                    break;
+                switch (sizing)
+                {
+                    case UISizeMethod.Pixel:
+                        globalRect.X = (int)(parent.globalRect.X + x);
+                        globalRect.Y = (int)(parent.globalRect.Y + y);
+                        globalRect.Width = (int)width;
+                        globalRect.Height = (int)height;
+                        break;
 
-                case UISizeMethod.UV:
-                    globalRect.X = (int)(parent.globalRect.X + parent.globalRect.Width * x);
-                    globalRect.Y = (int)(parent.globalRect.Y + parent.globalRect.Height * y);
-                    globalRect.Width = (int)(parent.globalRect.Width * width);
-                    globalRect.Height = (int)(parent.globalRect.Height * height);
-                    break;
+                    case UISizeMethod.UV:
+                        globalRect.X = (int)(parent.globalRect.X + parent.globalRect.Width * x);
+                        globalRect.Y = (int)(parent.globalRect.Y + parent.globalRect.Height * y);
+                        globalRect.Width = (int)(parent.globalRect.Width * width);
+                        globalRect.Height = (int)(parent.globalRect.Height * height);
+                        break;
+                }
             }
 
             foreach (UIContainer element in children)
