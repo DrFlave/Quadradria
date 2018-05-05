@@ -60,6 +60,7 @@ namespace Quadradria
 
             UIButton btnHello = new UIButton(0.1f, 0.1f, 0.3f, 0.05f, "Hallo", UIMaster);
             UIButton btnWorld = new UIButton(0.1f, 0.2f, 0.3f, 0.05f, "Welt", UIMaster);
+            new UIButton(0.12f, 0.08f, 0.02f, 0.3f, "Overlap", UIMaster);
 
             btnHello.Click += OnClickHello;
             btnWorld.Click += OnClickWorld;

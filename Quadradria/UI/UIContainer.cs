@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -116,6 +117,16 @@ namespace Quadradria.UI
             child.parent = null;
         }
 
+        public virtual void CheckHover(int x, int y, ref int currentTop)
+        {
+            if (!visible) return;
+
+            foreach (UIContainer element in children)
+            {
+                element.CheckHover(x, y, ref currentTop);
+            }
+        }
+
         public void Show()
         {
             visible = true;
@@ -126,12 +137,20 @@ namespace Quadradria.UI
             visible = false;
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, int currentTop = 0)
         {
+            MouseState mouseState = Mouse.GetState();
+
             if (!visible) return;
+
+            if (parent == null)
+            {
+                CheckHover(mouseState.X, mouseState.Y, ref currentTop);
+            }
+
             foreach (UIContainer element in children)
             {
-                element.Draw(spriteBatch);
+                element.Draw(spriteBatch, currentTop);
             }
         }
     }

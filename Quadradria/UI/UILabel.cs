@@ -46,7 +46,7 @@ namespace Quadradria.UI
             this.alignment = alignment;
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, int currentTop)
         {
             Vector2 origin = textDimension * scale * 0.5f;
             Vector2 center = globalRect.Center.ToVector2();
@@ -57,7 +57,7 @@ namespace Quadradria.UI
             if (alignment.HasFlag(UIAlignment.Bottom)) origin.Y -= globalRect.Height / 2 - textDimension.Y / 2;
 
             spriteBatch.DrawString(font, text, center, color, 0, origin, scale, SpriteEffects.None, 0);
-            base.Draw(spriteBatch);
+            base.Draw(spriteBatch, currentTop);
         }
     }
 }

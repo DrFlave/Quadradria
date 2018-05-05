@@ -30,12 +30,12 @@ namespace Quadradria.UI
             };
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, int currentHover = 0)
         {
 
             spriteBatch.Draw(Textures.Solid, globalRect, hover || pressed ? Color.White : Color.LightGray);
 
-            base.Draw(spriteBatch);
+            base.Draw(spriteBatch, currentHover);
         }
     }
 }

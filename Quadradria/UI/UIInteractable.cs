@@ -23,11 +23,11 @@ namespace Quadradria.UI
 
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, int currentHover)
         {
             var mouseState = Mouse.GetState();
 
-            if (globalRect.Contains(mouseState.X, mouseState.Y))
+            if (currentHover == GetHashCode())
             {
                 hover = true;
                 if (mouseState.LeftButton == ButtonState.Pressed)
@@ -52,6 +52,16 @@ namespace Quadradria.UI
             lastLeftDown = mouseState.LeftButton == ButtonState.Pressed;
 
             base.Draw(spriteBatch);
+        }
+
+        public override void CheckHover(int x, int y, ref int currentTop)
+        {
+            if (globalRect.Contains(x, y))
+            {
+                currentTop = GetHashCode();
+            }
+
+            base.CheckHover(x, y, ref currentTop);
         }
 
         protected virtual void OnClick()
