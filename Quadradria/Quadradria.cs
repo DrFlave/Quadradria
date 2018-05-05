@@ -94,7 +94,7 @@ namespace Quadradria
                 Exit();
 
             
-            player.Update(gameTime.ElapsedGameTime.Milliseconds / 1000.0f);
+            player.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             camera.Update(player.position);
 
             Rectangle rect = camera.GetRect();
