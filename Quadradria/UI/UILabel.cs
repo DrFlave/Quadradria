@@ -20,6 +20,8 @@ namespace Quadradria.UI
         private string text;
         private UIAlignment alignment = UIAlignment.Center;
 
+        public Color color = Color.White;
+
         public string Text {
             set {
                 text = value;
@@ -54,7 +56,7 @@ namespace Quadradria.UI
             if (alignment.HasFlag(UIAlignment.Top)) origin.Y += globalRect.Height / 2 - textDimension.Y / 2;
             if (alignment.HasFlag(UIAlignment.Bottom)) origin.Y -= globalRect.Height / 2 - textDimension.Y / 2;
 
-            spriteBatch.DrawString(font, text, center, Color.White, 0, origin, scale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(font, text, center, color, 0, origin, scale, SpriteEffects.None, 0);
             base.Draw(spriteBatch);
         }
     }

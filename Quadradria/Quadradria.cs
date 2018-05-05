@@ -31,7 +31,7 @@ namespace Quadradria
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            
+            IsFixedTimeStep = false;
         }
 
         protected override void Initialize()
@@ -58,10 +58,15 @@ namespace Quadradria
 
             frameCounter = new UILabel(0, 20, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
 
+            UIButton btnHello = new UIButton(0.1f, 0.1f, 0.3f, 0.05f, "Hallo", UIMaster);
+            UIButton btnWorld = new UIButton(0.1f, 0.2f, 0.3f, 0.05f, "Welt", UIMaster);
 
+            btnHello.Click += OnClickHello;
+            btnWorld.Click += OnClickWorld;
 
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
+            graphics.SynchronizeWithVerticalRetrace = true;
             graphics.ApplyChanges();
 
             camera = new Camera(GraphicsDevice.Viewport);
@@ -134,6 +139,16 @@ namespace Quadradria
 
 
             base.Draw(gameTime);
+        }
+
+        public void OnClickHello(Object sender, EventArgs e)
+        {
+            Console.WriteLine("Hello was clicked!");
+        }
+
+        public void OnClickWorld(Object sender, EventArgs e)
+        {
+            Console.WriteLine("World was clicked!");
         }
 
         public void OnResize(Object sender, EventArgs e)
