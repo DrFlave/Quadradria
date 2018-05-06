@@ -44,26 +44,7 @@ namespace Quadradria
             world = new World(GraphicsDevice);
 
             UIMaster = new UIContainer(0, 0, 300, 300);
-            
-            
-            new UILabel(0, 0, 1, 1, "Center", UIMaster, UISizeMethod.UV, UIAlignment.Center);
-            new UILabel(0, 0, 1, 1, "Top", UIMaster, UISizeMethod.UV, UIAlignment.Top);
-            new UILabel(0, 0, 1, 1, "Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Bottom);
-            new UILabel(0, 0, 1, 1, "Left", UIMaster, UISizeMethod.UV, UIAlignment.Left);
-            new UILabel(0, 0, 1, 1, "Right", UIMaster, UISizeMethod.UV, UIAlignment.Right);
-            new UILabel(0, 0, 1, 1, "Right Top", UIMaster, UISizeMethod.UV, UIAlignment.Right | UIAlignment.Top);
-            new UILabel(0, 0, 1, 1, "Right Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Right | UIAlignment.Bottom);
-            new UILabel(0, 0, 1, 1, "Left Top", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Top);
-            new UILabel(0, 0, 1, 1, "Left Bottom", UIMaster, UISizeMethod.UV, UIAlignment.Left | UIAlignment.Bottom);
-
-            frameCounter = new UILabel(0, 20, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
-
-            UIButton btnHello = new UIButton(0.1f, 0.1f, 0.3f, 0.05f, "Hallo", UIMaster);
-            UIButton btnWorld = new UIButton(0.1f, 0.2f, 0.3f, 0.05f, "Welt", UIMaster);
-            new UIButton(0.12f, 0.08f, 0.02f, 0.3f, "Overlap", UIMaster);
-
-            btnHello.Click += OnClickHello;
-            btnWorld.Click += OnClickWorld;
+            frameCounter = new UILabel(0, 0, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
 
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
@@ -140,16 +121,6 @@ namespace Quadradria
 
 
             base.Draw(gameTime);
-        }
-
-        public void OnClickHello(Object sender, EventArgs e)
-        {
-            Console.WriteLine("Hello was clicked!");
-        }
-
-        public void OnClickWorld(Object sender, EventArgs e)
-        {
-            Console.WriteLine("World was clicked!");
         }
 
         public void OnResize(Object sender, EventArgs e)
