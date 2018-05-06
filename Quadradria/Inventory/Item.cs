@@ -82,7 +82,9 @@ namespace Quadradria.Inventory
 
         public void Draw(SpriteBatch spriteBatch, int x, int y, float scale = 1)
         {
-            spriteBatch.Draw(itemType.texture, new Vector2(x, y), color: Color.White, scale: new Vector2(scale, scale));
+            //spriteBatch.Draw(itemType.texture, new Vector2(x, y), color: Color.White, scale: new Vector2(scale, scale));
+            spriteBatch.Draw(itemType.texture, new Vector2(x, y), null, Color.White, 0f, Vector2.Zero, new Vector2(scale, scale), SpriteEffects.None, 0f);
+
             spriteBatch.DrawString(font, "" + stackSize, new Vector2(x + 8 * scale, y + 8 * scale), Color.White, 0, Vector2.Zero, scale / 2, SpriteEffects.None, 0);
         }
     }

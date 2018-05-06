@@ -18,8 +18,8 @@ namespace Quadradria
         private float zoomScale = 16;
         public float rotation = 0;
 
-        public float x;
-        public float y;
+        //public float x;
+        //public float y;
 
         public Camera(Viewport viewport)
         {
