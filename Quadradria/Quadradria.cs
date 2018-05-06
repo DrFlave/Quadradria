@@ -6,6 +6,7 @@ using Quadradria.Inventory;
 using Quadradria.UI;
 using Quadradria.Enviroment;
 using System;
+using static Quadradria.Utils;
 
 namespace Quadradria
 {
@@ -103,7 +104,7 @@ namespace Quadradria
             player.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             camera.Update(player.position);
 
-            Rectangle rect = camera.GetRect();
+            RectF rect = camera.GetRect();
 
             world.Update(rect.X, rect.Y, rect.Width, rect.Height);
 

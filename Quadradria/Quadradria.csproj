@@ -48,6 +48,8 @@
     <Compile Include="Entity\IInventory.cs" />
     <Compile Include="Entity\Mob.cs" />
     <Compile Include="Entity\Physical.cs" />
+    <Compile Include="Enviroment\ChunkLoader.cs" />
+    <Compile Include="Enviroment\LoadedChunksManager.cs" />
     <Compile Include="Enviroment\World.cs" />
     <Compile Include="Inventory\Storage.cs" />
     <Compile Include="Inventory\Item.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Enviroment\Chunk.cs" />
     <Compile Include="UI\UIInteractable.cs" />
     <Compile Include="UI\UILabel.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
