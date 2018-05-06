@@ -91,26 +91,21 @@ namespace Quadradria.Enviroment
             }
 
             //add new chunks
-
-            int ccc = 0;
+            
             for (int i = newrect.Y; i < newrect.Y + newrect.Height; i++)
             {
                 for (int j = newrect.X; j < newrect.X + newrect.Width; j++)
                 {
-                    ccc++;
                     if (lastRect == null || !lastRect.Contains(j, i))
                     {
                         Chunk c = chunkLoader.loadChunk(j, i);
                         if (c != null)
                         {
-                            
                             AddChunk(j, i, c);
                         }
                     }
                 }
             }
-            Console.WriteLine(ccc);
-            Console.WriteLine(lastRect);
 
             lastRect = newrect;
         }
@@ -152,7 +147,7 @@ namespace Quadradria.Enviroment
             {
                 if (GetChunk(y) != null) return false;
 
-                chunk.Load();
+                //chunk.Load();
                 Chunks.Add(new ChunkWrapper(y, chunk));
                 return true;
             }
