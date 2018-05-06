@@ -81,6 +81,7 @@ namespace Quadradria
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.S)) camera.zoom -= 0.02f;
             
             player.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             camera.Update(player.position);

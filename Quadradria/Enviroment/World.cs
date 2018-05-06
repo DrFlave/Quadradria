@@ -24,8 +24,8 @@ namespace Quadradria.Enviroment
         {
             int cX = (int)Math.Floor(x / 16);
             int cY = (int)Math.Floor(y / 16);
-            int cW = (int)Math.Floor((x + width) / 16) - cX;
-            int cH = (int)Math.Floor((y + height) / 16) - cY;
+            int cW = (int)Math.Ceiling((x + width) / 16) - cX;
+            int cH = (int)Math.Ceiling((y + height) / 16) - cY;
 
             LoadedChunks.UpdateLoadedArea(cX, cY, cW, cH, chunkLoader);
         }

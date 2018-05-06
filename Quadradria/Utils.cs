@@ -8,7 +8,7 @@ namespace Quadradria
 {
     static class Utils
     {
-        public struct Rect
+        public class Rect
         {
             public int X, Y, Width, Height;
 
@@ -20,30 +20,26 @@ namespace Quadradria
                 this.Height = height;
             }
 
-            public static bool operator ==(Rect a, Rect b)
+            public bool Contains(int x, int y)
             {
-                return a.X == b.X && a.Y == b.Y && a.Width == b.Width && a.Height == b.Height;
-            }
-
-            public override int GetHashCode()
-            {
-                return base.GetHashCode();
+                return (x >= X && y >= Y && x < X + Width && y < Y + Height);
             }
 
             public override bool Equals(object obj)
             {
                 if (!(obj is Rect)) return false;
-
-                return this == (Rect)obj;
+                Rect b = (Rect)obj;
+               
+                return X == b.X && Y == b.Y && Width == b.Width && Height == b.Height;
             }
 
-            public static bool operator !=(Rect a, Rect b)
+            public override string ToString()
             {
-                return !(a == b);
+                return ("(X: " + X + ", Y: " + Y + ", W: " + Width + ", H: " + Height + ")");
             }
         }
 
-        public struct RectF
+        public class RectF
         {
             public float X, Y, Width, Height;
 
@@ -53,6 +49,11 @@ namespace Quadradria
                 this.Y = y;
                 this.Width = width;
                 this.Height = height;
+            }
+
+            public bool Contains(float x, float y)
+            {
+                return (x >= X && y >= Y && x < X + Width && y < Y + Height);
             }
 
             public static bool operator ==(RectF a, RectF b)

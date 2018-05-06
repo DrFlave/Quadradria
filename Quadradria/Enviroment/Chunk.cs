@@ -13,6 +13,8 @@ namespace Quadradria.Enviroment
         public const int SIZE = 16;
         public const int BLOCK_SIZE = 16;
 
+        private bool isLoaded;
+
         public Block[,] blocks = new Block[SIZE, SIZE];
         public Vector2 pos;
         public Vector2 drawPos;
@@ -26,12 +28,19 @@ namespace Quadradria.Enviroment
             this.pos = new Vector2(x, y);
             this.drawPos = new Vector2(x * SIZE, y * SIZE);
             this.graphicsDevice = graphicsDevice;
-            this.renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
-            
+            Load();
+        }
+
+        public void Load()
+        {
+            if (isLoaded) return;
+            isLoaded = true;
+
+            renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
+
             Texture2D[] textures = { Textures.Blocks.Dirt, Textures.Blocks.Stone, Textures.Blocks.WoolCyan, Textures.Blocks.WoolGreen, Textures.Blocks.WoolPurple, Textures.Blocks.WoolRed, Textures.Blocks.WoolYellow };
-            Texture2D texture = textures[new Random(x + y * 100).Next(0, textures.Length)];
-
-
+            Texture2D texture = textures[new Random((int)(pos.X + pos.Y * 100)).Next(0, textures.Length)];
+            
             for (int i = 0; i < SIZE; i++)
             {
                 for (int j = 0; j < SIZE; j++)
@@ -41,9 +50,17 @@ namespace Quadradria.Enviroment
             }
         }
 
+        public void Unload()
+        {
+            if (!isLoaded) return;
+            isLoaded = false;
+
+            renderTarget.Dispose();
+        }
+
         public void Render(SpriteBatch spriteBatch)
         {
-            if (!shouldRender) return;
+            if (!shouldRender || renderTarget == null) return;
 
             graphicsDevice.SetRenderTarget(renderTarget);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
