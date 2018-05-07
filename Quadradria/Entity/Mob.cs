@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Quadradria.Entity;
+using Quadradria.Enviroment;
 
 namespace Quadradria.Entity
 {
@@ -14,7 +15,7 @@ namespace Quadradria.Entity
         private float maxHealth;
         private float walkSpeed;
 
-        public Mob(Vector2 position, float maxHealth, float walkSpeed) : base(position) {
+        public Mob(World world, Vector2 position, float maxHealth, float walkSpeed) : base(world, position) {
             this.maxHealth = maxHealth;
             this.health = maxHealth;
             this.walkSpeed = walkSpeed;

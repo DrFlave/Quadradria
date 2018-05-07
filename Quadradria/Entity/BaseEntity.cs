@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Quadradria.Enviroment;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,18 @@ using System.Threading.Tasks;
 
 namespace Quadradria.Entity
 {
+
     abstract class BaseEntity
     {
-        public Vector2 position;
-        public int id;
+        public Vector2 Position { get; set; }
+        public int ID { get; set; }
 
-        public BaseEntity(Vector2 position)
+        public BaseEntity(World world, Vector2 position)
         {
-            this.position = position;
+            Position = position;
+
+            ID = world.RequestEntityId();
+            Console.WriteLine("Created Entity with id " + ID);
         }
 
         public void Update()

@@ -13,7 +13,8 @@ namespace Quadradria.Enviroment
         
         private LoadedChunksManager LoadedChunks = new LoadedChunksManager();
         private ChunkLoader chunkLoader = new ChunkLoader();
-        
+
+        private int nextEntId = 0;
 
         public World(GraphicsDevice graphicsDevice)
         {
@@ -42,6 +43,11 @@ namespace Quadradria.Enviroment
             LoadedChunks.ForEach((chunk) => {
                 chunk.Draw(spriteBatch);
             });
+        }
+
+        public int RequestEntityId()
+        {
+            return nextEntId++;
         }
     }
 }

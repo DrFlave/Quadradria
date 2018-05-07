@@ -13,6 +13,14 @@ namespace Quadradria.UI
         protected bool hover;
         protected bool pressed;
 
+        //For Gamepad Controls
+        protected UIInteractable elementDown; 
+        protected UIInteractable elementUp;
+        protected UIInteractable elementRight;
+        protected UIInteractable elementLeft;
+
+        protected bool hasFocus;
+
         private bool lastLeftDown = false;
 
         public delegate void ClickEventHandler(object source, EventArgs args);
