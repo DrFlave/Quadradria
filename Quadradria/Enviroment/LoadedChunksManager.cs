@@ -1,81 +1,21 @@
-﻿using System;
+﻿using Quadradria.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Quadradria.Utils;
 
 namespace Quadradria.Enviroment
 {
     class LoadedChunksManager
     {
 
-        public Rect lastRect;
-
-        private List<ChunkColoumn> ChunkColoumns = new List<ChunkColoumn>();
-        
-        private ChunkColoumn GetChunkColoumn(int x)
-        {
-            for (int i = 0; i < ChunkColoumns.Count; i++)
-            {
-                if (ChunkColoumns[i].x == x)
-                {
-                    return ChunkColoumns[i];
-                }
-            }
-            return null;
-        }
-
-
-
-        public Chunk GetChunk(int x, int y)
-        {
-            ChunkColoumn cc = GetChunkColoumn(x);
-            if (cc == null) return null;
-
-            return cc.GetChunk(y);
-        }
-
-        public bool AddChunk(int x, int y, Chunk chunk)
-        {
-            if (GetChunk(x, y) != null) return false;
-
-            ChunkColoumn cc = GetChunkColoumn(x);
-            if (cc == null)
-            {
-                cc = new ChunkColoumn(x);
-                ChunkColoumns.Add(cc);
-            }
-
-            cc.AddChunk(y, chunk);
-            return true;
-        }
-
-        public bool RemoveChunk(int x, int y)
-        {
-            for (int i = 0; i < ChunkColoumns.Count; i++)
-            {
-                if (ChunkColoumns[i].x == x)
-                {
-                    if (ChunkColoumns[i].RemoveChunk(y))
-                    {
-                        if (ChunkColoumns[i].IsEmpty())
-                        {
-                            ChunkColoumns.RemoveAt(i);
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-            }
-            return false;
-        }
-
+        private Rect lastRect;
 
         public void UpdateLoadedArea(int x, int y, int width, int height, ChunkLoader chunkLoader)
         {
             Rect newrect = new Rect(x, y, width, height);
-            if (newrect.Equals(lastRect))  return;
+            if (newrect.Equals(lastRect)) return;
 
             //remove old chunks
             if (lastRect != null)
@@ -91,7 +31,6 @@ namespace Quadradria.Enviroment
             }
 
             //add new chunks
-            
             for (int i = newrect.Y; i < newrect.Y + newrect.Height; i++)
             {
                 for (int j = newrect.X; j < newrect.X + newrect.Width; j++)
@@ -109,90 +48,28 @@ namespace Quadradria.Enviroment
 
             lastRect = newrect;
         }
+        
+        private List2D<Chunk> Chunks = new List2D<Chunk>();
+
+        public Chunk GetChunk(int x, int y)
+        {
+            return Chunks.Get(x, y);
+        }
+
+        public bool AddChunk(int x, int y, Chunk chunk)
+        {
+            return Chunks.Add(x, y, chunk);
+        }
+
+        public bool RemoveChunk(int x, int y)
+        {
+            return Chunks.Remove(x, y);
+        }
 
         public void ForEach(Action<Chunk> func)
         {
-            for (int i = 0; i < ChunkColoumns.Count; i++)
-            {
-                ChunkColoumns[i].ForEach(func);
-            }
-
+            Chunks.ForEach(func);
         }
-
-
-        private class ChunkColoumn
-        {
-            public int x;
-
-            private List<ChunkWrapper> Chunks = new List<ChunkWrapper>();
-
-            public ChunkColoumn(int x)
-            {
-                this.x = x;
-            }
-
-            public Chunk GetChunk(int y)
-            {
-                for (int i = 0; i < Chunks.Count; i++)
-                {
-                    if (Chunks[i].y == y)
-                    {
-                        return Chunks[i].chunk;
-                    }
-                }
-                return null;
-            }
-
-            public bool AddChunk(int y, Chunk chunk)
-            {
-                if (GetChunk(y) != null) return false;
-
-                //chunk.Load();
-                Chunks.Add(new ChunkWrapper(y, chunk));
-                return true;
-            }
-
-            public bool RemoveChunk(int y)
-            {
-                for (int i = 0; i < Chunks.Count; i++)
-                {
-                    if (Chunks[i].y == y)
-                    {
-                        //Chunks[i].chunk.Unload();
-                        Chunks.RemoveAt(i);
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            public bool IsEmpty()
-            {
-                return !Chunks.Any();
-            }
-
-            public void ForEach(Action<Chunk> func)
-            {
-                for (int i = 0; i < Chunks.Count; i++)
-                {
-                    func(Chunks[i].chunk);
-                }
-            }
-
-            private struct ChunkWrapper
-            {
-                public int y;
-                public Chunk chunk;
-
-                public ChunkWrapper(int y, Chunk chunk)
-                {
-                    this.y = y;
-                    this.chunk = chunk;
-                }
-            }
-        }
-
-
     }
 
 }

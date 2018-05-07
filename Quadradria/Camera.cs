@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Quadradria.Utils;
+using Quadradria.Utils;
 
 namespace Quadradria
 {

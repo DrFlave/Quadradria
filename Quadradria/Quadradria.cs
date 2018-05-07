@@ -6,7 +6,7 @@ using Quadradria.Inventory;
 using Quadradria.UI;
 using Quadradria.Enviroment;
 using System;
-using static Quadradria.Utils;
+using Quadradria.Utils;
 
 namespace Quadradria
 {
