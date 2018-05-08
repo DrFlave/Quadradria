@@ -44,6 +44,9 @@ namespace Quadradria
             //chunk2 = new Chunk(1, 1, GraphicsDevice);
             world = new World(GraphicsDevice);
 
+            world.AddEntity(new Human(new Vector2(4, 4)));
+            world.AddEntity(new Human(new Vector2(4, 3)));
+
             UIMaster = new UIContainer(0, 0, 300, 300);
             frameCounter = new UILabel(0, 0, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
 

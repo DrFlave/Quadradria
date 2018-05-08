@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Quadradria.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,11 @@ namespace Quadradria.Enviroment
             LoadedChunks.ForEach((chunk) => {
                 chunk.Draw(spriteBatch);
             });
+        }
+
+        public void AddEntity(BaseEntity entity)
+        {
+            entity.Initialize(RequestEntityId());
         }
 
         public int RequestEntityId()

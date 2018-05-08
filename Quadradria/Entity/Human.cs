@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Quadradria.Enviroment;
 using Quadradria.Inventory;
 using System;
 using System.Collections.Generic;
@@ -14,7 +13,7 @@ namespace Quadradria.Entity
 
         public Storage Inventory { get; }
 
-        public Human(World world, Vector2 position) : base(world, position, 100, 3)
+        public Human(Vector2 position) : base(position, 100, 3)
         {
             Inventory = new Storage(10);
         }

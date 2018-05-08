@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Quadradria.Entity;
-using Quadradria.Enviroment;
 
 namespace Quadradria.Entity
 {
@@ -15,7 +14,7 @@ namespace Quadradria.Entity
         private float maxHealth;
         private float walkSpeed;
 
-        public Mob(World world, Vector2 position, float maxHealth, float walkSpeed) : base(world, position) {
+        public Mob(Vector2 position, float maxHealth, float walkSpeed) : base(position) {
             this.maxHealth = maxHealth;
             this.health = maxHealth;
             this.walkSpeed = walkSpeed;
@@ -28,12 +27,12 @@ namespace Quadradria.Entity
 
         public void Damage(float amount)
         {
-            health -= amount;
+            health = Math.Max( health - amount, 0 );
         }
 
         public void Heal(float amount)
         {
-            health = Math.Min( health + amount, maxHealth);
+            health = Math.Min( health + amount, maxHealth );
         }
     }
 }
