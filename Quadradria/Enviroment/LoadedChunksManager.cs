@@ -70,6 +70,11 @@ namespace Quadradria.Enviroment
         {
             Chunks.ForEach(func);
         }
+
+        public Chunk GetChunkByPosition(int x, int y)
+        {
+            return null;
+        }
     }
 
 }

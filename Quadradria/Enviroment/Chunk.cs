@@ -84,5 +84,11 @@ namespace Quadradria.Enviroment
             spriteBatch.Draw(renderTarget, drawPos, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
         }
+
+        public Block GetBlockAtLocalPosition(int x, int y)
+        {
+            if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return null;
+            return blocks[x, y];
+        }
     }
 }

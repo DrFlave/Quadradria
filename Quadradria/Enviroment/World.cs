@@ -55,5 +55,18 @@ namespace Quadradria.Enviroment
         {
             return nextEntId++;
         }
+
+        public Chunk GetChunkAtPosition(int x, int y)
+        {
+            return LoadedChunks.GetChunkByPosition(x / Chunk.SIZE, y / Chunk.SIZE);
+        }
+
+        public Block GetBlockAtPosition(int x, int y)
+        {
+            Chunk c = GetChunkAtPosition(x, y);
+            if (c == null) return null;
+
+            return c.GetBlockAtLocalPosition(x % Chunk.SIZE, y % Chunk.SIZE);
+        }
     }
 }
