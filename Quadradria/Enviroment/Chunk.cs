@@ -116,13 +116,13 @@ namespace Quadradria.Enviroment
             {
                 for (j = 0; j < SIZE; j++)
                 {
-                    index = i * SIZE + j;
+                    index = 4*(i * SIZE + j);
 
                     Block block = blocks[j, i];
-                    array[0] = ((byte)(block.blockID));
-                    array[1] = ((byte)(block.blockID >> 8));
-                    array[2] = ((byte)(block.subID));
-                    array[3] = ((byte)(block.subID >> 8));
+                    array[index + 0] = ((byte)(block.blockID));
+                    array[index + 1] = ((byte)(block.blockID >> 8));
+                    array[index + 2] = ((byte)(block.subID));
+                    array[index + 3] = ((byte)(block.subID >> 8));
                 }
             }
 
