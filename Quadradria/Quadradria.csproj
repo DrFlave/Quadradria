@@ -63,7 +63,7 @@
     <Compile Include="Inventory\IInventory.cs" />
     <Compile Include="Entity\Mob.cs" />
     <Compile Include="Entity\Physical.cs" />
-    <Compile Include="Enviroment\ChunkLoader.cs" />
+    <Compile Include="Enviroment\WorldLoader.cs" />
     <Compile Include="Enviroment\LoadedChunksManager.cs" />
     <Compile Include="Enviroment\World.cs" />
     <Compile Include="Inventory\Storage.cs" />
@@ -87,8 +87,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-	<Reference Include="MonoGame.Framework">
-		<HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

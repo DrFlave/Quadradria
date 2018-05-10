@@ -11,7 +11,7 @@ namespace Quadradria.Entity
     {
         Vector2 momentum;
 
-        public Physical(Vector2 position) : base(position)
+        public Physical() : base()
         {
             momentum = new Vector2(0, 0);
         }

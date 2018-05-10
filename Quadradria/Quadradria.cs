@@ -37,15 +37,19 @@ namespace Quadradria
 
         protected override void Initialize()
         {
+            int zeit = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
+            Console.WriteLine(zeit);
+            Console.WriteLine(new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(zeit).ToLocalTime());
+
             player = new Player();
             Textures.Load(Content, GraphicsDevice);
 
             //chunk = new Chunk(0, 0, GraphicsDevice);
             //chunk2 = new Chunk(1, 1, GraphicsDevice);
-            world = new World(GraphicsDevice);
+            world = new World(@"C: \Users\Adrian\Downloads\world.qwld", GraphicsDevice);
 
-            world.AddEntity(new Human(new Vector2(4, 4)));
-            world.AddEntity(new Human(new Vector2(4, 3)));
+            //world.AddEntity(new Human() { Position = new Vector2(4, 4) });
+            //world.AddEntity(new Human() { Position = new Vector2(2, 2) });
 
             UIMaster = new UIContainer(0, 0, 300, 300);
             frameCounter = new UILabel(0, 0, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
@@ -108,7 +112,7 @@ namespace Quadradria
 
             graphics.GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
 
             //chunk.Draw(spriteBatch);
             //chunk2.Draw(spriteBatch);

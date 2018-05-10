@@ -9,6 +9,8 @@ namespace Quadradria.Utils
     class List2D<T>
     {
         private List<Coloumn> Coloumns = new List<Coloumn>();
+        private int length = 0;
+        public int Length { get { return length; } }
 
         private Coloumn GetColoumn(int x)
         {
@@ -30,9 +32,17 @@ namespace Quadradria.Utils
             return cc.Get(y);
         }
 
+        public bool Includes(int x, int y)
+        {
+            Coloumn cc = GetColoumn(x);
+            if (cc == null) return false;
+
+            return cc.Includes(x);
+        }
+
         public bool Add(int x, int y, T item)
         {
-            if (Get(x, y) != null) return false;
+            if (Get(x, y) != null)  return false;
 
             Coloumn cc = GetColoumn(x);
             if (cc == null)
@@ -41,8 +51,13 @@ namespace Quadradria.Utils
                 Coloumns.Add(cc);
             }
 
-            cc.Add(y, item);
-            return true;
+            if(cc.Add(y, item))
+            {
+                length++;
+                return true;
+            }
+
+            return false;
         }
 
         public bool Remove(int x, int y)
@@ -57,6 +72,7 @@ namespace Quadradria.Utils
                         {
                             Coloumns.RemoveAt(i);
                         }
+                        length--;
                         return true;
                     }
                     return false;
@@ -73,8 +89,17 @@ namespace Quadradria.Utils
             }
 
         }
-        
-        private class Coloumn
+
+        public void ForEachWrapper(Action<Wrapper> func)
+        {
+            for (int i = 0; i < Coloumns.Count; i++)
+            {
+                Coloumns[i].ForEachWrapper(func);
+            }
+        }
+
+
+        public class Coloumn
         {
             public int x;
 
@@ -97,11 +122,23 @@ namespace Quadradria.Utils
                 return default(T);
             }
 
+            public bool Includes(int y)
+            {
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    if (Items[i].y == y)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             public bool Add(int y, T item)
             {
                 if (Get(y) != null) return false;
 
-                Items.Add(new Wrapper(y, item));
+                Items.Add(new Wrapper(x, y, item));
                 return true;
             }
 
@@ -130,17 +167,28 @@ namespace Quadradria.Utils
                     func(Items[i].item);
                 }
             }
-
-            private struct Wrapper
+            
+            public void ForEachWrapper(Action<Wrapper> func)
             {
-                public int y;
-                public T item;
-
-                public Wrapper(int y, T item)
+                for (int i = 0; i < Items.Count; i++)
                 {
-                    this.y = y;
-                    this.item = item;
+                    func(Items[i]);
                 }
+            }
+
+        }
+
+        public struct Wrapper
+        {
+            public int x;
+            public int y;
+            public T item;
+
+            public Wrapper(int x, int y, T item)
+            {
+                this.x = x;
+                this.y = y;
+                this.item = item;
             }
         }
 

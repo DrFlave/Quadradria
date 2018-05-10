@@ -13,9 +13,11 @@ namespace Quadradria.Entity
 
         public Storage Inventory { get; }
 
-        public Human(Vector2 position) : base(position, 100, 3)
+        public Human() : base(100, 3)
         {
             Inventory = new Storage(10);
         }
+
+
     }
 }

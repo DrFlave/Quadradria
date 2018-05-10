@@ -11,8 +11,14 @@ namespace Quadradria.Enviroment
     {
 
         private Rect lastRect;
+        private WorldLoader worldLoader;
 
-        public void UpdateLoadedArea(int x, int y, int width, int height, ChunkLoader chunkLoader)
+        public LoadedChunksManager(WorldLoader worldLoader)
+        {
+            this.worldLoader = worldLoader;
+        }
+
+        public void UpdateLoadedArea(int x, int y, int width, int height, WorldLoader chunkLoader)
         {
             Rect newrect = new Rect(x, y, width, height);
             if (newrect.Equals(lastRect)) return;
@@ -25,7 +31,15 @@ namespace Quadradria.Enviroment
                     for (int j = lastRect.X; j < lastRect.X + lastRect.Width; j++)
                     {
                         if (!newrect.Contains(j, i))
-                            RemoveChunk(j, i);
+                        {
+                            Chunk c = GetChunk(j, i);
+                            if (c != null)
+                            {
+                                worldLoader.WriteChunk(c);
+                                c.Unload();
+                                RemoveChunk(j, i);
+                            }
+                        }
                     }
                 }
             }
@@ -37,7 +51,7 @@ namespace Quadradria.Enviroment
                 {
                     if (lastRect == null || !lastRect.Contains(j, i))
                     {
-                        Chunk c = chunkLoader.loadChunk(j, i);
+                        Chunk c = chunkLoader.LoadChunk(j, i);
                         if (c != null)
                         {
                             AddChunk(j, i, c);
@@ -53,7 +67,12 @@ namespace Quadradria.Enviroment
 
         public Chunk GetChunk(int x, int y)
         {
-            return Chunks.Get(x, y);
+            Chunk c = Chunks.Get(x, y);
+            if (c == null)
+            {
+                //c = neuer chunk;
+            }
+            return c;
         }
 
         public bool AddChunk(int x, int y, Chunk chunk)
@@ -71,10 +90,6 @@ namespace Quadradria.Enviroment
             Chunks.ForEach(func);
         }
 
-        public Chunk GetChunkByPosition(int x, int y)
-        {
-            return null;
-        }
     }
 
 }

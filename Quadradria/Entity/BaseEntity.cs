@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,30 +14,14 @@ namespace Quadradria.Entity
         public Vector2 Position { get; set; }
         public int ID { get; private set; }
 
-        public BaseEntity(Vector2 position)
-        {
-            Position = position;
-        }
-
         public void Initialize(int id)
         {
             ID = id;
             Console.WriteLine("Initialized an entity at position " + Position.X + ", " + Position.Y + " with the ID: " + ID);
         }
 
-        public void Update()
-        {
+        public virtual void Update() { }
 
-        }
-
-        public void Tick()
-        {
-
-        }
-
-        public void Draw()
-        {
-
-        }
+        public virtual void Draw(SpriteBatch spriteBatch) { }
     }
 }

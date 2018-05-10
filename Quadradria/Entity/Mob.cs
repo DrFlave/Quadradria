@@ -14,7 +14,7 @@ namespace Quadradria.Entity
         private float maxHealth;
         private float walkSpeed;
 
-        public Mob(Vector2 position, float maxHealth, float walkSpeed) : base(position) {
+        public Mob(float maxHealth, float walkSpeed) : base() {
             this.maxHealth = maxHealth;
             this.health = maxHealth;
             this.walkSpeed = walkSpeed;
