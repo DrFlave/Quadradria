@@ -37,12 +37,12 @@ namespace Quadradria.Utils
             Coloumn cc = GetColoumn(x);
             if (cc == null) return false;
 
-            return cc.Includes(x);
+            return cc.Includes(y);
         }
 
         public bool Add(int x, int y, T item)
         {
-            if (!Includes(x, y))  return false;
+            if (Includes(x, y))  return false;
 
             Coloumn cc = GetColoumn(x);
             if (cc == null)
@@ -136,7 +136,7 @@ namespace Quadradria.Utils
 
             public bool Add(int y, T item)
             {
-                if (!Includes(y)) return false;
+                if (Includes(y)) return false;
 
                 Items.Add(new Wrapper(x, y, item));
                 return true;
