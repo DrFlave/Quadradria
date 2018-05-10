@@ -14,12 +14,12 @@ namespace Quadradria.UI
         protected bool pressed;
 
         //For Gamepad Controls
-        protected UIInteractable elementDown;
+        /*protected UIInteractable elementDown;
         protected UIInteractable elementUp;
         protected UIInteractable elementRight;
         protected UIInteractable elementLeft;
 
-        protected bool hasFocus;
+        protected bool hasFocus;*/
 
         private bool lastLeftDown = false;
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Quadradria.Enviroment
@@ -13,39 +14,41 @@ namespace Quadradria.Enviroment
     {
 
         /*
-         * Dateien je Welt:
-         * world.qwld       -Welt Daten
-         *
-         * World Format
-         * Header:
+         * Files per world:
+         * world.qwld           //World Data
          * 4    magic number    //ever 0x42171701
          * 4    file version
          * 4    seed
          * 128  world name  
-         * 4    width           //bei 0 = infinity
+         * 4    width           // 0 => infinity
          * 1    worldSize
-         * 4    creationTime    //Encoded in a binary format with the C# method DAtetime.ToBinary().
+         * 4    creationTime    //Timestamp. Seconds since 01.01.1970
          * 4    playtime        //seconds
          * 1    difficulty
          * 1    generator
          * 4    timeOfDay
          * 4    lengthOfDay
          * 4    chunkIndexSize
-         * Chunk Index:
+         * repeat(chunkIndexSize) { //Chunk specific values
+         *      4    x          
+         *      4    y
+         *      8    address        //Address in chunks.cdat                                
+         * }
          * 
          * 
          * 
          * 
+         * chunks.cdat       //Block Data
+         * chunk(1024bytes), chunk...
+         *
+         *
          * 
-         * 
-         * 
-         * 
-         * chunkData.cdat   -Block Daten
-         * entData.edat     -Entity Daten
+         * entData.edat         //Entity Data
          * 
          * */
 
         private Chunk[,] AllChunks = new Chunk[100, 100];
+
 
         public void Init(GraphicsDevice graphicsDevice)
         {
@@ -64,9 +67,11 @@ namespace Quadradria.Enviroment
             return (AllChunks[x, y]);
         }
 
+        private FileStream fsChunk;
+        private FileStream fsWorld;
         private string worldPath;
 
-        private List2D<uint> chunkIndex = new List2D<uint>();
+        private List2D<long> chunkIndex = new List2D<long>();
 
         public WorldLoader()
         {
@@ -77,9 +82,8 @@ namespace Quadradria.Enviroment
         {
             this.worldPath = fileName;
 
-            //FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-            //StreamWriter writer = new StreamWriter(fs);
-            //StreamReader reader = new StreamReader(fs);
+            fsChunk = new FileStream(worldPath + @"\chunks.cdat", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+            fsWorld = new FileStream(worldPath + @"\world.qwld", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
         }
 
         public void GetChunk(int x, int y)
@@ -89,66 +93,71 @@ namespace Quadradria.Enviroment
 
         public void WriteChunk(Chunk chunk)
         {
-            uint address;
-            FileStream fsChunks = new FileStream(worldPath + @"\chunks.cdat", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-            FileStream fsWorld = new FileStream(worldPath + @"\world.qwld", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-            BinaryWriter writerChunk = new BinaryWriter(fsChunks);
+            long address;
+            BinaryWriter writerChunk = new BinaryWriter(fsChunk);
             BinaryWriter writerWorld = new BinaryWriter(fsWorld);
 
+            bool write = false;
             if (!chunkIndex.Includes(chunk.pos.X, chunk.pos.Y))
             {
-                address = (uint)fsChunks.Length;
+                address = (uint)fsChunk.Length;
                 chunkIndex.Add(chunk.pos.X, chunk.pos.Y, address);
-
-                writerWorld.Write(chunk.pos.X);
-                writerWorld.Write(chunk.pos.Y);
-                writerWorld.Write(address);
-            } else {
+                write = true;
+            }
+            else
+            {
                 address = chunkIndex.Get(chunk.pos.X, chunk.pos.Y);
             }
 
-            fsChunks.Seek(address, SeekOrigin.Begin);
-            writerChunk.Write(chunk.Export());
-
-            fsChunks.Close();
-            fsWorld.Close();
+            Task task = new Task(() =>
+            {
+                if(write)
+                {
+                    writerWorld.Write(chunk.pos.X);
+                    writerWorld.Write(chunk.pos.Y);
+                    writerWorld.Write(address);
+                }
+                fsChunk.Seek(address, SeekOrigin.Begin);
+                writerChunk.Write(chunk.Export());
+            });
+            task.Start();
         }
 
         public void WriteWorld(WorldInfo worldInfo)
         {
-            FileStream fsWorld = new FileStream(worldPath + @"\world.qwld", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+            Task task = new Task(() =>
+            {
+                fsWorld.Seek(0, SeekOrigin.Begin);
+                BinaryWriter writer = new BinaryWriter(fsWorld);
+                writer.Write((uint)0x42171701);    //Magic Number
+                writer.Write((uint)0x1);           //Version
+                writer.Write((uint)worldInfo.seed);
+                writer.Write(Encoding.UTF8.GetBytes(worldInfo.name.PadRight(128, '\0')));
+                writer.Write((uint)worldInfo.width);
+                writer.Write((byte)worldInfo.worldSize);
+                writer.Write((ulong)worldInfo.creationTime);
+                writer.Write((ulong)worldInfo.playTime);
+                writer.Write((byte)worldInfo.difficulty);
+                writer.Write((byte)worldInfo.generator);
+                writer.Write((uint)worldInfo.timeOfDay);
+                writer.Write((uint)worldInfo.lengthOfDay);
+                writer.Write((uint)chunkIndex.Length);
 
-            BinaryWriter writer = new BinaryWriter(fsWorld);
-            writer.Write((uint) 0x42171701);    //Magic Number
-            writer.Write((uint) 0x1);           //Version
-            writer.Write((uint)worldInfo.seed);
-            writer.Write(Encoding.UTF8.GetBytes(worldInfo.name.PadRight(128, '\0')));
-            writer.Write((uint)worldInfo.width);
-            writer.Write((byte)worldInfo.worldSize);
-            writer.Write((ulong)worldInfo.creationTime);
-            writer.Write((ulong)worldInfo.playTime);
-            writer.Write((byte)worldInfo.difficulty);
-            writer.Write((byte)worldInfo.generator);
-            writer.Write((uint)worldInfo.timeOfDay);
-            writer.Write((uint)worldInfo.lengthOfDay);
-            writer.Write((uint)0);
+                uint chunkIndexSize = (uint)chunkIndex.Length;
 
-            uint chunkIndexSize = (uint)chunkIndex.Length;
-
-            chunkIndex.ForEachWrapper((chunk) => {
-                writer.Write(chunk.x);
-                writer.Write(chunk.y);
-                writer.Write(chunk.item);
+                chunkIndex.ForEachWrapper((chunk) => {
+                    writer.Write(chunk.x);
+                    writer.Write(chunk.y);
+                    writer.Write(chunk.item);
+                });
             });
-
-            fsWorld.Close();
+            task.Start();
         }
 
         public void LoadWorld()
         {
-            FileStream fs = new FileStream(worldPath + @"\world.qwld", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-
-            BinaryReader reader = new BinaryReader(fs);
+            fsWorld.Seek(0, SeekOrigin.Begin);
+            BinaryReader reader = new BinaryReader(fsWorld);
 
             uint magicNumber = reader.ReadUInt32();
             uint version = reader.ReadUInt32();
@@ -194,9 +203,12 @@ namespace Quadradria.Enviroment
                 uint pointer = reader.ReadUInt32();
                 chunkIndex.Add(x, y, pointer);
             }
-
-            fs.Close();
         }
 
+        public void Close()
+        {
+            fsWorld.Close();
+            fsChunk.Close();
+        }
     }
 }

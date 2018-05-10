@@ -19,21 +19,15 @@ namespace Quadradria
         {
             public static Texture2D Dirt;
             public static Texture2D Stone;
-            public static Texture2D WoolRed;
-            public static Texture2D WoolYellow;
-            public static Texture2D WoolGreen;
-            public static Texture2D WoolCyan;
-            public static Texture2D WoolPurple;
+            public static Texture2D Wool;
+            public static Texture2D DoorWood;
 
             public static void Load(ContentManager content)
             {
-                Dirt = content.Load<Texture2D>("Dirt");
-                Stone = content.Load<Texture2D>("Stone");
-                WoolRed = content.Load<Texture2D>("WoolRed");
-                WoolYellow = content.Load<Texture2D>("WoolYellow");
-                WoolGreen = content.Load<Texture2D>("WoolGreen");
-                WoolCyan = content.Load<Texture2D>("WoolCyan");
-                WoolPurple = content.Load<Texture2D>("WoolPurple");
+                Dirt = content.Load<Texture2D>("Blocks/Dirt");
+                Stone = content.Load<Texture2D>("Blocks/Stone");
+                Wool = content.Load<Texture2D>("Blocks/Wool");
+                DoorWood = content.Load<Texture2D>("Blocks/Doors/Wood");
             }
         }
 

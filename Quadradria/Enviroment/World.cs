@@ -37,7 +37,7 @@ namespace Quadradria.Enviroment
         private WorldLoader worldLoader;
         private LoadedChunksManager LoadedChunks;
 
-        public WorldInfo worldInfo { get; set; }
+        public WorldInfo Info { get; set; }
 
         private string path;
 
@@ -45,14 +45,14 @@ namespace Quadradria.Enviroment
 
         public World(string path, GraphicsDevice graphicsDevice)
         {
-            worldLoader = new WorldLoader(@"E:\");
+            worldLoader = new WorldLoader(path);
             LoadedChunks = new LoadedChunksManager(worldLoader);
 
             this.path = path;
-            worldInfo = new WorldInfo();
+            Info = new WorldInfo();
 
             worldLoader.Init(graphicsDevice);
-            worldLoader.WriteWorld(worldInfo);
+            worldLoader.WriteWorld(Info);
             worldLoader.LoadWorld();
         }
 
@@ -106,7 +106,7 @@ namespace Quadradria.Enviroment
             return LoadedChunks.GetChunk(cX, cY);
         }
 
-        public Block GetBlockAtPosition(int x, int y)
+        public Block? GetBlockAtPosition(int x, int y)
         {
             Chunk c = GetChunkAtTilePosition(x, y);
             if (c == null) return null;
@@ -117,7 +117,7 @@ namespace Quadradria.Enviroment
         public void Save()
         {
             
-            worldLoader.WriteWorld(worldInfo);
+            worldLoader.WriteWorld(Info);
         }
 
     }

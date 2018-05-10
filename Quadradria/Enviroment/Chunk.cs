@@ -41,14 +41,14 @@ namespace Quadradria.Enviroment
 
             renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
 
-            Texture2D[] textures = { Textures.Blocks.Dirt, Textures.Blocks.Stone, Textures.Blocks.WoolCyan, Textures.Blocks.WoolGreen, Textures.Blocks.WoolPurple, Textures.Blocks.WoolRed, Textures.Blocks.WoolYellow };
-            Texture2D texture = textures[new Random((int)(pos.X + pos.Y * 100)).Next(0, textures.Length)];
+            BlockType[] types = { BlockType.Dirt, BlockType.Stone };
+            BlockType type = types[new Random((int)(pos.X + pos.Y * 100)).Next(0, types.Length)];
 
             for (int i = 0; i < SIZE; i++)
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    blocks[i, j] = new Block(texture);
+                    blocks[i, j] = new Block(type, 0);
                 }
             }
         }
@@ -92,7 +92,7 @@ namespace Quadradria.Enviroment
             });
         }
 
-        public Block GetBlockAtLocalPosition(int x, int y)
+        public Block? GetBlockAtLocalPosition(int x, int y)
         {
             if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return null;
             return blocks[x, y];
@@ -119,10 +119,10 @@ namespace Quadradria.Enviroment
                     index = 4*(i * SIZE + j);
 
                     Block block = blocks[j, i];
-                    array[index + 0] = ((byte)(block.blockID));
-                    array[index + 1] = ((byte)(block.blockID >> 8));
-                    array[index + 2] = ((byte)(block.subID));
-                    array[index + 3] = ((byte)(block.subID >> 8));
+                    array[index + 0] = ((byte)((int)block.BlockID));
+                    array[index + 1] = ((byte)((int)block.BlockID >> 8));
+                    array[index + 2] = ((byte)(block.SubID));
+                    array[index + 3] = ((byte)(block.SubID >> 8));
                 }
             }
 

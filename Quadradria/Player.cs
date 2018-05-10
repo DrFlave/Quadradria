@@ -13,7 +13,7 @@ namespace Quadradria
 
         public void Load(ContentManager content)
         {
-            texture = content.Load<Texture2D>("Dirt");
+            texture = content.Load<Texture2D>("Blocks/Dirt");
         }
 
         public void Update(float dt)
