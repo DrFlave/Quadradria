@@ -27,7 +27,8 @@ namespace Quadradria.Enviroment
 
         public bool shouldRender = true;
 
-        public Chunk(int x, int y, GraphicsDevice graphicsDevice) {
+        public Chunk(int x, int y, GraphicsDevice graphicsDevice)
+        {
             this.pos = new Point(x, y);
             this.drawPos = new Vector2(x * SIZE, y * SIZE);
             this.graphicsDevice = graphicsDevice;
@@ -82,7 +83,8 @@ namespace Quadradria.Enviroment
             shouldRender = false;
         }
 
-        public void Draw(SpriteBatch spriteBatch) {
+        public void Draw(SpriteBatch spriteBatch)
+        {
             float scale = 1.0f / BLOCK_SIZE;
             spriteBatch.Draw(renderTarget, drawPos, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0.5f);
 
@@ -108,7 +110,8 @@ namespace Quadradria.Enviroment
             entities.Remove(entity);
         }
 
-        public byte[] Export() {
+        public byte[] Export()
+        {
             byte[] array = new byte[1024];
             int index, i, j;
 
@@ -116,11 +119,11 @@ namespace Quadradria.Enviroment
             {
                 for (j = 0; j < SIZE; j++)
                 {
-                    index = 4*(i * SIZE + j);
+                    index = 4 * (i * SIZE + j);
 
                     Block block = blocks[j, i];
-                    array[index + 0] = ((byte)((int)block.BlockID));
-                    array[index + 1] = ((byte)((int)block.BlockID >> 8));
+                    array[index + 0] = ((byte)(block.BlockID));
+                    array[index + 1] = ((byte)(block.BlockID >> 8));
                     array[index + 2] = ((byte)(block.SubID));
                     array[index + 3] = ((byte)(block.SubID >> 8));
                 }
@@ -129,8 +132,21 @@ namespace Quadradria.Enviroment
             return array;
         }
 
-        public void Import(byte[] data) {
-            
+        public void Import(byte[] data)
+        {
+            int index, i, j;
+            for (i = 0; i < SIZE; i++)
+            {
+                for (j = 0; j < SIZE; j++)
+                {
+                    index = 4 * (i * SIZE + j);
+                    Block block = blocks[j, i];
+
+                    block.damage = 0;
+                    block.BlockID = BitConverter.ToUInt16(data, index);
+                    block.SubID = BitConverter.ToUInt16(data, index + 2);
+                }
+            }
         }
     }
 }

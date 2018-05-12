@@ -22,19 +22,19 @@ namespace Quadradria.Enviroment
 
     struct Block
     {
-        public BlockType BlockID;
-        public short SubID;
+        public ushort BlockID;
+        public ushort SubID;
         public byte damage;
 
-        public Block(BlockType blockID, short subID) {
-            BlockID = blockID;
+        public Block(BlockType blockID, ushort subID) {
+            BlockID = (ushort)blockID;
             SubID = subID;
             damage = 0;
         }
 
         public void Draw(SpriteBatch spriteBatch, int x, int y)
         {
-            BlockTypeDefault typeInst = BlockTypeDefault.BlockTypeList[(int)BlockID];
+            BlockTypeDefault typeInst = BlockTypeDefault.BlockTypeList[BlockID];
 
             if (typeInst != null)
                 typeInst.Draw(spriteBatch, x, y, this);
@@ -55,9 +55,9 @@ namespace Quadradria.Enviroment
             BlockTypeList[(int)BlockType.DoorWood] = (new BlockTypeDoor(BlockType.DoorWood, "doorWood", Textures.Blocks.DoorWood));
         }
 
-        private string name;
-        private Texture2D texture;
-        private BlockType type;
+        protected string name;
+        protected Texture2D texture;
+        protected BlockType type;
 
         public BlockTypeDefault(BlockType type, string name, Texture2D texture)
         {
@@ -75,10 +75,14 @@ namespace Quadradria.Enviroment
 
     class BlockTypeDoor : BlockTypeDefault
     {
+        private Rectangle rectClosed = new Rectangle(0, 0, 32, 32);
+        private Rectangle rectOpen = new Rectangle(32, 0, 32, 32);
+
         public BlockTypeDoor(BlockType type, string name, Texture2D texture) : base(type, name, texture) { }
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
             bool open = block.SubID > 0;
+            spriteBatch.Draw(texture, new Vector2(x, y), open ? rectOpen : rectClosed, Color.White);
         }
     }
 
