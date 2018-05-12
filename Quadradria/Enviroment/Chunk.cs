@@ -134,6 +134,8 @@ namespace Quadradria.Enviroment
 
         public void Import(byte[] data)
         {
+            if (data.Length != SIZE*SIZE*4) return; //!= 1024
+
             int index, i, j;
             for (i = 0; i < SIZE; i++)
             {

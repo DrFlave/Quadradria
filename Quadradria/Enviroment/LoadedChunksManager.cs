@@ -55,7 +55,7 @@ namespace Quadradria.Enviroment
                         if (c != null)
                         {
                             AddChunk(j, i, c);
-                        }
+                        } 
                     }
                 }
             }
@@ -63,31 +63,32 @@ namespace Quadradria.Enviroment
             lastRect = newrect;
         }
         
-        private List2D<Chunk> Chunks = new List2D<Chunk>();
+        private List2D<Chunk> ChunksLoaded = new List2D<Chunk>();
+        private List2D<Chunk> ChunksVisible = new List2D<Chunk>();
 
         public Chunk GetChunk(int x, int y)
         {
-            Chunk c = Chunks.Get(x, y);
+            Chunk c = ChunksLoaded.Get(x, y);
             if (c == null)
             {
-                //c = neuer chunk;
+                worldLoader.GetChunk(x, y);
             }
             return c;
         }
 
         public bool AddChunk(int x, int y, Chunk chunk)
         {
-            return Chunks.Add(x, y, chunk);
+            return ChunksLoaded.Add(x, y, chunk);
         }
 
         public bool RemoveChunk(int x, int y)
         {
-            return Chunks.Remove(x, y);
+            return ChunksLoaded.Remove(x, y);
         }
 
         public void ForEach(Action<Chunk> func)
         {
-            Chunks.ForEach(func);
+            ChunksLoaded.ForEach(func);
         }
 
     }

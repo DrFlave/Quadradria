@@ -12,9 +12,21 @@ namespace Quadradria.Enviroment
     class WorldInfo
     {
         public uint seed, width, timeOfDay, lengthOfDay;
-        public string name;
-        public byte difficulty, generator, worldSize;
+        private string name;
+        public byte difficulty, generator;
         public ulong creationTime, playTime;
+        public WorldSize Size;
+
+        public string Name {
+            get => name;
+            set {
+                name = value;
+                if (value.Length > 128)
+                {
+                    name = value.Substring(0, 128);
+                }
+            }
+        }
 
         public WorldInfo()
         {
@@ -22,14 +34,16 @@ namespace Quadradria.Enviroment
             width = 0;
             timeOfDay = 0;
             lengthOfDay = 0xFFFF;
-            name = "Alex Stinkt";
+            Name = "unnamed world";
             difficulty = 1;
             generator = 0;
-            worldSize = 1;
+            Size = WorldSize.Small;
             creationTime = 0;
             playTime = 0;
         }
     }
+
+    enum WorldSize : byte { Small = 0, Medium = 1, Large = 2 }
 
     class World
     {

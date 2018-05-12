@@ -40,6 +40,15 @@ namespace Quadradria.Utils
             return cc.Includes(y);
         }
 
+        public bool Includes(T obj)
+        {
+            bool found = false;
+            ForEach((item) =>{
+                if (obj.GetHashCode() == item.GetHashCode()) found = true;
+            });
+            return found;
+        }
+
         public bool Add(int x, int y, T item)
         {
             if (Includes(x, y))  return false;

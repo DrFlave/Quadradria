@@ -52,6 +52,8 @@ namespace Quadradria.Enviroment
 
         public void Init(GraphicsDevice graphicsDevice)
         {
+            this.graphicsDevice = graphicsDevice;
+
             for (int i = 0; i < 100; i++)
             {
                 for (int j = 0; j < 100; j++)
@@ -70,6 +72,7 @@ namespace Quadradria.Enviroment
         private FileStream fsChunk;
         private FileStream fsWorld;
         private string worldPath;
+        private GraphicsDevice graphicsDevice;
 
         private List2D<long> chunkIndex = new List2D<long>();
 
@@ -86,9 +89,30 @@ namespace Quadradria.Enviroment
             fsWorld = new FileStream(worldPath + @"\world.qwld", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
         }
 
-        public void GetChunk(int x, int y)
+        public Chunk GetChunk(int x, int y)
         {
+            if (chunkIndex.Includes(x, y))
+            {
+                Chunk chunk = new Chunk(x, y, graphicsDevice);
+                ReadChunk(chunk);
+                return chunk;
+            } else {
+                Chunk chunk = new Chunk(x, y, graphicsDevice);
+                //ToDo: Woldgenerator here!
+                return chunk;
+            }
+        }
 
+        public void ReadChunk(Chunk chunk)
+        {
+            long? address = chunkIndex.Get(chunk.pos.X, chunk.pos.Y);
+            if (address == null) return;
+
+            fsChunk.Seek((long)address, SeekOrigin.Begin);
+            BinaryReader reader = new BinaryReader(fsChunk);
+
+            byte[] bytes = reader.ReadBytes(1024);
+            chunk.Import(bytes);
         }
 
         public void WriteChunk(Chunk chunk)
@@ -132,9 +156,9 @@ namespace Quadradria.Enviroment
                 writer.Write((uint)0x42171701);    //Magic Number
                 writer.Write((uint)0x1);           //Version
                 writer.Write((uint)worldInfo.seed);
-                writer.Write(Encoding.UTF8.GetBytes(worldInfo.name.PadRight(128, '\0')));
+                writer.Write(Encoding.UTF8.GetBytes(worldInfo.Name.PadRight(128, '\0')));
                 writer.Write((uint)worldInfo.width);
-                writer.Write((byte)worldInfo.worldSize);
+                writer.Write((byte)worldInfo.Size);
                 writer.Write((ulong)worldInfo.creationTime);
                 writer.Write((ulong)worldInfo.playTime);
                 writer.Write((byte)worldInfo.difficulty);
@@ -181,7 +205,7 @@ namespace Quadradria.Enviroment
             uint timeOfDay = reader.ReadUInt32();
             uint lengthOfDay = reader.ReadUInt32();
 
-            Console.WriteLine("magic number: {0}, {1}", magicNumber, magicNumber == 0x42171701 ? "Ja" : "Nein");
+            Console.WriteLine("magic number: {0}, {1}", magicNumber, magicNumber == 0x42171701 ? "Matches." : "No Match!");
             Console.WriteLine("version: {0}", version);
             Console.WriteLine("seed: {0}", seed);
             Console.WriteLine("worldName: {0}", worldName);
