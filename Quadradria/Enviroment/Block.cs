@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Quadradria.Enviroment
 {
 
-    enum BlockType
+    enum BlockType : ushort
     {
         Air = 0,
         Dirt = 1,
@@ -22,19 +22,19 @@ namespace Quadradria.Enviroment
 
     struct Block
     {
-        public ushort BlockID;
+        public BlockType BlockID;
         public ushort SubID;
         public byte damage;
 
         public Block(BlockType blockID, ushort subID) {
-            BlockID = (ushort)blockID;
+            BlockID = blockID;
             SubID = subID;
             damage = 0;
         }
 
         public void Draw(SpriteBatch spriteBatch, int x, int y)
         {
-            BlockTypeDefault typeInst = BlockTypeDefault.BlockTypeList[BlockID];
+            BlockTypeDefault typeInst = BlockTypeDefault.BlockTypeList[(uint)BlockID];
 
             if (typeInst != null)
                 typeInst.Draw(spriteBatch, x, y, this);

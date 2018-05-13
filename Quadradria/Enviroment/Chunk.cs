@@ -123,7 +123,7 @@ namespace Quadradria.Enviroment
 
                     Block block = blocks[j, i];
                     array[index + 0] = ((byte)(block.BlockID));
-                    array[index + 1] = ((byte)(block.BlockID >> 8));
+                    array[index + 1] = ((byte)((ushort)block.BlockID >> 8));
                     array[index + 2] = ((byte)(block.SubID));
                     array[index + 3] = ((byte)(block.SubID >> 8));
                 }
@@ -145,7 +145,7 @@ namespace Quadradria.Enviroment
                     Block block = blocks[j, i];
 
                     block.damage = 0;
-                    block.BlockID = BitConverter.ToUInt16(data, index);
+                    block.BlockID = (BlockType)BitConverter.ToUInt16(data, index);
                     block.SubID = BitConverter.ToUInt16(data, index + 2);
                 }
             }
