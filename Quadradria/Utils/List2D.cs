@@ -12,6 +12,110 @@ namespace Quadradria.Utils
         private int length = 0;
         public int Length { get { return length; } }
 
+        
+        public T Get(int x, int y)
+        {
+            lock (this)
+            {
+                Coloumn cc = GetColoumn(x);
+                if (cc == null) return default(T);
+
+                return cc.Get(y);
+            }
+        }
+
+        public bool Includes(int x, int y)
+        {
+            lock (this) {
+                Coloumn cc = GetColoumn(x);
+                if (cc == null) return false;
+
+                return cc.Includes(y);
+            }
+        }
+
+        public bool Includes(T obj)
+        {
+            lock (this)
+            {
+                bool found = false;
+                ForEach((item) =>
+                {
+                    if (obj.GetHashCode() == item.GetHashCode()) found = true;
+                });
+                return found;
+            }
+        }
+
+        public bool Add(int x, int y, T item)
+        {
+            lock (this)
+            {
+                if (Includes(x, y)) return false;
+
+                Coloumn cc = GetColoumn(x);
+                if (cc == null)
+                {
+                    cc = new Coloumn(x);
+                    Coloumns.Add(cc);
+                }
+
+                if (cc.Add(y, item))
+                {
+                    length++;
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public bool Remove(int x, int y)
+        {
+            lock (this)
+            {
+                for (int i = 0; i < Coloumns.Count; i++)
+                {
+                    if (Coloumns[i].x == x)
+                    {
+                        if (Coloumns[i].Remove(y))
+                        {
+                            if (Coloumns[i].IsEmpty())
+                            {
+                                Coloumns.RemoveAt(i);
+                            }
+                            length--;
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public void ForEach(Action<T> func)
+        {
+            lock (this)
+            {
+                for (int i = 0; i < Coloumns.Count; i++)
+                {
+                    Coloumns[i].ForEach(func);
+                }
+            }
+
+        }
+
+        public void ForEachWrapper(Action<Wrapper> func)
+        {
+            lock (this)
+            {
+                for (int i = 0; i < Coloumns.Count; i++)
+                {
+                    Coloumns[i].ForEachWrapper(func);
+                }
+            }
+        }
+
         private Coloumn GetColoumn(int x)
         {
             for (int i = 0; i < Coloumns.Count; i++)
@@ -23,92 +127,8 @@ namespace Quadradria.Utils
             }
             return null;
         }
-        
-        public T Get(int x, int y)
-        {
-            Coloumn cc = GetColoumn(x);
-            if (cc == null) return default(T);
 
-            return cc.Get(y);
-        }
-
-        public bool Includes(int x, int y)
-        {
-            Coloumn cc = GetColoumn(x);
-            if (cc == null) return false;
-
-            return cc.Includes(y);
-        }
-
-        public bool Includes(T obj)
-        {
-            bool found = false;
-            ForEach((item) =>{
-                if (obj.GetHashCode() == item.GetHashCode()) found = true;
-            });
-            return found;
-        }
-
-        public bool Add(int x, int y, T item)
-        {
-            if (Includes(x, y))  return false;
-
-            Coloumn cc = GetColoumn(x);
-            if (cc == null)
-            {
-                cc = new Coloumn(x);
-                Coloumns.Add(cc);
-            }
-
-            if(cc.Add(y, item))
-            {
-                length++;
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool Remove(int x, int y)
-        {
-            for (int i = 0; i < Coloumns.Count; i++)
-            {
-                if (Coloumns[i].x == x)
-                {
-                    if (Coloumns[i].Remove(y))
-                    {
-                        if (Coloumns[i].IsEmpty())
-                        {
-                            Coloumns.RemoveAt(i);
-                        }
-                        length--;
-                        return true;
-                    }
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        public void ForEach(Action<T> func)
-        {
-            for (int i = 0; i < Coloumns.Count; i++)
-            {
-                Coloumns[i].ForEach(func);
-            }
-
-        }
-
-        public void ForEachWrapper(Action<Wrapper> func)
-        {
-            for (int i = 0; i < Coloumns.Count; i++)
-            {
-                Coloumns[i].ForEachWrapper(func);
-            }
-        }
-
-
-        public class Coloumn
+        private class Coloumn
         {
             public int x;
 

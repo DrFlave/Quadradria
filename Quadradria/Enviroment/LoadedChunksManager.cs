@@ -11,6 +11,7 @@ namespace Quadradria.Enviroment
     {
 
         private Rect lastRect;
+        private Rect lastDrawRect;
         private WorldLoader worldLoader;
 
         public LoadedChunksManager(WorldLoader worldLoader)
@@ -18,10 +19,11 @@ namespace Quadradria.Enviroment
             this.worldLoader = worldLoader;
         }
 
-        public void UpdateLoadedArea(int x, int y, int width, int height, WorldLoader chunkLoader)
+        public void UpdateLoadedArea(int x, int y, int width, int height, WorldLoader worldLoader)
         {
-            Rect newrect = new Rect(x, y, width, height);
+            Rect newrect = new Rect(x-3, y-3, width+6, height+6);
             if (newrect.Equals(lastRect)) return;
+            Rect newDrawRect = new Rect(x, y, width, height);
 
             //remove old chunks
             if (lastRect != null)
@@ -32,12 +34,16 @@ namespace Quadradria.Enviroment
                     {
                         if (!newrect.Contains(j, i))
                         {
-                            Chunk c = GetChunk(j, i);
-                            if (c != null)
+                            Chunk chunk = ChunksLoaded.Get(j, i);
+                            if (chunk == null) continue;
+
+                            worldLoader.WriteChunk(chunk);
+                            chunk.Unload();
+                            RemoveChunk(j, i);
+
+                            if (!newDrawRect.Contains(j, i) && lastDrawRect.Contains(j, i))
                             {
-                                worldLoader.WriteChunk(c);
-                                c.Unload();
-                                RemoveChunk(j, i);
+                                ChunksVisible.Remove(j, i);
                             }
                         }
                     }
@@ -51,29 +57,35 @@ namespace Quadradria.Enviroment
                 {
                     if (lastRect == null || !lastRect.Contains(j, i))
                     {
-                        Chunk c = chunkLoader.LoadChunk(j, i);
-                        if (c != null)
-                        {
-                            AddChunk(j, i, c);
-                        } 
+                        worldLoader.LoadChunk(j, i, (chunk) => {
+                            if (chunk == null) return;
+                            AddChunk(j, i, chunk);
+
+                            if (lastDrawRect == null || !lastDrawRect.Contains(j, i))
+                            {
+                                ChunksVisible.Add(j, i, chunk);
+                            }
+                        });
                     }
                 }
             }
 
             lastRect = newrect;
+            lastDrawRect = newDrawRect;
         }
         
         private List2D<Chunk> ChunksLoaded = new List2D<Chunk>();
         private List2D<Chunk> ChunksVisible = new List2D<Chunk>();
 
-        public Chunk GetChunk(int x, int y)
+        public void GetChunk(int x, int y, Action<Chunk> callback)
         {
             Chunk c = ChunksLoaded.Get(x, y);
-            if (c == null)
-            {
-                worldLoader.GetChunk(x, y);
+            if (c != null) {
+                callback(c);
+                return;
             }
-            return c;
+
+            worldLoader.LoadChunk(x, y, callback);
         }
 
         public bool AddChunk(int x, int y, Chunk chunk)
@@ -86,9 +98,14 @@ namespace Quadradria.Enviroment
             return ChunksLoaded.Remove(x, y);
         }
 
-        public void ForEach(Action<Chunk> func)
+        public void ForEachLoaded(Action<Chunk> func)
         {
             ChunksLoaded.ForEach(func);
+        }
+
+        public void ForEachVisible(Action<Chunk> func)
+        {
+            ChunksVisible.ForEach(func);
         }
 
     }
