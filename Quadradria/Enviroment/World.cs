@@ -32,8 +32,8 @@ namespace Quadradria.Enviroment
         {
             seed = 0x1;
             width = 0;
-            timeOfDay = 0;
-            lengthOfDay = 0xFFFF;
+            timeOfDay = 0xabcdef99;
+            lengthOfDay = 0x12345678;
             Name = "unnamed world";
             difficulty = 1;
             generator = 0;

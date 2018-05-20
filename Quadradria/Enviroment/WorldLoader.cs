@@ -172,7 +172,7 @@ namespace Quadradria.Enviroment
 
                     ChunkWriter.BaseStream.Seek((long)address, SeekOrigin.Begin);
                     ChunkWriter.Write(export);
-                    WorldWriter.Seek(163, SeekOrigin.Begin);
+                    WorldWriter.Seek(0xAB, SeekOrigin.Begin);
                     WorldWriter.Write((uint)chunkIndex.Length);
                 }
             });
@@ -259,7 +259,7 @@ namespace Quadradria.Enviroment
                     uint chunkIndexSize = WorldReader.ReadUInt32();
 
                     WorldReader.ReadUInt32();
-
+                    /*
                     for (int i = 0; i < chunkIndexSize; i++)
                     {
                         int x = WorldReader.ReadInt32();
@@ -268,6 +268,7 @@ namespace Quadradria.Enviroment
                         WorldReader.ReadInt32();
                         chunkIndex.Add(x, y, pointer);
                     }
+                    */
                 }
             });
 
