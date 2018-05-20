@@ -18,8 +18,7 @@ namespace Quadradria.UI
         protected UIInteractable elementUp;
         protected UIInteractable elementRight;
         protected UIInteractable elementLeft;
-
-        protected bool hasFocus;*/
+        */
 
         private bool lastLeftDown = false;
 
@@ -46,6 +45,7 @@ namespace Quadradria.UI
                     if (pressed)
                     {
                         OnClick();
+                        Focus(null);
                         pressed = false;
                     }
                 }
@@ -59,11 +59,13 @@ namespace Quadradria.UI
 
             lastLeftDown = mouseState.LeftButton == ButtonState.Pressed;
 
-            base.Draw(spriteBatch);
+            base.Draw(spriteBatch, currentHover);
         }
 
         public override void CheckHover(int x, int y, ref int currentTop)
         {
+            if (!visible) return;
+
             if (globalRect.Contains(x, y))
             {
                 currentTop = GetHashCode();

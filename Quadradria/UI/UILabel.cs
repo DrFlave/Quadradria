@@ -48,6 +48,8 @@ namespace Quadradria.UI
 
         public override void Draw(SpriteBatch spriteBatch, int currentTop)
         {
+            if (!visible) return;
+
             Vector2 origin = textDimension * scale * 0.5f;
             Vector2 center = globalRect.Center.ToVector2();
 

@@ -54,7 +54,14 @@ namespace Quadradria
             //world.AddEntity(new Human() { Position = new Vector2(2, 2) });
 
             UIMaster = new UIContainer(0, 0, 300, 300);
+            new UIInteractable(0, 0, 1, 1, UIMaster); //makes things defocusable
             frameCounter = new UILabel(0, 0, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
+            UIDropDown dropDown = new UIDropDown(32, 32, 200, 30, UIMaster, UISizeMethod.Pixel);
+            dropDown.AddOption("Entry1", new Object());
+            dropDown.AddOption("Entry2", new Object());
+            dropDown.AddOption("Entry3", new Object());
+            UIButton A = new UIButton(500, 32, 200, 40, "I AM BUTTON!", UIMaster, UISizeMethod.Pixel);
+            new UIButton(10, 20, 40, 100, "B", A, UISizeMethod.Pixel);
 
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;

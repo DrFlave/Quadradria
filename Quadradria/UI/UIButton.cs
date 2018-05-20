@@ -11,7 +11,7 @@ namespace Quadradria.UI
     class UIButton : UIInteractable
     {
         UILabel label;
-        string Text {
+        public string Text {
             set
             {
                 label.Text = value;
@@ -32,6 +32,7 @@ namespace Quadradria.UI
 
         public override void Draw(SpriteBatch spriteBatch, int currentHover = 0)
         {
+            if (!visible) return;
 
             spriteBatch.Draw(Textures.Solid, globalRect, hover || pressed ? Color.White : Color.LightGray);
 

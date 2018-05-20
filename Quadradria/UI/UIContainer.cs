@@ -19,11 +19,34 @@ namespace Quadradria.UI
         private float y;
         private float width;
         private float height;
-        private bool visible = true;
-        private UIContainer parent;
-        private List<UIContainer> children;
+        private UIContainer focused;
 
+        protected UIContainer parent;
+        protected bool visible = true;
+        protected List<UIContainer> children;
         protected Rectangle globalRect;
+
+        public bool HasFocus()
+        {
+            return (GetFocusedElement() == this);
+        }
+
+        public UIContainer GetFocusedElement()
+        {
+            if (parent == null) return focused;
+            return parent.GetFocusedElement();
+        }
+
+        public void Focus(UIContainer element)
+        {
+            if (element == null) element = this;
+
+            if (parent == null) {
+                focused = element;
+                return;
+            }
+            parent.Focus(element);
+        }
 
         public UIContainer(float x, float y, float width, float height, UIContainer parent = null, UISizeMethod sizing = UISizeMethod.UV)
         {
@@ -139,12 +162,11 @@ namespace Quadradria.UI
 
         public virtual void Draw(SpriteBatch spriteBatch, int currentTop = 0)
         {
-            MouseState mouseState = Mouse.GetState();
-
             if (!visible) return;
 
             if (parent == null)
             {
+                MouseState mouseState = Mouse.GetState();
                 CheckHover(mouseState.X, mouseState.Y, ref currentTop);
             }
 

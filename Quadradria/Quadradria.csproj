@@ -78,6 +78,7 @@
     <Compile Include="UI\UIContainer.cs" />
     <Compile Include="Enviroment\Block.cs" />
     <Compile Include="Enviroment\Chunk.cs" />
+    <Compile Include="UI\UIDropDown.cs" />
     <Compile Include="UI\UIInteractable.cs" />
     <Compile Include="UI\UILabel.cs" />
     <Compile Include="Utils\List2D.cs" />
@@ -142,6 +143,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.manifest" />
+    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Error.png" />
