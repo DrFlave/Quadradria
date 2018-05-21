@@ -51,6 +51,7 @@ namespace Quadradria.Enviroment
         private Chunk[,] AllChunks = new Chunk[100, 100];
 
         //DEBUG!!!!
+        
         public void Init(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
@@ -64,15 +65,19 @@ namespace Quadradria.Enviroment
             }
         }
 
+
         //DEBUG!!!!
-        public void LoadChunk(int x, int y, Action<Chunk> callback)
+        /*
+        public Chunk LoadChunk(int x, int y)
         {
-            if (x < 0 || y < 0 || x > 99 || y > 99) { 
-                callback(null);
-                return;
+            if (x < 0 || y < 0 || x > 99 || y > 99) {
+                return null;
             }
-            callback(AllChunks[x, y]);
+            AllChunks[x, y].Load();
+            return AllChunks[x, y];
         }
+        */
+        
 
         private FileStream fsChunk;
         private FileStream fsWorld;
@@ -86,8 +91,9 @@ namespace Quadradria.Enviroment
         private List2D<long?> chunkIndex = new List2D<long?>();
 
         //ToDo: try catch when instanziate
-        public WorldLoader(string fileName)
+        public WorldLoader(string fileName, GraphicsDevice graphicsDevice)
         {
+            this.graphicsDevice = graphicsDevice;
             this.worldPath = fileName;
 
             try
@@ -104,23 +110,23 @@ namespace Quadradria.Enviroment
             }
         }
 
-        /*
-        public void LoadChunk(int x, int y, Action<Chunk> callback)
+        
+        public Chunk LoadChunk(int x, int y)
         {
+            Chunk c = new Chunk(x, y, graphicsDevice);
             if (chunkIndex.Includes(x, y))
             {
-                ReadChunk(x, y, (bytes)=> {
-                    Chunk c = new Chunk(x, y, graphicsDevice);
+                ReadChunk(x, y, (bytes) => {
                     c.Import(bytes);
-                    callback(c);
                 });
             } else {
-                callback(new Chunk(x, y, graphicsDevice));
+                c.Load(true);
                 //ToDo: Woldgenerator here!
                 //ToDo: (Maybe) save chunk after generating
             }
+            return c;
         }
-        */
+        
 
         private void ReadChunk(int x, int y, Action<byte[]> callback)
         {
@@ -131,8 +137,15 @@ namespace Quadradria.Enviroment
                 byte[] bytes;
                 lock (fsChunk)
                 {
-                    ChunkReader.BaseStream.Seek((long)address, SeekOrigin.Begin);
-                    bytes = ChunkReader.ReadBytes(1024);
+                    try
+                    {
+                        ChunkReader.BaseStream.Seek((long)address, SeekOrigin.Begin);
+                        bytes = ChunkReader.ReadBytes(1024);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception("Error, reading chunk", e);
+                    }
                 }
                 callback(bytes);
             });
@@ -157,23 +170,30 @@ namespace Quadradria.Enviroment
             int x = chunk.pos.X;
             int y = chunk.pos.Y;
             byte[] export = chunk.Export();
+            if (export == null) return;
 
             Task.Run(() => {
                 lock (fsWorld) lock (fsChunk)
                 {
-                    if (write)
+                    try
                     {
-                        WorldWriter.BaseStream.Seek(WorldWriter.BaseStream.Length, SeekOrigin.Begin);
-                        //WorldWriter.BaseStream.Seek(0, SeekOrigin.End);
-                        WorldWriter.Write(x);
-                        WorldWriter.Write(y);
-                        WorldWriter.Write((long)address);
-                    }
+                        if (write)
+                        {
+                            WorldWriter.BaseStream.Seek(0, SeekOrigin.End);
+                            WorldWriter.Write(x);
+                            WorldWriter.Write(y);
+                            WorldWriter.Write((long)address);
+                        }
 
-                    ChunkWriter.BaseStream.Seek((long)address, SeekOrigin.Begin);
-                    ChunkWriter.Write(export);
-                    WorldWriter.Seek(0xAB, SeekOrigin.Begin);
-                    WorldWriter.Write((uint)chunkIndex.Length);
+                        ChunkWriter.BaseStream.Seek((long)address, SeekOrigin.Begin);
+                        ChunkWriter.Write(export);
+                        WorldWriter.Seek(0xAB, SeekOrigin.Begin);
+                        WorldWriter.Write((uint)chunkIndex.Length);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception("Error saving chunk", e);
+                    }
                 }
             });
         }
@@ -185,90 +205,112 @@ namespace Quadradria.Enviroment
             Task.Run(() => {
                 lock (fsWorld)
                 {
-                    //potential issue with using worldInfo without locking
-                    WorldWriter.Seek(0, SeekOrigin.Begin);
-                    WorldWriter.Write((uint)0x42171701);    //Magic Number
-                    WorldWriter.Write((uint)0x1);           //Version
-                    WorldWriter.Write((uint)worldInfo.seed);
-                    WorldWriter.Write(Encoding.UTF8.GetBytes(worldInfo.Name.PadRight(128, '\0')));
-                    WorldWriter.Write((uint)worldInfo.width);
-                    WorldWriter.Write((byte)worldInfo.Size);
-                    WorldWriter.Write((ulong)worldInfo.creationTime);
-                    WorldWriter.Write((ulong)worldInfo.playTime);
-                    WorldWriter.Write((byte)worldInfo.difficulty);
-                    WorldWriter.Write((byte)worldInfo.generator);
-                    WorldWriter.Write((uint)worldInfo.timeOfDay);
-                    WorldWriter.Write((uint)worldInfo.lengthOfDay);
-                    WorldWriter.Write((uint)indexLength);
+                    try
+                    {
+                        //potential issue with using worldInfo without locking
+                        WorldWriter.Seek(0, SeekOrigin.Begin);
+                        WorldWriter.Write((uint)0x42171701);    //Magic Number
+                        WorldWriter.Write((uint)0x1);           //Version
+                        WorldWriter.Write((uint)worldInfo.seed);
+                        WorldWriter.Write(Encoding.UTF8.GetBytes(worldInfo.Name.PadRight(128, '\0')));
+                        WorldWriter.Write((uint)worldInfo.width);
+                        WorldWriter.Write((byte)worldInfo.Size);
+                        WorldWriter.Write((ulong)worldInfo.creationTime);
+                        WorldWriter.Write((ulong)worldInfo.playTime);
+                        WorldWriter.Write((byte)worldInfo.difficulty);
+                        WorldWriter.Write((byte)worldInfo.generator);
+                        WorldWriter.Write((uint)worldInfo.timeOfDay);
+                        WorldWriter.Write((uint)worldInfo.lengthOfDay);
+                        WorldWriter.Write((uint)indexLength);
 
-                    uint chunkIndexSize = (uint)indexLength;
-
-                    chunkIndex.ForEachWrapper((chunkW) => {
-                        WorldWriter.Write((int)chunkW.x);
-                        WorldWriter.Write((int)chunkW.y);
-                        WorldWriter.Write((long)chunkW.item);
-                    });
+                        chunkIndex.ForEachWrapper((chunkW) => {
+                            WorldWriter.Write((int)chunkW.x);
+                            WorldWriter.Write((int)chunkW.y);
+                            WorldWriter.Write((long)chunkW.item);
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception("Error saving world", e);
+                    }
                 }
             });
         }
 
-        public void LoadWorld()
+        public void LoadWorld(WorldInfo Info)
         {
             Task.Run(() =>
             {
                 lock (fsWorld)
                 {
-
-                    fsWorld.Seek(0, SeekOrigin.Begin);
-
-                    uint magicNumber = WorldReader.ReadUInt32();
-                    uint version = WorldReader.ReadUInt32();
-                    uint seed = WorldReader.ReadUInt32();
-
-                    char[] worldChars = WorldReader.ReadChars(128);
-
-                    string worldName = "";
-                    for (int i = 0; i < 128; i++)
+                    try
                     {
-                        if (worldChars[i] == 0) break;
-                        worldName += worldChars[i];
+
+                        fsWorld.Seek(0, SeekOrigin.Begin);
+
+                        uint magicNumber = WorldReader.ReadUInt32();
+                        uint version = WorldReader.ReadUInt32();
+                        uint seed = WorldReader.ReadUInt32();
+
+                        char[] worldChars = WorldReader.ReadChars(128);
+
+                        string worldName = "";
+                        for (int i = 0; i < 128; i++)
+                        {
+                            if (worldChars[i] == 0) break;
+                            worldName += worldChars[i];
+                        }
+
+                        uint width = WorldReader.ReadUInt32();
+                        WorldSize worldSize = (WorldSize)WorldReader.ReadByte();
+                        ulong creationTime = WorldReader.ReadUInt64();
+                        ulong playTime = WorldReader.ReadUInt64();
+                        Difficulty difficulty = (Difficulty)WorldReader.ReadByte();
+                        Generator generator = (Generator)WorldReader.ReadByte();
+                        uint timeOfDay = WorldReader.ReadUInt32();
+                        uint lengthOfDay = WorldReader.ReadUInt32();
+
+                        Console.WriteLine("magic number: {0}, {1}", magicNumber, magicNumber == 0x42171701 ? "Matches." : "No Match!");
+                        Console.WriteLine("version: {0}", version.ToString("X"));
+                        Console.WriteLine("seed: {0}", seed.ToString("X"));
+                        Console.WriteLine("worldName: {0}", worldName);
+                        Console.WriteLine("width: {0}", width.ToString("X"));
+                        Console.WriteLine("worldSize: {0}", worldSize.ToString("X"));
+                        Console.WriteLine("creationTime: {0}", creationTime.ToString("X"));
+                        Console.WriteLine("playTime: {0}", playTime.ToString("X"));
+                        Console.WriteLine("difficulty: {0}", difficulty.ToString("X"));
+                        Console.WriteLine("generator: {0}", generator.ToString("X"));
+                        Console.WriteLine("timeOfDay: {0}", timeOfDay.ToString("X"));
+                        Console.WriteLine("lengthOfDay: {0}", lengthOfDay.ToString("X"));
+
+                        Info.seed = seed;
+                        Info.width = width;
+                        Info.timeOfDay = timeOfDay;
+                        Info.lengthOfDay = lengthOfDay;
+                        Info.Name = worldName;
+                        Info.difficulty = difficulty;
+                        Info.generator = generator;
+                        Info.Size = worldSize;
+                        Info.creationTime = creationTime;
+                        Info.playTime = playTime;
+
+                        uint chunkIndexSize = WorldReader.ReadUInt32();
+                        Console.WriteLine("chunkIndexSize: {0}", chunkIndexSize);
+                        
+                        
+                        for (int i = 0; i < chunkIndexSize; i++)
+                        {
+                            int x = WorldReader.ReadInt32();
+                            int y = WorldReader.ReadInt32();
+                            long pointer = WorldReader.ReadInt64();
+                            chunkIndex.Add(x, y, pointer);
+                        }
+                        
                     }
-
-                    uint width = WorldReader.ReadUInt32();
-                    byte worldSize = WorldReader.ReadByte();
-                    ulong creationTime = WorldReader.ReadUInt32();
-                    ulong playTime = WorldReader.ReadUInt32();
-                    byte difficulty = WorldReader.ReadByte();
-                    byte generator = WorldReader.ReadByte();
-                    uint timeOfDay = WorldReader.ReadUInt32();
-                    uint lengthOfDay = WorldReader.ReadUInt32();
-
-                    Console.WriteLine("magic number: {0}, {1}", magicNumber, magicNumber == 0x42171701 ? "Matches." : "No Match!");
-                    Console.WriteLine("version: {0}", version);
-                    Console.WriteLine("seed: {0}", seed);
-                    Console.WriteLine("worldName: {0}", worldName);
-                    Console.WriteLine("width: {0}", width);
-                    Console.WriteLine("worldSize: {0}", worldSize);
-                    Console.WriteLine("creationTime: {0}", creationTime);
-                    Console.WriteLine("playTime: {0}", playTime);
-                    Console.WriteLine("difficulty: {0}", difficulty);
-                    Console.WriteLine("generator: {0}", generator);
-                    Console.WriteLine("timeOfDay: {0}", timeOfDay);
-                    Console.WriteLine("lengthOfDay: {0}", lengthOfDay);
-
-                    uint chunkIndexSize = WorldReader.ReadUInt32();
-
-                    WorldReader.ReadUInt32();
-                    /*
-                    for (int i = 0; i < chunkIndexSize; i++)
+                    catch (Exception e)
                     {
-                        int x = WorldReader.ReadInt32();
-                        int y = WorldReader.ReadInt32();
-                        long pointer = WorldReader.ReadInt64();
-                        WorldReader.ReadInt32();
-                        chunkIndex.Add(x, y, pointer);
+                        throw new Exception("Error reading world", e);
                     }
-                    */
                 }
             });
 

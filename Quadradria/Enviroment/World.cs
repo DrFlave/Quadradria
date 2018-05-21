@@ -13,9 +13,10 @@ namespace Quadradria.Enviroment
     {
         public uint seed, width, timeOfDay, lengthOfDay;
         private string name;
-        public byte difficulty, generator;
         public ulong creationTime, playTime;
+        public Generator generator;
         public WorldSize Size;
+        public Difficulty difficulty;
 
         public string Name {
             get => name;
@@ -35,21 +36,23 @@ namespace Quadradria.Enviroment
             timeOfDay = 0xabcdef99;
             lengthOfDay = 0x12345678;
             Name = "unnamed world";
-            difficulty = 1;
-            generator = 0;
+            difficulty = Difficulty.Ultra;
+            generator = Generator.Skyblock;
             Size = WorldSize.Small;
-            creationTime = 0;
-            playTime = 0;
+            creationTime = 0x1212121212121212;
+            playTime = 0x5454545454545454;
         }
     }
 
     enum WorldSize : byte { Small = 0, Medium = 1, Large = 2 }
+    enum Difficulty : byte { Easy = 0, Medium = 1, Hard = 2, Ultra = 0xFF }
+    enum Generator : byte { Default = 0, Hell = 1, Island = 2, Skyblock = 3 }
 
     class World
     {
 
         private WorldLoader worldLoader;
-        private LoadedChunksManager LoadedChunks;
+        public LoadedChunksManager LoadedChunks;
 
         public WorldInfo Info { get; set; }
 
@@ -61,7 +64,7 @@ namespace Quadradria.Enviroment
         {
             try
             {
-                worldLoader = new WorldLoader(path);
+                worldLoader = new WorldLoader(path, graphicsDevice);
             } catch (Exception e)
             {
                 throw new Exception("Can't create World", e);
@@ -71,9 +74,9 @@ namespace Quadradria.Enviroment
             this.path = path;
             Info = new WorldInfo();
 
-            worldLoader.Init(graphicsDevice);
-            worldLoader.WriteWorld(Info);
-            worldLoader.LoadWorld();
+            //worldLoader.Init(graphicsDevice);
+            //worldLoader.WriteWorld(Info);
+            worldLoader.LoadWorld(Info);
         }
 
         public void Update(float x, float y, float width, float height)

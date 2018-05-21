@@ -10,8 +10,8 @@ namespace Quadradria.Enviroment
     class LoadedChunksManager
     {
 
-        private Rect lastRect;
-        private Rect lastDrawRect;
+        private Rect lastRect = new Rect(0, 0, 0, 0);
+        private Rect lastDrawRect = new Rect(0, 0, 0, 0);
         private WorldLoader worldLoader;
 
         public LoadedChunksManager(WorldLoader worldLoader)
@@ -26,47 +26,46 @@ namespace Quadradria.Enviroment
             Rect newDrawRect = new Rect(x, y, width, height);
 
             //remove old chunks
-            if (lastRect != null)
+            for (int i = lastRect.Y; i < lastRect.Y + lastRect.Height; i++)
             {
-                for (int i = lastRect.Y; i < lastRect.Y + lastRect.Height; i++)
+                for (int j = lastRect.X; j < lastRect.X + lastRect.Width; j++)
                 {
-                    for (int j = lastRect.X; j < lastRect.X + lastRect.Width; j++)
+                    if (!newrect.Contains(j, i))
                     {
-                        if (!newrect.Contains(j, i))
-                        {
-                            Chunk chunk = ChunksLoaded.Get(j, i);
-                            if (chunk == null) continue;
+                        Chunk chunk = ChunksLoaded.Get(j, i);
+                        if (chunk == null) continue;
 
-                            worldLoader.WriteChunk(chunk);
-                            chunk.Unload();
-                            RemoveChunk(j, i);
-
-                            if (!newDrawRect.Contains(j, i) && lastDrawRect.Contains(j, i))
-                            {
-                                ChunksVisible.Remove(j, i);
-                            }
-                        }
+                        worldLoader.WriteChunk(chunk);
+                        chunk.Unload();
+                        ChunksLoaded.Remove(j, i);
+                    }
+                    if (!newDrawRect.Contains(j, i) && lastDrawRect.Contains(j, i))
+                    {
+                        ChunksVisible.Remove(j, i);
                     }
                 }
             }
+
 
             //add new chunks
             for (int i = newrect.Y; i < newrect.Y + newrect.Height; i++)
             {
                 for (int j = newrect.X; j < newrect.X + newrect.Width; j++)
                 {
-                    if (lastRect == null || !lastRect.Contains(j, i))
+                    if (!lastRect.Contains(j, i))
                     {
-                        worldLoader.LoadChunk(j, i, (chunk) => {
-                            if (chunk == null) return;
-                            AddChunk(j, i, chunk);
-
-                            if (lastDrawRect == null || !lastDrawRect.Contains(j, i))
-                            {
-                                ChunksVisible.Add(j, i, chunk);
-                            }
-                        });
+                        Chunk chunk = worldLoader.LoadChunk(j, i);
+                        if (chunk == null) continue;
+                        ChunksLoaded.Add(j, i, chunk);
                     }
+
+                    if (newDrawRect.Contains(j, i))
+                    {
+                        Chunk chunk = ChunksLoaded.Get(j, i);
+                        if (chunk == null) continue;
+                        ChunksVisible.Add(j, i, chunk);
+                    }
+
                 }
             }
 
@@ -77,6 +76,17 @@ namespace Quadradria.Enviroment
         private List2D<Chunk> ChunksLoaded = new List2D<Chunk>();
         private List2D<Chunk> ChunksVisible = new List2D<Chunk>();
 
+        public int GetLoadedChunkNumber()
+        {
+            return ChunksLoaded.Length;
+        }
+
+        public int GetVisibleChunkNumber()
+        {
+            return ChunksVisible.Length;
+        }
+
+        /*
         public void GetChunk(int x, int y, Action<Chunk> callback)
         {
             Chunk c = ChunksLoaded.Get(x, y);
@@ -87,7 +97,9 @@ namespace Quadradria.Enviroment
 
             worldLoader.LoadChunk(x, y, callback);
         }
+        */
 
+        /*
         public bool AddChunk(int x, int y, Chunk chunk)
         {
             return ChunksLoaded.Add(x, y, chunk);
@@ -97,6 +109,7 @@ namespace Quadradria.Enviroment
         {
             return ChunksLoaded.Remove(x, y);
         }
+        */
 
         public void ForEachLoaded(Action<Chunk> func)
         {

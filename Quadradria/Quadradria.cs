@@ -7,6 +7,7 @@ using Quadradria.UI;
 using Quadradria.Enviroment;
 using System;
 using Quadradria.Utils;
+using System.Diagnostics;
 
 namespace Quadradria
 {
@@ -26,13 +27,15 @@ namespace Quadradria
 
         UIContainer UIMaster;
         UILabel frameCounter;
+        UILabel debugInformation;
 
         public Quadradria()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            IsFixedTimeStep = false;
+            IsFixedTimeStep = true;
+
         }
 
         protected override void Initialize()
@@ -56,16 +59,11 @@ namespace Quadradria
             UIMaster = new UIContainer(0, 0, 300, 300);
             new UIInteractable(0, 0, 1, 1, UIMaster); //makes things defocusable
             frameCounter = new UILabel(0, 0, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
-            UIDropDown dropDown = new UIDropDown(32, 32, 200, 30, UIMaster, UISizeMethod.Pixel);
-            dropDown.AddOption("Entry1", new Object());
-            dropDown.AddOption("Entry2", new Object());
-            dropDown.AddOption("Entry3", new Object());
-            UIButton A = new UIButton(500, 32, 200, 40, "I AM BUTTON!", UIMaster, UISizeMethod.Pixel);
-            new UIButton(10, 20, 40, 100, "B", A, UISizeMethod.Pixel);
+            debugInformation = new UILabel(0, 20, 200, 20, "Loaded Chunks: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
 
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
-            graphics.SynchronizeWithVerticalRetrace = true;
+            graphics.SynchronizeWithVerticalRetrace = true; //V-Sync
             graphics.ApplyChanges();
 
             camera = new Camera(GraphicsDevice.Viewport);
@@ -92,7 +90,12 @@ namespace Quadradria
         protected override void Update(GameTime gameTime)
         {
 
-
+            debugInformation.Text
+            = "Loaded Chunks: " + world.LoadedChunks.GetLoadedChunkNumber()
+            + "\nVisible Chunks: " + world.LoadedChunks.GetVisibleChunkNumber()
+            + "\nMemory Usage (GC): " + GC.GetTotalMemory(false) / 1024 / 1024 + "MB"
+            + "\nMemory Usage (Process): " + Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "MB"
+            +"\nRender Targets: " + GraphicsDevice.RenderTargetCount;
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();

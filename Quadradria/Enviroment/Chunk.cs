@@ -32,16 +32,10 @@ namespace Quadradria.Enviroment
             this.pos = new Point(x, y);
             this.drawPos = new Vector2(x * SIZE, y * SIZE);
             this.graphicsDevice = graphicsDevice;
-            Load();
-        }
-
-        public void Load()
-        {
-            if (isLoaded) return;
-            isLoaded = true;
 
             renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
 
+            //Debug
             BlockType[] types = { BlockType.Dirt, BlockType.Stone };
             BlockType type = types[new Random((int)(pos.X + pos.Y * 100)).Next(0, types.Length)];
 
@@ -50,6 +44,26 @@ namespace Quadradria.Enviroment
                 for (int j = 0; j < SIZE; j++)
                 {
                     blocks[i, j] = new Block(type, 0);
+                }
+            }
+        }
+
+        public void Load(bool hi)
+        {
+            if (isLoaded) return;
+            isLoaded = true;
+
+            if (hi)
+            {
+                BlockType[] types = { BlockType.DoorWood };
+                BlockType type = types[new Random((int)(pos.X + pos.Y * 100)).Next(0, types.Length)];
+
+                for (int i = 0; i < SIZE; i++)
+                {
+                    for (int j = 0; j < SIZE; j++)
+                    {
+                        blocks[i, j] = new Block(type, 0);
+                    }
                 }
             }
         }
@@ -64,7 +78,7 @@ namespace Quadradria.Enviroment
 
         public void Render(SpriteBatch spriteBatch)
         {
-            if (!shouldRender || renderTarget == null) return;
+            if (!shouldRender || renderTarget == null || !isLoaded) return;
 
             graphicsDevice.SetRenderTarget(renderTarget);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
@@ -85,6 +99,8 @@ namespace Quadradria.Enviroment
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            if (!isLoaded) return;
+
             float scale = 1.0f / BLOCK_SIZE;
             spriteBatch.Draw(renderTarget, drawPos, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0.5f);
 
@@ -96,22 +112,26 @@ namespace Quadradria.Enviroment
 
         public Block? GetBlockAtLocalPosition(int x, int y)
         {
+            if (!isLoaded) return null;
             if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return null;
             return blocks[x, y];
         }
 
         public void AddEntity(BaseEntity entity)
         {
+            if (!isLoaded) return;
             entities.Add(entity);
         }
 
         public void RemoveEntiy(BaseEntity entity)
         {
+            if (!isLoaded) return;
             entities.Remove(entity);
         }
 
         public byte[] Export()
         {
+            if (!isLoaded) return null;
             byte[] array = new byte[1024];
             int index, i, j;
 
@@ -149,6 +169,7 @@ namespace Quadradria.Enviroment
                     block.SubID = BitConverter.ToUInt16(data, index + 2);
                 }
             }
+            Load(false);
         }
     }
 }
