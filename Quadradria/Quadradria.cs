@@ -29,6 +29,8 @@ namespace Quadradria
         UILabel frameCounter;
         UILabel debugInformation;
 
+        bool showDebugInformation = true;
+
         public Quadradria()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -58,8 +60,13 @@ namespace Quadradria
 
             UIMaster = new UIContainer(0, 0, 300, 300);
             new UIInteractable(0, 0, 1, 1, UIMaster); //makes things defocusable
-            frameCounter = new UILabel(0, 0, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
-            debugInformation = new UILabel(0, 20, 200, 20, "Loaded Chunks: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
+            frameCounter = new UILabel(10, 10, 200, 50, "FPS: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
+            debugInformation = new UILabel(10, 30, 200, 20, "Loaded Chunks: -", UIMaster, UISizeMethod.Pixel, UIAlignment.Top | UIAlignment.Left);
+
+            /*UIDropDown dd = new UIDropDown(200, 20, 300, 35, UIMaster, UISizeMethod.Pixel);
+            dd.AddOption("Option A", 1);
+            dd.AddOption("Option B", 2);
+            dd.AddOption("Option C", 3);*/
 
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
@@ -89,13 +96,13 @@ namespace Quadradria
 
         protected override void Update(GameTime gameTime)
         {
+            debugInformation.Visible = showDebugInformation;
 
+            debugInformation.Show();
             debugInformation.Text
             = "Loaded Chunks: " + world.LoadedChunks.GetLoadedChunkNumber()
             + "\nVisible Chunks: " + world.LoadedChunks.GetVisibleChunkNumber()
-            + "\nMemory Usage (GC): " + GC.GetTotalMemory(false) / 1024 / 1024 + "MB"
-            + "\nMemory Usage (Process): " + Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "MB"
-            +"\nRender Targets: " + GraphicsDevice.RenderTargetCount;
+            + "\nMemory Usage (Process): " + Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "MB";
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();

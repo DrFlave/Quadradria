@@ -10,7 +10,7 @@ namespace Quadradria.UI
 {
     class UIButton : UIInteractable
     {
-        UILabel label;
+        protected UILabel label;
         public string Text {
             set
             {

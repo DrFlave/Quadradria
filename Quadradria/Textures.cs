@@ -51,6 +51,16 @@ namespace Quadradria
             }
         }
 
+        public static class UI
+        {
+            public static Texture2D DropDownArrow;
+
+            public static void Load(ContentManager content)
+            {
+                DropDownArrow = content.Load<Texture2D>("UI/DropDown_arrow");
+            }
+        }
+
         public static Texture2D Solid; //A 1x1 pixel white texture
 
         public static void Load(ContentManager content, GraphicsDevice graphicsDevice)
@@ -63,6 +73,7 @@ namespace Quadradria
             Blocks.Load(content);
             Fonts.Load(content);
             Items.Load(content);
+            UI.Load(content);
         }
     }
 }

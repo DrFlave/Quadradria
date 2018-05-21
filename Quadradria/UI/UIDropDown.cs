@@ -10,6 +10,8 @@ namespace Quadradria.UI
     class UIDropDown : UIButton
     {
         private int active = -1;
+        private bool isOpen;
+
         public object Value {
             get
             {
@@ -20,7 +22,12 @@ namespace Quadradria.UI
 
         public UIDropDown(float x, float y, float width, float height, UIContainer parent, UISizeMethod sizing = UISizeMethod.UV) : base(x, y, width, height, "---", parent, sizing)
         {
+            new UIImage(0, 0, 1, 1, Textures.UI.DropDownArrow, label, UISizeMethod.UV);
 
+            Click += (object sender, EventArgs e) =>
+            {
+                isOpen = !isOpen;
+            };
         }
 
         public void SetActive(int index)
@@ -44,10 +51,12 @@ namespace Quadradria.UI
 
         public override void Draw(SpriteBatch spriteBatch, int currentHover) {
 
+            if (!HasFocus()) isOpen = false;
+
             for (int i = 1; i < children.Count; i++)
             {
                 UIContainer element = children[i];
-                if (HasFocus())
+                if (isOpen)
                 {
                     element.Show();
                 }

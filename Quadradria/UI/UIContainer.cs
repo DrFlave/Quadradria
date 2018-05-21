@@ -21,6 +21,12 @@ namespace Quadradria.UI
         private float height;
         private UIContainer focused;
 
+        public bool Visible
+        {
+            get => visible;
+            set => visible = value;
+        }
+
         protected UIContainer parent;
         protected bool visible = true;
         protected List<UIContainer> children;
