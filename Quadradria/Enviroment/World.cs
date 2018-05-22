@@ -62,9 +62,11 @@ namespace Quadradria.Enviroment
 
         public World(string path, GraphicsDevice graphicsDevice)
         {
+            Info = new WorldInfo();
+
             try
             {
-                worldLoader = new WorldLoader(path, graphicsDevice);
+                worldLoader = new WorldLoader(path, graphicsDevice, Info);
             } catch (Exception e)
             {
                 throw new Exception("Can't create World", e);
@@ -72,11 +74,6 @@ namespace Quadradria.Enviroment
             LoadedChunks = new LoadedChunksManager(worldLoader);
 
             this.path = path;
-            Info = new WorldInfo();
-
-            //worldLoader.Init(graphicsDevice);
-            //worldLoader.WriteWorld(Info);
-            worldLoader.LoadWorld(Info);
         }
 
         public void Update(float x, float y, float width, float height)
@@ -142,7 +139,7 @@ namespace Quadradria.Enviroment
 
         public void Save()
         {
-            worldLoader.WriteWorld(Info);
+            worldLoader.WriteWorld();
         }
 
     }

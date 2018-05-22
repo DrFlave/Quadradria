@@ -128,21 +128,23 @@ namespace Quadradria.Enviroment
 
         public void Import(byte[] data)
         {
-            if (data.Length != SIZE*SIZE*4) return; //!= 1024
-
-            int index, i, j;
-            for (i = 0; i < SIZE; i++)
+            lock (this)
             {
-                for (j = 0; j < SIZE; j++)
-                {
-                    index = 4 * (i * SIZE + j);
+                if (data.Length != SIZE * SIZE * 4) return; //!= 1024
 
-                    Blocks[j, i].damage = 0;
-                    Blocks[j, i].BlockID = (BlockType)BitConverter.ToUInt16(data, index);
-                    Blocks[j, i].SubID = BitConverter.ToUInt16(data, index + 2);
+                int index, i, j;
+                for (i = 0; i < SIZE; i++)
+                {
+                    for (j = 0; j < SIZE; j++)
+                    {
+                        index = 4 * (i * SIZE + j);
+
+                        Blocks[j, i].damage = 0;
+                        Blocks[j, i].BlockID = (BlockType)BitConverter.ToUInt16(data, index);
+                        Blocks[j, i].SubID = BitConverter.ToUInt16(data, index + 2);
+                    }
                 }
             }
-            Load();
         }
     }
 }

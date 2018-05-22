@@ -47,37 +47,6 @@ namespace Quadradria.Enviroment
          * entData.edat         //Entity Data
          * 
          * */
-
-        //DEBUG!!!!
-        private Chunk[,] AllChunks = new Chunk[100, 100];
-
-        //DEBUG!!!!
-        
-        public void Init(GraphicsDevice graphicsDevice)
-        {
-            this.graphicsDevice = graphicsDevice;
-
-            for (int i = 0; i < 100; i++)
-            {
-                for (int j = 0; j < 100; j++)
-                {
-                    AllChunks[j, i] = new Chunk(j, i, graphicsDevice);
-                }
-            }
-        }
-
-
-        //DEBUG!!!!
-        /*
-        public Chunk LoadChunk(int x, int y)
-        {
-            if (x < 0 || y < 0 || x > 99 || y > 99) {
-                return null;
-            }
-            AllChunks[x, y].Load();
-            return AllChunks[x, y];
-        }
-        */
         
 
         private FileStream fsChunk;
@@ -87,16 +56,19 @@ namespace Quadradria.Enviroment
         private BinaryReader WorldReader;
         private BinaryWriter WorldWriter;
         private string worldPath;
-        private GraphicsDevice graphicsDevice;
+        private GraphicsDevice graphicsDevice;        
 
         private List2D<long?> chunkIndex = new List2D<long?>();
         private IGenerator generator = new GenOverworld();
 
+        private WorldInfo worldInfo;
+
         //ToDo: try catch when instanziate
-        public WorldLoader(string fileName, GraphicsDevice graphicsDevice)
+        public WorldLoader(string fileName, GraphicsDevice graphicsDevice, WorldInfo info)
         {
             this.graphicsDevice = graphicsDevice;
             this.worldPath = fileName;
+            this.worldInfo = info;
 
             try
             {
@@ -106,6 +78,15 @@ namespace Quadradria.Enviroment
                 ChunkWriter = new BinaryWriter(fsChunk);
                 WorldReader = new BinaryReader(fsWorld);
                 WorldWriter = new BinaryWriter(fsWorld);
+
+                if (fsChunk.Length == 0)
+                {
+                    WriteWorld();
+                } else
+                {
+                    LoadWorld();
+                }
+
             } catch (Exception e)
             {
                 throw new Exception("Error, creating world loader", e);
@@ -120,15 +101,11 @@ namespace Quadradria.Enviroment
             {
                 ReadChunk(x, y, (bytes) => {
                     c.Import(bytes);
+                    c.Load();
                 });
             } else {
-
                 generator.GenerateChunk(c);
                 c.Load();
-
-                //c.Load();
-                //ToDo: Woldgenerator here!
-                //ToDo: (Maybe) save chunk after generating
             }
             return c;
         }
@@ -160,36 +137,47 @@ namespace Quadradria.Enviroment
 
         public void WriteChunk(Chunk chunk)
         {
-            long? address;
-            bool write = false;
+            int x = chunk.pos.X;
+            int y = chunk.pos.Y;
 
-            if (!chunkIndex.Includes(chunk.pos.X, chunk.pos.Y))
+            byte[] export = chunk.Export();
+            if (export == null) return;
+            
+            /*
+            bool write = false;
+            if (!chunkIndex.Includes(x, y))
             {
                 address = fsChunk.Length;
-                chunkIndex.Add(chunk.pos.X, chunk.pos.Y, address);
+                chunkIndex.Add(x, y, address);
                 write = true;
             }
             else
             {
                 address = chunkIndex.Get(chunk.pos.X, chunk.pos.Y);
             }
+            */
 
-            int x = chunk.pos.X;
-            int y = chunk.pos.Y;
-            byte[] export = chunk.Export();
-            if (export == null) return;
 
             Task.Run(() => {
                 lock (fsWorld) lock (fsChunk)
                 {
                     try
                     {
-                        if (write)
+                        long? address;
+
+                        if (!chunkIndex.Includes(x, y))
                         {
+                            address = fsChunk.Length;
+                            chunkIndex.Add(x, y, address);
+
                             WorldWriter.BaseStream.Seek(0, SeekOrigin.End);
                             WorldWriter.Write(x);
                             WorldWriter.Write(y);
                             WorldWriter.Write((long)address);
+                        }
+                        else
+                        {
+                            address = chunkIndex.Get(chunk.pos.X, chunk.pos.Y);
                         }
 
                         ChunkWriter.BaseStream.Seek((long)address, SeekOrigin.Begin);
@@ -205,7 +193,7 @@ namespace Quadradria.Enviroment
             });
         }
 
-        public void WriteWorld(WorldInfo worldInfo)
+        public void WriteWorld()
         {
             uint indexLength = (uint)chunkIndex.Length;
 
@@ -244,8 +232,10 @@ namespace Quadradria.Enviroment
             });
         }
 
-        public void LoadWorld(WorldInfo Info)
+        public void LoadWorld()
         {
+            WorldInfo Info = worldInfo;
+
             Task.Run(() =>
             {
                 lock (fsWorld)
