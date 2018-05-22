@@ -48,7 +48,7 @@ namespace Quadradria.Enviroment
 
         public static void InitBlockTypes()
         {
-            BlockTypeList[(int)BlockType.Air] = (new BlockTypeDefault(BlockType.Air, "air", Textures.Solid));
+            BlockTypeList[(int)BlockType.Air] = (new BlockTypeAir(BlockType.Air, "air"));
             BlockTypeList[(int)BlockType.Dirt] = (new BlockTypeDefault(BlockType.Dirt, "dirt", Textures.Blocks.Dirt));
             BlockTypeList[(int)BlockType.Stone] = (new BlockTypeDefault(BlockType.Stone, "stone", Textures.Blocks.Stone));
             BlockTypeList[(int)BlockType.Grass] = new BlockTypeGrass(BlockType.Grass, "grass", Textures.Blocks.Dirt);
@@ -97,6 +97,15 @@ namespace Quadradria.Enviroment
             bool top =    ((block.SubID & 0b0010) > 0);
             bool left =   ((block.SubID & 0b0100) > 0);
             bool bottom = ((block.SubID & 0b1000) > 0);
+
+        }
+    }
+
+    class BlockTypeAir : BlockTypeDefault
+    {
+        public BlockTypeAir(BlockType type, string name) : base(type, name, null) { }
+        public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
+        {
 
         }
     }

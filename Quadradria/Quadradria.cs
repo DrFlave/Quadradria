@@ -20,9 +20,7 @@ namespace Quadradria
         Player player;
 
         Camera camera;
-
-        //Chunk chunk;
-        //Chunk chunk2;
+        
         World world;
 
         UIContainer UIMaster;
@@ -42,18 +40,12 @@ namespace Quadradria
 
         protected override void Initialize()
         {
-            /*int zeit = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
-            Console.WriteLine(zeit);
-            Console.WriteLine(new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(zeit).ToLocalTime());*/
-
             player = new Player();
             Textures.Load(Content, GraphicsDevice);
 
             BlockTypeDefault.InitBlockTypes();
-
-            //chunk = new Chunk(0, 0, GraphicsDevice);
-            //chunk2 = new Chunk(1, 1, GraphicsDevice);
             world = new World(@"E:\", GraphicsDevice);
+
 
             //world.AddEntity(new Human() { Position = new Vector2(4, 4) });
             //world.AddEntity(new Human() { Position = new Vector2(2, 2) });
@@ -124,17 +116,11 @@ namespace Quadradria
             if (gameTime.ElapsedGameTime.Milliseconds != 0)
                 frameCounter.Text = "FPS: " + Math.Round(1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
 
-            //chunk.Render(spriteBatch);
-            //chunk2.Render(spriteBatch);
-
             world.Render(spriteBatch);
 
             graphics.GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
-
-            //chunk.Draw(spriteBatch);
-            //chunk2.Draw(spriteBatch);
 
             world.Draw(spriteBatch);
 

@@ -60,6 +60,8 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Entity\BaseEntity.cs" />
     <Compile Include="Entity\Human.cs" />
+    <Compile Include="Enviroment\Generators\GenOverworld.cs" />
+    <Compile Include="Enviroment\Generators\IGenerator.cs" />
     <Compile Include="Inventory\IInventory.cs" />
     <Compile Include="Entity\Mob.cs" />
     <Compile Include="Entity\Physical.cs" />

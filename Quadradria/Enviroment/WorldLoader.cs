@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Quadradria.Enviroment.Generators;
 using Quadradria.Utils;
 using System;
 using System.Collections.Generic;
@@ -89,6 +90,7 @@ namespace Quadradria.Enviroment
         private GraphicsDevice graphicsDevice;
 
         private List2D<long?> chunkIndex = new List2D<long?>();
+        private IGenerator generator = new GenOverworld();
 
         //ToDo: try catch when instanziate
         public WorldLoader(string fileName, GraphicsDevice graphicsDevice)
@@ -120,13 +122,17 @@ namespace Quadradria.Enviroment
                     c.Import(bytes);
                 });
             } else {
-                c.Load(true);
+
+                generator.GenerateChunk(c);
+                c.Load();
+
+                //c.Load();
                 //ToDo: Woldgenerator here!
                 //ToDo: (Maybe) save chunk after generating
             }
             return c;
         }
-        
+
 
         private void ReadChunk(int x, int y, Action<byte[]> callback)
         {
@@ -135,6 +141,7 @@ namespace Quadradria.Enviroment
 
             Task.Run(() => {
                 byte[] bytes;
+
                 lock (fsChunk)
                 {
                     try

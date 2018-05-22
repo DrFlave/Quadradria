@@ -19,7 +19,7 @@ namespace Quadradria.Enviroment
         public Point pos;
         public Vector2 drawPos;
 
-        public Block[,] blocks = new Block[SIZE, SIZE];
+        public Block[,] Blocks = new Block[SIZE, SIZE];
         public List<BaseEntity> entities = new List<BaseEntity>();
 
         RenderTarget2D renderTarget;
@@ -34,38 +34,12 @@ namespace Quadradria.Enviroment
             this.graphicsDevice = graphicsDevice;
 
             renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
-
-            //Debug
-            BlockType[] types = { BlockType.Dirt, BlockType.Stone };
-            BlockType type = types[new Random((int)(pos.X + pos.Y * 100)).Next(0, types.Length)];
-
-            for (int i = 0; i < SIZE; i++)
-            {
-                for (int j = 0; j < SIZE; j++)
-                {
-                    blocks[i, j] = new Block(type, 0);
-                }
-            }
         }
 
-        public void Load(bool hi)
+        public void Load()
         {
             if (isLoaded) return;
             isLoaded = true;
-
-            if (hi)
-            {
-                BlockType[] types = { BlockType.DoorWood };
-                BlockType type = types[new Random((int)(pos.X + pos.Y * 100)).Next(0, types.Length)];
-
-                for (int i = 0; i < SIZE; i++)
-                {
-                    for (int j = 0; j < SIZE; j++)
-                    {
-                        blocks[i, j] = new Block(type, 0);
-                    }
-                }
-            }
         }
 
         public void Unload()
@@ -87,7 +61,7 @@ namespace Quadradria.Enviroment
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    blocks[i, j].Draw(spriteBatch, i * BLOCK_SIZE, j * BLOCK_SIZE);
+                    Blocks[i, j].Draw(spriteBatch, i * BLOCK_SIZE, j * BLOCK_SIZE);
                 }
             }
 
@@ -114,7 +88,7 @@ namespace Quadradria.Enviroment
         {
             if (!isLoaded) return null;
             if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return null;
-            return blocks[x, y];
+            return Blocks[x, y];
         }
 
         public void AddEntity(BaseEntity entity)
@@ -141,7 +115,7 @@ namespace Quadradria.Enviroment
                 {
                     index = 4 * (i * SIZE + j);
 
-                    Block block = blocks[j, i];
+                    Block block = Blocks[j, i];
                     array[index + 0] = ((byte)(block.BlockID));
                     array[index + 1] = ((byte)((ushort)block.BlockID >> 8));
                     array[index + 2] = ((byte)(block.SubID));
@@ -162,14 +136,13 @@ namespace Quadradria.Enviroment
                 for (j = 0; j < SIZE; j++)
                 {
                     index = 4 * (i * SIZE + j);
-                    Block block = blocks[j, i];
 
-                    block.damage = 0;
-                    block.BlockID = (BlockType)BitConverter.ToUInt16(data, index);
-                    block.SubID = BitConverter.ToUInt16(data, index + 2);
+                    Blocks[j, i].damage = 0;
+                    Blocks[j, i].BlockID = (BlockType)BitConverter.ToUInt16(data, index);
+                    Blocks[j, i].SubID = BitConverter.ToUInt16(data, index + 2);
                 }
             }
-            Load(false);
+            Load();
         }
     }
 }
