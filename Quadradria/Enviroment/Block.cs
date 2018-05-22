@@ -16,8 +16,7 @@ namespace Quadradria.Enviroment
         Air = 0,
         Dirt = 1,
         Stone = 2,
-        Grass = 3,
-        DoorWood = 4
+        DoorWood = 3
     }
 
     struct Block
@@ -41,7 +40,7 @@ namespace Quadradria.Enviroment
 
         }
     }
-
+    
     class BlockTypeDefault
     {
         public static BlockTypeDefault[] BlockTypeList = new BlockTypeDefault[Enum.GetNames(typeof(BlockType)).Length];
@@ -49,9 +48,8 @@ namespace Quadradria.Enviroment
         public static void InitBlockTypes()
         {
             BlockTypeList[(int)BlockType.Air] = (new BlockTypeAir(BlockType.Air, "air"));
-            BlockTypeList[(int)BlockType.Dirt] = (new BlockTypeDefault(BlockType.Dirt, "dirt", Textures.Blocks.Dirt));
+            BlockTypeList[(int)BlockType.Dirt] = (new BlockTypeGrass(BlockType.Dirt, "dirt", Textures.Blocks.Dirt, Textures.Blocks.Grass));
             BlockTypeList[(int)BlockType.Stone] = (new BlockTypeDefault(BlockType.Stone, "stone", Textures.Blocks.Stone));
-            BlockTypeList[(int)BlockType.Grass] = new BlockTypeGrass(BlockType.Grass, "grass", Textures.Blocks.Dirt);
             BlockTypeList[(int)BlockType.DoorWood] = (new BlockTypeDoor(BlockType.DoorWood, "doorWood", Textures.Blocks.DoorWood));
         }
 
@@ -88,7 +86,16 @@ namespace Quadradria.Enviroment
 
     class BlockTypeGrass : BlockTypeDefault
     {
-        public BlockTypeGrass(BlockType type, string name, Texture2D texture) : base(type, name, texture) { }
+        private Rectangle sourceRight = new Rectangle(0, 0, 16, 16);
+        private Rectangle sourceTop = new Rectangle(16, 0, 16, 16);
+        private Rectangle sourceLeft = new Rectangle(32, 0, 16, 16);
+        private Rectangle sourceBottom = new Rectangle(48, 0, 16, 16);
+
+        private Texture2D textureFoliage;
+
+        public BlockTypeGrass(BlockType type, string name, Texture2D textureBase, Texture2D textureFoliage) : base(type, name, textureBase) {
+            this.textureFoliage = textureFoliage;
+        }
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
             base.Draw(spriteBatch, x, y, block);
@@ -98,6 +105,10 @@ namespace Quadradria.Enviroment
             bool left =   ((block.SubID & 0b0100) > 0);
             bool bottom = ((block.SubID & 0b1000) > 0);
 
+            if (right) spriteBatch.Draw(textureFoliage, new Vector2(x, y), sourceRight, Color.White);
+            if (top) spriteBatch.Draw(textureFoliage, new Vector2(x, y), sourceTop, Color.White);
+            if (left) spriteBatch.Draw(textureFoliage, new Vector2(x, y), sourceLeft, Color.White);
+            if (bottom) spriteBatch.Draw(textureFoliage, new Vector2(x, y), sourceBottom, Color.White);
         }
     }
 

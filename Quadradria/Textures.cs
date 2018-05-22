@@ -21,6 +21,7 @@ namespace Quadradria
             public static Texture2D Stone;
             public static Texture2D Wool;
             public static Texture2D DoorWood;
+            public static Texture2D Grass;
 
             public static void Load(ContentManager content)
             {
@@ -28,6 +29,7 @@ namespace Quadradria
                 Stone = content.Load<Texture2D>("Blocks/Stone");
                 Wool = content.Load<Texture2D>("Blocks/Wool");
                 DoorWood = content.Load<Texture2D>("Blocks/Doors/Wood");
+                Grass = content.Load<Texture2D>("Blocks/Grass");
             }
         }
 

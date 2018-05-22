@@ -24,7 +24,7 @@ namespace Quadradria.Enviroment.Generators
                     int worldY = cy + y;
 
                     if (worldY < height) chunk.Blocks[x, y] = new Block(BlockType.Air, 0);
-                    else if (worldY == height) chunk.Blocks[x, y] = new Block(BlockType.Grass, 2);
+                    else if (worldY == height) chunk.Blocks[x, y] = new Block(BlockType.Dirt, 2);
                     else if (worldY > height && worldY < height + 10) chunk.Blocks[x, y] = new Block(BlockType.Dirt, 0);
                     else chunk.Blocks[x, y] = new Block(BlockType.Stone, 0);
                 }
