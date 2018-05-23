@@ -104,10 +104,10 @@ namespace Quadradria.Enviroment
             });
         }
 
-        /*public void AddEntity(BaseEntity entity)
+        public void AddEntity(BaseEntity entity)
         {
             Chunk chunk = GetChunkAtTilePosition((int)Math.Floor(entity.Position.X), (int)Math.Floor(entity.Position.Y));
-            /*if (chunk == null) {
+            if (chunk == null) {
                 //Something went wrong :(
                 Console.WriteLine("Can't create entity because there is no chunk! Entity position: ({0}, {1}), Chunk position: ({2}, {3})");
                 return;
@@ -116,20 +116,20 @@ namespace Quadradria.Enviroment
             entity.Initialize(RequestEntityId());
 
             chunk.AddEntity(entity);
-        }*/
+        }
 
         public int RequestEntityId()
         {
             return nextEntId++;
         }
-        /*
+        
         public Chunk GetChunkAtTilePosition(int x, int y)
         {
             int cX = (int)Math.Floor((float)x / Chunk.SIZE);
             int cY = (int)Math.Floor((float)y / Chunk.SIZE);
             return LoadedChunks.GetChunk(cX, cY);
         }
-        */
+        
 
         /*
         public Block? GetBlockAtPosition(int x, int y)

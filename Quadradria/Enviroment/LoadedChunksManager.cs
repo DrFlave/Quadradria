@@ -86,18 +86,12 @@ namespace Quadradria.Enviroment
             return ChunksVisible.Length;
         }
 
-        /*
-        public void GetChunk(int x, int y, Action<Chunk> callback)
+        
+        public Chunk GetChunk(int x, int y)
         {
-            Chunk c = ChunksLoaded.Get(x, y);
-            if (c != null) {
-                callback(c);
-                return;
-            }
-
-            worldLoader.LoadChunk(x, y, callback);
+            return ChunksLoaded.Get(x, y);
         }
-        */
+        
 
         /*
         public bool AddChunk(int x, int y, Chunk chunk)

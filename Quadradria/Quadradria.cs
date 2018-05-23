@@ -47,8 +47,8 @@ namespace Quadradria
             world = new World(@"E:\", GraphicsDevice);
 
 
-            //world.AddEntity(new Human() { Position = new Vector2(4, 4) });
-            //world.AddEntity(new Human() { Position = new Vector2(2, 2) });
+            world.AddEntity(new Human() { Position = new Vector2(4, 4) });
+            world.AddEntity(new Human() { Position = new Vector2(2, 2) });
 
             UIMaster = new UIContainer(0, 0, 300, 300);
             new UIInteractable(0, 0, 1, 1, UIMaster); //makes things defocusable

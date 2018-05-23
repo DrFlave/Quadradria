@@ -107,7 +107,7 @@ namespace Quadradria.Enviroment
             entities.Add(entity);
         }
 
-        public void RemoveEntiy(BaseEntity entity)
+        public void RemoveEntity(BaseEntity entity)
         {
             if (!isLoaded) return;
             entities.Remove(entity);
