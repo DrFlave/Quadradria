@@ -86,6 +86,7 @@
     <Compile Include="UI\UIInteractable.cs" />
     <Compile Include="UI\UILabel.cs" />
     <Compile Include="Utils\List2D.cs" />
+    <Compile Include="Utils\OpenSimplexNoise.cs" />
     <Compile Include="Utils\RectF.cs" />
     <Compile Include="Utils\Rect.cs" />
   </ItemGroup>

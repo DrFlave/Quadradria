@@ -59,9 +59,9 @@ namespace Quadradria.Enviroment
         private GraphicsDevice graphicsDevice;        
 
         private List2D<long?> chunkIndex = new List2D<long?>();
-        private IGenerator generator = new GenOverworld();
 
         private WorldInfo worldInfo;
+        private IGenerator generator;
 
         //ToDo: try catch when instanziate
         public WorldLoader(string fileName, GraphicsDevice graphicsDevice, WorldInfo info)
@@ -91,6 +91,8 @@ namespace Quadradria.Enviroment
             {
                 throw new Exception("Error, creating world loader", e);
             }
+
+            generator = new GenOverworld(info);
         }
 
         
@@ -182,7 +184,7 @@ namespace Quadradria.Enviroment
 
                         ChunkWriter.BaseStream.Seek((long)address, SeekOrigin.Begin);
                         ChunkWriter.Write(export);
-                        WorldWriter.Seek(0xAB, SeekOrigin.Begin);
+                        WorldWriter.Seek(0xAD, SeekOrigin.Begin);
                         WorldWriter.Write((uint)chunkIndex.Length);
                     }
                     catch (Exception e)
@@ -206,7 +208,7 @@ namespace Quadradria.Enviroment
                         WorldWriter.Seek(0, SeekOrigin.Begin);
                         WorldWriter.Write((uint)0x42171701);    //Magic Number
                         WorldWriter.Write((uint)0x1);           //Version
-                        WorldWriter.Write((uint)worldInfo.seed);
+                        WorldWriter.Write((long)worldInfo.seed);
                         WorldWriter.Write(Encoding.UTF8.GetBytes(worldInfo.Name.PadRight(128, '\0')));
                         WorldWriter.Write((uint)worldInfo.width);
                         WorldWriter.Write((byte)worldInfo.Size);
@@ -247,7 +249,7 @@ namespace Quadradria.Enviroment
 
                         uint magicNumber = WorldReader.ReadUInt32();
                         uint version = WorldReader.ReadUInt32();
-                        uint seed = WorldReader.ReadUInt32();
+                        long seed = WorldReader.ReadInt64();
 
                         char[] worldChars = WorldReader.ReadChars(128);
 
