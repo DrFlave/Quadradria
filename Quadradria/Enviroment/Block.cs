@@ -33,7 +33,7 @@ namespace Quadradria.Enviroment
 
         public void Draw(SpriteBatch spriteBatch, int x, int y)
         {
-            BlockTypeDefault typeInst = BlockTypeDefault.BlockTypeList[(uint)BlockID];
+            BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
 
             if (typeInst != null)
                 typeInst.Draw(spriteBatch, x, y, this);
@@ -42,7 +42,7 @@ namespace Quadradria.Enviroment
 
         public bool RandomTick()
         {
-            BlockTypeDefault typeInst = BlockTypeDefault.BlockTypeList[(uint)BlockID];
+            BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
 
             if (typeInst != null)
                 return typeInst.RandomTick(this);
@@ -52,16 +52,6 @@ namespace Quadradria.Enviroment
     
     class BlockTypeDefault
     {
-        public static BlockTypeDefault[] BlockTypeList = new BlockTypeDefault[Enum.GetNames(typeof(BlockType)).Length];
-
-        public static void InitBlockTypes()
-        {
-            BlockTypeList[(int)BlockType.Air] = (new BlockTypeAir(BlockType.Air, "air"));
-            BlockTypeList[(int)BlockType.Dirt] = (new BlockTypeGrass(BlockType.Dirt, "dirt", Textures.Blocks.Dirt, Textures.Blocks.Grass));
-            BlockTypeList[(int)BlockType.Stone] = (new BlockTypeDefault(BlockType.Stone, "stone", Textures.Blocks.Stone));
-            BlockTypeList[(int)BlockType.DoorWood] = (new BlockTypeDoor(BlockType.DoorWood, "doorWood", Textures.Blocks.DoorWood));
-        }
-
         protected string name;
         protected Texture2D texture;
         protected BlockType type;

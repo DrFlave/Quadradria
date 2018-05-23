@@ -8,6 +8,7 @@ using Quadradria.Enviroment;
 using System;
 using Quadradria.Utils;
 using System.Diagnostics;
+using Quadradria.Enviroment.Generators;
 
 namespace Quadradria
 {
@@ -43,12 +44,19 @@ namespace Quadradria
             player = new Player();
             Textures.Load(Content, GraphicsDevice);
 
-            BlockTypeDefault.InitBlockTypes();
+            BlockManager.Init();
+            EntityManager.Init();
+
             world = new World(@"E:\", GraphicsDevice);
 
+            camera = new Camera(GraphicsDevice.Viewport);
 
-            world.AddEntity(new Human() { Position = new Vector2(4, 4) });
-            world.AddEntity(new Human() { Position = new Vector2(2, 2) });
+            RectF rect = camera.GetRect();
+            world.Update(rect.X, rect.Y, rect.Width, rect.Height);
+
+
+            BaseEntity human = EntityManager.Spawn(EntityType.Human);
+            world.AddEntity(human);
 
             UIMaster = new UIContainer(0, 0, 300, 300);
             new UIInteractable(0, 0, 1, 1, UIMaster); //makes things defocusable
@@ -65,7 +73,6 @@ namespace Quadradria
             graphics.SynchronizeWithVerticalRetrace = true; //V-Sync
             graphics.ApplyChanges();
 
-            camera = new Camera(GraphicsDevice.Viewport);
 
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += OnResize;
