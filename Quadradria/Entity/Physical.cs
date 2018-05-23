@@ -10,10 +10,16 @@ namespace Quadradria.Entity
     abstract class Physical : BaseEntity
     {
         Vector2 momentum;
+        protected float gravityMultiplier = 1;
 
         public Physical() : base()
         {
             momentum = new Vector2(0, 0);
+        }
+
+        public override void Update()
+        {
+
         }
     }
 }

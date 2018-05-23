@@ -11,9 +11,10 @@ namespace Quadradria.Enviroment
 {
     class WorldInfo
     {
-        public uint seed, width, timeOfDay, lengthOfDay;
+        public uint width, timeOfDay, lengthOfDay;
         private string name;
         public ulong creationTime, playTime;
+        public long seed;
         public Generator generator;
         public WorldSize Size;
         public Difficulty difficulty;

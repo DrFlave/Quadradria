@@ -41,7 +41,7 @@ namespace Quadradria
 
         public RectF GetRect()
         {
-            return new RectF((center.X - viewport.Width / zoomScale / 2), (center.Y - viewport.Height / zoomScale / 2), (viewport.Width / zoomScale), (viewport.Height / zoomScale));
+            return new RectF((center.X - viewport.Width / zoomScale / zoom / 2), (center.Y - viewport.Height / zoomScale / zoom / 2), (viewport.Width / zoomScale / zoom), (viewport.Height / zoomScale / zoom));
         }
 
         public void Resize(Viewport viewport)
