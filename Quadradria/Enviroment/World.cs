@@ -84,6 +84,10 @@ namespace Quadradria.Enviroment
             int cH = (int)Math.Ceiling((y + height) / 16) - cY;
 
             LoadedChunks.UpdateLoadedArea(cX, cY, cW, cH, worldLoader);
+            LoadedChunks.ForEachLoaded((chunk) =>
+            {
+                chunk.Update();
+            });
         }
 
         public void Render(SpriteBatch spriteBatch)

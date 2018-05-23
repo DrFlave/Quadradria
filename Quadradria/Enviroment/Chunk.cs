@@ -71,6 +71,16 @@ namespace Quadradria.Enviroment
             shouldRender = false;
         }
 
+        public void Update()
+        {
+            Random randomTickGenerator = new Random();
+            int rx = randomTickGenerator.Next(SIZE);
+            int ry = randomTickGenerator.Next(SIZE);
+
+            bool redraw = Blocks[rx, ry].RandomTick();
+            if (redraw) shouldRender = true;
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             if (!isLoaded) return;

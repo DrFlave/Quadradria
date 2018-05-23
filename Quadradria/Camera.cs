@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Quadradria.Utils;
+using Microsoft.Xna.Framework.Input;
 
 namespace Quadradria
 {
@@ -32,8 +33,9 @@ namespace Quadradria
             center = new Vector2(position.X, position.Y);
 
             transform = Matrix.CreateTranslation(new Vector3(-center.X, -center.Y, 0)) * 
-                        Matrix.CreateRotationZ(rotation) * 
-                        Matrix.CreateScale(new Vector3(zoom, zoom, 0) * zoomScale) *
+                        Matrix.CreateRotationZ(rotation) *
+                        //Matrix.CreateScale(new Vector3(zoom, zoom, 0) * zoomScale) *
+                        Matrix.CreateScale(zoomScale * zoom, zoomScale * zoom, 1) *
                         Matrix.CreateTranslation(new Vector3(viewport.Width / 2, viewport.Height / 2, 0));
         }
 
@@ -47,6 +49,12 @@ namespace Quadradria
             this.viewport = viewport;
 
             center = new Vector2(this.viewport.Width / 2, this.viewport.Height / 2);
+        }
+
+        public Vector2 GetMousePositionInWorld()
+        {
+            MouseState mouseState = Mouse.GetState();
+            return Vector2.Transform(mouseState.Position.ToVector2(), Matrix.Invert(transform));
         }
 
     }

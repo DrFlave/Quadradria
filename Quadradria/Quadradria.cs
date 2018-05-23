@@ -90,11 +90,17 @@ namespace Quadradria
         {
             debugInformation.Visible = showDebugInformation;
 
+            Vector2 mpos = camera.GetMousePositionInWorld();
+
             debugInformation.Show();
             debugInformation.Text
-            = "Loaded Chunks: " + world.LoadedChunks.GetLoadedChunkNumber()
-            + "\nVisible Chunks: " + world.LoadedChunks.GetVisibleChunkNumber()
-            + "\nMemory Usage (Process): " + Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "MB";
+            = "Loaded chunks: " + world.LoadedChunks.GetLoadedChunkNumber()
+            + "\nVisible chunks: " + world.LoadedChunks.GetVisibleChunkNumber()
+            + "\nMemory usage (Process): " + Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "MB"
+            + "\nMouse position (World space): "+ mpos.X + ", " + mpos.Y
+            + "\nMouse position (Block): " + Math.Floor(mpos.X) + ", " + Math.Floor(mpos.Y)
+            + "\nCamera zoom: " + camera.zoom
+            + "\nCamera position (Center): " + camera.center;
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -123,7 +129,7 @@ namespace Quadradria
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
 
             world.Draw(spriteBatch);
-
+            spriteBatch.Draw(Textures.Error, camera.GetMousePositionInWorld(), null, Color.White, 0, Vector2.Zero, 1/16, SpriteEffects.None, 0);
 
             spriteBatch.End();
 

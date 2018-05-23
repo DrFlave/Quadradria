@@ -39,6 +39,15 @@ namespace Quadradria.Enviroment
                 typeInst.Draw(spriteBatch, x, y, this);
 
         }
+
+        public bool RandomTick()
+        {
+            BlockTypeDefault typeInst = BlockTypeDefault.BlockTypeList[(uint)BlockID];
+
+            if (typeInst != null)
+                return typeInst.RandomTick(this);
+            return false;
+        }
     }
     
     class BlockTypeDefault
@@ -62,6 +71,11 @@ namespace Quadradria.Enviroment
             this.type = type;
             this.name = name;
             this.texture = texture;
+        }
+
+        public virtual bool RandomTick(Block block) //will be triggered randomly. Used for plant grow and stuff.
+        {
+            return false;
         }
 
         public virtual void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
@@ -110,6 +124,14 @@ namespace Quadradria.Enviroment
             if (left) spriteBatch.Draw(textureFoliage, new Vector2(x, y), sourceLeft, Color.White);
             if (bottom) spriteBatch.Draw(textureFoliage, new Vector2(x, y), sourceBottom, Color.White);
         }
+
+        public override bool RandomTick(Block block)
+        {
+            base.RandomTick(block);
+
+            block.SubID = 0b1111;
+            return true;
+        }
     }
 
     class BlockTypeAir : BlockTypeDefault
@@ -118,6 +140,13 @@ namespace Quadradria.Enviroment
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
 
+        }
+
+        public override bool RandomTick(Block block)
+        {
+            base.RandomTick(block);
+            block.BlockID = BlockType.DoorWood;
+            return true;
         }
     }
 }
