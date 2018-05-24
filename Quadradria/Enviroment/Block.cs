@@ -110,7 +110,38 @@ namespace Quadradria.Enviroment
         {
             base.RandomTick(x, y, block, world);
 
-            world.SetBlockAtPosition(x, y, type, 0b1111);
+            ushort subid = block.SubID;
+
+            Block?[] nexts = new Block?[] {
+                world.GetBlockAtPosition(x - 1, y - 1), world.GetBlockAtPosition(x , y - 1), world.GetBlockAtPosition(x + 1, y - 1),
+                world.GetBlockAtPosition(x - 1, y    ),                                      world.GetBlockAtPosition(x + 1, y    ),
+                world.GetBlockAtPosition(x - 1, y + 1), world.GetBlockAtPosition(x , y + 1), world.GetBlockAtPosition(x + 1, y + 1)
+            };
+
+            foreach(Block? b in nexts)
+            {
+                if (b != null)
+                subid |= (ushort)(b?.SubID);
+            }
+
+            if (subid > 0) subid = 0b1111;
+
+            bool gRight = ((subid & 0b0001) > 0);
+            bool gTop = ((subid & 0b0010) > 0);
+            bool gLeft = ((subid & 0b0100) > 0);
+            bool gBottom = ((subid & 0b1000) > 0);
+
+            bool bRight = nexts[4]?.BlockID != BlockType.Air;
+            bool bTop = nexts[1]?.BlockID != BlockType.Air;
+            bool bLeft = nexts[3]?.BlockID != BlockType.Air;
+            bool bBottom = nexts[6]?.BlockID != BlockType.Air;
+
+            if (bRight) subid &= 0b1110;
+            if (bTop) subid &= 0b1101;
+            if (bLeft) subid &= 0b1011;
+            if (bBottom) subid &= 0b0111;
+
+            world.SetBlockAtPosition(x, y, type, subid);
         }
     }
 
