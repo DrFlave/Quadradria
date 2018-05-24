@@ -126,10 +126,12 @@ namespace Quadradria.Enviroment
 
             if (subid > 0) subid = 0b1111;
 
+            /*
             bool gRight = ((subid & 0b0001) > 0);
             bool gTop = ((subid & 0b0010) > 0);
             bool gLeft = ((subid & 0b0100) > 0);
             bool gBottom = ((subid & 0b1000) > 0);
+            */
 
             bool bRight = nexts[4]?.BlockID != BlockType.Air;
             bool bTop = nexts[1]?.BlockID != BlockType.Air;

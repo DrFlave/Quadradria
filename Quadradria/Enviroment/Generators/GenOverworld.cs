@@ -13,6 +13,7 @@ namespace Quadradria.Enviroment.Generators
         private OpenSimplexNoise noise;
         private OpenSimplexNoise noiseCave1;
         private OpenSimplexNoise noiseCave2;
+        private OpenSimplexNoise dirtDepth;
         private WorldInfo info;
 
         public GenOverworld(WorldInfo info)
@@ -22,6 +23,7 @@ namespace Quadradria.Enviroment.Generators
             noise = new OpenSimplexNoise(info.seed);
             noiseCave1 = new OpenSimplexNoise(info.seed);
             noiseCave2 = new OpenSimplexNoise((info.seed == 0) ? 1 : info.seed - Math.Sign(info.seed));
+            dirtDepth = new OpenSimplexNoise((info.seed == 0) ? 2 : info.seed - Math.Sign(info.seed) * 2);
         }
 
         public void GenerateChunk(Chunk chunk)
@@ -36,6 +38,7 @@ namespace Quadradria.Enviroment.Generators
                 float h2 = noise.Generate((x + cx) * 0.005f) * 25;
                 float h3 = noise.Generate((x + cx) * 0.05f) * 3;
                 int height = (int)(h1 + h2 + h3);
+                int dirth = 18 + (int)Math.Abs(noise.Generate((x + cx) * 0.05f) * 10);
 
                 for (int y = 0; y < Chunk.SIZE; y++)
                 {
@@ -44,7 +47,7 @@ namespace Quadradria.Enviroment.Generators
 
                     if (worldY < height) chunk.Blocks[x, y] = new Block(BlockType.Air, 0);
                     else if (worldY == height) chunk.Blocks[x, y] = new Block(BlockType.Dirt, 0b10);
-                    else if (worldY > height && worldY < height + 10) chunk.Blocks[x, y] = new Block(BlockType.Dirt, 0);
+                    else if (worldY > height && worldY < height + dirth) chunk.Blocks[x, y] = new Block(BlockType.Dirt, 0);
                     else chunk.Blocks[x, y] = new Block(BlockType.Stone, 0);
                 }
             }
@@ -87,7 +90,6 @@ namespace Quadradria.Enviroment.Generators
                     {
                         chunk.Blocks[i, j] = new Block(BlockType.Air, 0);
                     }
-
                 }
             }
         }

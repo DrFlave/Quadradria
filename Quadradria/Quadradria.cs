@@ -114,7 +114,7 @@ namespace Quadradria
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                world.SetBlockAtPosition((int)Math.Floor(mpos.X), (int)Math.Floor(mpos.Y), BlockType.Wool, 0);
+                world.SetBlockAtPosition((int)Math.Floor(mpos.X), (int)Math.Floor(mpos.Y), BlockType.Dirt, 0);
             }
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
