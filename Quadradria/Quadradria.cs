@@ -99,6 +99,8 @@ namespace Quadradria
 
             Vector2 mpos = camera.GetMousePositionInWorld();
 
+            Block? underMouse = world.GetBlockAtPosition((int)Math.Floor(mpos.X), (int)Math.Floor(mpos.Y));
+
             debugInformation.Show();
             debugInformation.Text
             = "Loaded chunks: " + world.LoadedChunks.GetLoadedChunkNumber()
@@ -107,7 +109,13 @@ namespace Quadradria
             + "\nMouse position (World space): "+ mpos.X + ", " + mpos.Y
             + "\nMouse position (Block): " + Math.Floor(mpos.X) + ", " + Math.Floor(mpos.Y)
             + "\nCamera zoom: " + camera.zoom
-            + "\nCamera position (Center): " + camera.center;
+            + "\nCamera position (Center): " + camera.center
+            + "\nBlock under mouse: " + underMouse?.BlockID + ":" + underMouse?.SubID;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                world.SetBlockAtPosition((int)Math.Floor(mpos.X), (int)Math.Floor(mpos.Y), BlockType.Wool, 0);
+            }
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();

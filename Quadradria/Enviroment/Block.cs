@@ -11,24 +11,16 @@ using System.Threading.Tasks;
 namespace Quadradria.Enviroment
 {
 
-    enum BlockType : ushort
-    {
-        Air = 0,
-        Dirt = 1,
-        Stone = 2,
-        DoorWood = 3
-    }
-
     struct Block
     {
         public BlockType BlockID;
         public ushort SubID;
-        public byte damage;
+        public byte Damage;
 
         public Block(BlockType blockID, ushort subID) {
             BlockID = blockID;
             SubID = subID;
-            damage = 0;
+            Damage = 0;
         }
 
         public void Draw(SpriteBatch spriteBatch, int x, int y)
@@ -40,13 +32,12 @@ namespace Quadradria.Enviroment
 
         }
 
-        public bool RandomTick()
+        public void RandomTick(int x, int y, World world)
         {
             BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
 
             if (typeInst != null)
-                return typeInst.RandomTick(this);
-            return false;
+                typeInst.RandomTick(x, y, this, world);
         }
     }
     
@@ -63,9 +54,9 @@ namespace Quadradria.Enviroment
             this.texture = texture;
         }
 
-        public virtual bool RandomTick(Block block) //will be triggered randomly. Used for plant grow and stuff.
+        public virtual void RandomTick(int x, int y, Block block, World world) //will be triggered randomly. Used for plant grow and stuff.
         {
-            return false;
+            
         }
 
         public virtual void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
@@ -115,12 +106,11 @@ namespace Quadradria.Enviroment
             if (bottom) spriteBatch.Draw(textureFoliage, new Vector2(x, y), sourceBottom, Color.White);
         }
 
-        public override bool RandomTick(Block block)
+        public override void RandomTick(int x, int y, Block block, World world)
         {
-            base.RandomTick(block);
+            base.RandomTick(x, y, block, world);
 
-            block.SubID = 0b1111;
-            return true;
+            world.SetBlockAtPosition(x, y, type, 0b1111);
         }
     }
 
@@ -130,13 +120,6 @@ namespace Quadradria.Enviroment
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
 
-        }
-
-        public override bool RandomTick(Block block)
-        {
-            base.RandomTick(block);
-            block.BlockID = BlockType.DoorWood;
-            return true;
         }
     }
 }

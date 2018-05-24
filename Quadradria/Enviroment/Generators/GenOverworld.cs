@@ -21,7 +21,7 @@ namespace Quadradria.Enviroment.Generators
 
             noise = new OpenSimplexNoise(info.seed);
             noiseCave1 = new OpenSimplexNoise(info.seed);
-            noiseCave2 = new OpenSimplexNoise((info.seed + 1) % long.MaxValue);
+            noiseCave2 = new OpenSimplexNoise((info.seed == 0) ? 1 : info.seed - Math.Sign(info.seed));
         }
 
         public void GenerateChunk(Chunk chunk)

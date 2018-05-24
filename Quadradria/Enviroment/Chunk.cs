@@ -71,14 +71,13 @@ namespace Quadradria.Enviroment
             shouldRender = false;
         }
 
-        public void Update()
+        public void Update(World world)
         {
             Random randomTickGenerator = new Random();
             int rx = randomTickGenerator.Next(SIZE);
             int ry = randomTickGenerator.Next(SIZE);
 
-            bool redraw = Blocks[rx, ry].RandomTick();
-            if (redraw) shouldRender = true;
+            Blocks[rx, ry].RandomTick(rx + pos.X * SIZE, ry + pos.Y * SIZE, world);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -99,6 +98,15 @@ namespace Quadradria.Enviroment
             if (!isLoaded) return null;
             if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return null;
             return Blocks[x, y];
+        }
+
+        public void SetBlockAtLocalPosition(int x, int y, BlockType type, ushort subid, byte damage = 0)
+        {
+            if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) return;
+            Blocks[x, y].BlockID = type;
+            Blocks[x, y].SubID = subid;
+            Blocks[x, y].Damage = damage;
+            shouldRender = true;
         }
 
         public void AddEntity(BaseEntity entity)
@@ -149,7 +157,7 @@ namespace Quadradria.Enviroment
                     {
                         index = 4 * (i * SIZE + j);
 
-                        Blocks[j, i].damage = 0;
+                        Blocks[j, i].Damage = 0;
                         Blocks[j, i].BlockID = (BlockType)BitConverter.ToUInt16(data, index);
                         Blocks[j, i].SubID = BitConverter.ToUInt16(data, index + 2);
                     }

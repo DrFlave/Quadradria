@@ -87,7 +87,7 @@ namespace Quadradria.Enviroment
             LoadedChunks.UpdateLoadedArea(cX, cY, cW, cH, worldLoader);
             LoadedChunks.ForEachLoaded((chunk) =>
             {
-                chunk.Update();
+                chunk.Update(this);
             });
         }
 
@@ -131,16 +131,26 @@ namespace Quadradria.Enviroment
             return LoadedChunks.GetChunk(cX, cY);
         }
         
-
-        /*
         public Block? GetBlockAtPosition(int x, int y)
         {
             Chunk c = GetChunkAtTilePosition(x, y);
             if (c == null) return null;
 
-            return c.GetBlockAtLocalPosition(x % Chunk.SIZE, y % Chunk.SIZE);
+            return c.GetBlockAtLocalPosition(Mod(x, Chunk.SIZE), Mod(y, Chunk.SIZE));
         }
-        */
+
+        public void SetBlockAtPosition(int x, int y, BlockType type, ushort subid)
+        {
+            Chunk c = GetChunkAtTilePosition(x, y);
+            if (c == null) return;
+
+            c.SetBlockAtLocalPosition(Mod(x, Chunk.SIZE), Mod(y, Chunk.SIZE), type, subid);
+        }
+
+        private int Mod(int x, int m)
+        {
+            return (x % m + m) % m;
+        }
 
         public void Save()
         {

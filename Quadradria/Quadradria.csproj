@@ -65,6 +65,7 @@
     <Compile Include="Enviroment\BlockManager.cs" />
     <Compile Include="Enviroment\Generators\GenOverworld.cs" />
     <Compile Include="Enviroment\Generators\IGenerator.cs" />
+    <Compile Include="Enviroment\Megachunk.cs" />
     <Compile Include="Inventory\IInventory.cs" />
     <Compile Include="Entity\Mob.cs" />
     <Compile Include="Entity\Physical.cs" />

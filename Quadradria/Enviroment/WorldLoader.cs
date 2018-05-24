@@ -225,6 +225,8 @@ namespace Quadradria.Enviroment
                             WorldWriter.Write((int)chunkW.y);
                             WorldWriter.Write((long)chunkW.item);
                         });
+
+                        Directory.CreateDirectory(worldPath + @"\entities");
                     }
                     catch (Exception e)
                     {
