@@ -59,11 +59,14 @@ namespace Quadradria.Enviroment.Generators
                     int worldY = cy + y;
 
                     float t = 0.2f;
+                    if (worldY < 150)
+                        t = 0.175f + (worldY / 150f) * 0.025f;
 
                     float c1 = Math.Abs(noiseCave1.Generate((worldX) / 100f, (worldY) / 100f)); //wolken
                     float c2 = Math.Abs(noiseCave2.Generate((worldX) / 80f, (worldY) / 50f)); //schlauch
+                    float c3 = noiseCave2.Generate((worldX) * 0.05f, (worldY) * 0.05f) * 0.15f; //besser aussehen
 
-                    if ((c1 * 0.35 + c2 * 0.65) < t) cave[x+1, y+1] = true;
+                    if ((c1 * 0.35 + (c2 + c3) * 0.65) < t) cave[x+1, y+1] = true;
                 }
             }
             
