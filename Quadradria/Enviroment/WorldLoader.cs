@@ -118,7 +118,7 @@ namespace Quadradria.Enviroment
             return c;
         }
 
-        public void Unload(Chunk chunk)
+        public void UnloadChunk(Chunk chunk)
         {
             int mx = (int)Math.Floor(chunk.pos.X / (float)Megachunk.SIZE);
             int my = (int)Math.Floor(chunk.pos.Y / (float)Megachunk.SIZE);
@@ -260,13 +260,16 @@ namespace Quadradria.Enviroment
             return megachunks.Length;
         }
 
-        public void Unload()
+        private void Unload()
         {
-            megachunks.ForEach((mc) =>
+            lock (fsWorld)
             {
-                mc.PutThatDamDataOutToTheDrive();
-            });
-            fsWorld.Close();
+                megachunks.ForEach((mc) =>
+                {
+                    mc.SortFile();
+                });
+                fsWorld.Close();
+            }
         }
     }
 }

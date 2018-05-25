@@ -161,7 +161,7 @@ namespace Quadradria.Enviroment
         public void Unload()
         {
             Save();
-            worldLoader.Unload();
+            //worldLoader.Unload();
         }
 
     }

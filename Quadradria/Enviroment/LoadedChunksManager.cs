@@ -24,7 +24,7 @@ namespace Quadradria.Enviroment
 
         public void UnloadChunk(Chunk c)
         {
-            worldLoader.Unload(c);
+            worldLoader.UnloadChunk(c);
             c.Unload();
             ChunksLoaded.Remove(c.pos.X, c.pos.Y);
         }

@@ -30,11 +30,8 @@ namespace Quadradria.Enviroment
         private BinaryReader reader;
         private BinaryWriter writer;
 
-        private bool isAlreadySaved = false;
-
         public Megachunk(int worldX, int worldY, GraphicsDevice graphicsDevice, IGenerator generator)
         {
-            Console.WriteLine("Opening Megachunk {0}, {1}", worldX, worldY);
 
             Directory.CreateDirectory(@"E:\c");
 
@@ -42,6 +39,7 @@ namespace Quadradria.Enviroment
             this.worldY = worldY;
             this.graphicsDevice = graphicsDevice;
             
+            Log("Opened");
             string path = @"E:\c\q" + worldX + "," + worldY + ".meg";
 
             fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -50,6 +48,7 @@ namespace Quadradria.Enviroment
 
             if (fs.Length != 0)
             {
+                Log("Megachunk is already saved => Importing...");
                 for (int y = 0; y < SIZE; y++)
                 {
                     for (int x = 0; x < SIZE; x++)
@@ -59,6 +58,7 @@ namespace Quadradria.Enviroment
                 }
             } else
             {
+                Log("Megachunk is new => Generating...");
                 writer.Write(new Byte[8 * SIZE * SIZE]);
                 Generate(generator);
             }
@@ -106,25 +106,33 @@ namespace Quadradria.Enviroment
             if (c != null)
             {
                 byte[] data = c.Export();
-                SaveChunk(x, y, data);
                 chunks[x, y] = null;
-
                 numberOfLoadedChunks--;
-                if(numberOfLoadedChunks <= 0) 
+
+                if (numberOfLoadedChunks <= 0)
                 {
-                    PutThatDamDataOutToTheDrive();
+                    Log("All Chunks are unloaded. Sorting file and close...");
+
+                    SaveChunk(x, y, data).ContinueWith((task)=> {
+                        SortFile(true);
+                    });
+
                     return UnloadState.MegachunkEmpty;
+                }
+                else
+                {
+                    SaveChunk(x, y, data);
                 }
             } else
             {
-                Console.WriteLine("Chunk does not exists! {0}, {1}", x + worldX * SIZE, y + worldY * SIZE);
+                Log("Chunk does not exists! " + x + (worldX * SIZE) + ", " + (y + worldY * SIZE));
             }
             return UnloadState.MegachunkNotEmpty;
         }
 
-        private void SaveChunk(int x, int y, byte[] data)
+        private Task SaveChunk(int x, int y, byte[] data)
         {
-            Task.Run(() =>
+            return Task.Run(() =>
             {
                 lock (fs)
                 {
@@ -139,11 +147,8 @@ namespace Quadradria.Enviroment
             });
         } 
 
-        public void PutThatDamDataOutToTheDrive()
+        public void SortFile(bool doCloseAfterFinish = false)
         {
-            if (isAlreadySaved) return;
-            isAlreadySaved = true;
-
             Task.Run(() =>
             {
                 lock (fs)
@@ -154,7 +159,6 @@ namespace Quadradria.Enviroment
                         //Make space for the index
                         outWriter.Write(new Byte[8 * SIZE * SIZE]);
                         outStream.Seek(8 * SIZE * SIZE, SeekOrigin.Begin);
-                        Console.WriteLine("A {0}, {1}", worldX, worldY);
                         for (int y = 0; y < SIZE; y++)
                         {
                             for (int x = 0; x < SIZE; x++)
@@ -179,7 +183,10 @@ namespace Quadradria.Enviroment
                         fs.SetLength(0);
                         writer.Write(outStream.ToArray());
 
-                        CloseEverythingA();
+                        if (doCloseAfterFinish)
+                        {
+                            CloseEverything();
+                        }
                     }
 
                 }
@@ -234,18 +241,27 @@ namespace Quadradria.Enviroment
             }
         }
 
-        private void CloseEverythingA()
+        private void CloseEverything()
         {
             lock (fs)
             {
-                Console.WriteLine("Close Megachunk {0}, {1}", worldX, worldY);
                 reader.Dispose();
                 writer.Dispose();
 
                 fs.Close();
                 fs.Dispose();
-                Console.WriteLine("B {0}, {1}", worldX, worldY);
+                Log("Closed");
             }
+        }
+
+        public override string ToString()
+        {
+            return "Megachunk:" + worldX + "," + worldY;
+        }
+
+        private void Log(string message)
+        {
+            Console.WriteLine("[WorldLoaded][" + ToString() + "]" + message);
         }
     }
 }
