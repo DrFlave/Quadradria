@@ -32,15 +32,20 @@ namespace Quadradria.Enviroment.Generators
         {
             return Task.Run(() =>
             {
+                Task[] tasks = new Task[Megachunk.SIZE * Megachunk.SIZE];
+
                 for (int y = 0; y < Megachunk.SIZE; y++)
                 {
                     for (int x = 0; x < Megachunk.SIZE; x++)
                     {
                         Chunk c = new Chunk(mc.WorldX * Megachunk.SIZE + x, mc.WorldY * Megachunk.SIZE + y, graphicsDevice);
                         GenerateChunk(c);
-                        mc.SaveChunk(x, y, c.Export());
+                        tasks[x + y * Megachunk.SIZE] = mc.SaveChunk(x, y, c.Export());
+
                     }
                 }
+
+                Task.WaitAll(tasks);
 
                 callback();
             });

@@ -15,7 +15,7 @@ namespace Quadradria.Enviroment
 
     class Megachunk
     {
-        public const int SIZE = 64;
+        public const int SIZE = 16;
 
         private Chunk[,] chunks = new Chunk[SIZE, SIZE];
 
@@ -107,7 +107,7 @@ namespace Quadradria.Enviroment
                         if (address < (SIZE * SIZE * 8)) {
                             if (address == 0)
                             {
-                                Log("Adress is zero");
+                                //Log("Adress is zero for chunk " + (x+WorldX*SIZE) + ", " + (y+WorldY*SIZE));
                             } else
                             {
                                 Log("File Corrupted: Chunk address is in the index!");
@@ -168,7 +168,7 @@ namespace Quadradria.Enviroment
             return UnloadState.MegachunkNotEmpty;
         }
 
-        public void SaveChunk(int x, int y, byte[] data)
+        public Task SaveChunk(int x, int y, byte[] data)
         {
             //Log("Saving a chunk");
             Task task = null;
@@ -189,6 +189,8 @@ namespace Quadradria.Enviroment
             });
             lock(tasksToDo)
                 tasksToDo.Add(task);
+
+            return task;
         } 
 
         public void SortFile(bool doCloseAfterFinish = false)
@@ -298,6 +300,7 @@ namespace Quadradria.Enviroment
                     {
                         if(chunks[x, y] != null)
                         {
+                            Log("Index for chunk " + (x + WorldX * SIZE) + ", " + (y + WorldY * SIZE) + " is " + index[x, y]);
                             LoadChunk(x, y, chunks[x, y]);
                         }
                     }
