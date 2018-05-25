@@ -15,7 +15,7 @@ namespace Quadradria.Enviroment
 
     class Megachunk
     {
-        public const int SIZE = 16;
+        public const int SIZE = 64;
 
         private Chunk[,] chunks = new Chunk[SIZE, SIZE];
 
@@ -300,7 +300,6 @@ namespace Quadradria.Enviroment
                     {
                         if(chunks[x, y] != null)
                         {
-                            Log("Index for chunk " + (x + WorldX * SIZE) + ", " + (y + WorldY * SIZE) + " is " + index[x, y]);
                             LoadChunk(x, y, chunks[x, y]);
                         }
                     }

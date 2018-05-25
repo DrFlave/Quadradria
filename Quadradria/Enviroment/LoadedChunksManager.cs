@@ -45,13 +45,20 @@ namespace Quadradria.Enviroment
                     if (chunk == null) return;
                     UnloadChunk(chunk);
                 }
-                if (!newDrawRect.Contains(j, i) && lastDrawRect.Contains(j, i))
+                
+            });
+
+            ChunksVisible.ForEachWrapper((cw) => {
+                int j = cw.x;
+                int i = cw.y;
+
+                if (!newDrawRect.Contains(j, i))
                 {
                     ChunksVisible.Remove(j, i);
                 }
             });
+            
 
-            //add new chunks
             for (int i = newrect.Y; i < newrect.Y + newrect.Height; i++)
             {
                 for (int j = newrect.X; j < newrect.X + newrect.Width; j++)
