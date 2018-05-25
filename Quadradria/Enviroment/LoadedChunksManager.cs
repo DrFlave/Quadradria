@@ -35,31 +35,29 @@ namespace Quadradria.Enviroment
             if (newrect.Equals(lastRect)) return;
             Rect newDrawRect = new Rect(x, y, width, height);
 
-            //remove old chunks
-            for (int i = lastRect.Y; i < lastRect.Y + lastRect.Height; i++)
-            {
-                for (int j = lastRect.X; j < lastRect.X + lastRect.Width; j++)
+            ChunksLoaded.ForEachWrapper((cw) => {
+                int j = cw.x;
+                int i = cw.y;
+                
+                if (!newrect.Contains(j, i))
                 {
-                    if (!newrect.Contains(j, i))
-                    {
-                        Chunk chunk = ChunksLoaded.Get(j, i);
-                        if (chunk == null) continue;
-                        UnloadChunk(chunk);
-                    }
-                    if (!newDrawRect.Contains(j, i) && lastDrawRect.Contains(j, i))
-                    {
-                        ChunksVisible.Remove(j, i);
-                    }
+                    Chunk chunk = ChunksLoaded.Get(j, i);
+                    if (chunk == null) return;
+                    UnloadChunk(chunk);
                 }
-            }
-
+                if (!newDrawRect.Contains(j, i) && lastDrawRect.Contains(j, i))
+                {
+                    ChunksVisible.Remove(j, i);
+                }
+            });
 
             //add new chunks
             for (int i = newrect.Y; i < newrect.Y + newrect.Height; i++)
             {
                 for (int j = newrect.X; j < newrect.X + newrect.Width; j++)
-                {             
-                    if (!lastRect.Contains(j, i))
+                {       
+                    
+                    if(!ChunksLoaded.Includes(j, i))
                     {
                         Chunk chunk = worldLoader.LoadChunk(j, i);
                         if (chunk == null) continue;
@@ -91,24 +89,18 @@ namespace Quadradria.Enviroment
             return ChunksVisible.Length;
         }
 
-        
         public Chunk GetChunk(int x, int y)
         {
             return ChunksLoaded.Get(x, y);
         }
         
-
-        /*
-        public bool AddChunk(int x, int y, Chunk chunk)
+        public void Unload()
         {
-            return ChunksLoaded.Add(x, y, chunk);
+            ForEachLoaded((chunk) =>
+            {
+                UnloadChunk(chunk);
+            });
         }
-
-        public bool RemoveChunk(int x, int y)
-        {
-            return ChunksLoaded.Remove(x, y);
-        }
-        */
 
         public void ForEachLoaded(Action<Chunk> func)
         {

@@ -22,11 +22,12 @@ namespace Quadradria.Enviroment
 
         public static void Init()
         {
-            BlockTypeList[(int)BlockType.Air] = (new BlockTypeAir(BlockType.Air, "air"));
-            BlockTypeList[(int)BlockType.Dirt] = (new BlockTypeGrass(BlockType.Dirt, "dirt", Textures.Blocks.Dirt, Textures.Blocks.Grass));
-            BlockTypeList[(int)BlockType.Stone] = (new BlockTypeDefault(BlockType.Stone, "stone", Textures.Blocks.Stone));
-            BlockTypeList[(int)BlockType.DoorWood] = (new BlockTypeDoor(BlockType.DoorWood, "doorWood", Textures.Blocks.DoorWood));
-            BlockTypeList[(int)BlockType.Wool] = (new BlockTypeDefault(BlockType.Wool, "wool", Textures.Blocks.Wool));
+            BlockTypeList[(int)BlockType.Error] = new BlockTypeDefault(BlockType.Error, "error", Textures.Error);
+            BlockTypeList[(int)BlockType.Air] = new BlockTypeAir(BlockType.Air, "air");
+            BlockTypeList[(int)BlockType.Dirt] = new BlockTypeGrass(BlockType.Dirt, "dirt", Textures.Blocks.Dirt, Textures.Blocks.Grass);
+            BlockTypeList[(int)BlockType.Stone] = new BlockTypeDefault(BlockType.Stone, "stone", Textures.Blocks.Stone);
+            BlockTypeList[(int)BlockType.DoorWood] = new BlockTypeDoor(BlockType.DoorWood, "doorWood", Textures.Blocks.DoorWood);
+            BlockTypeList[(int)BlockType.Wool] = new BlockTypeDefault(BlockType.Wool, "wool", Textures.Blocks.Wool);
         }
     }
 }

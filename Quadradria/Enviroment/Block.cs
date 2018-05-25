@@ -34,10 +34,16 @@ namespace Quadradria.Enviroment
 
         public void RandomTick(int x, int y, World world)
         {
-            BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
+            try
+            {
+                BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
 
-            if (typeInst != null)
-                typeInst.RandomTick(x, y, this, world);
+                if (typeInst != null)
+                    typeInst.RandomTick(x, y, this, world);
+            } catch (Exception e)
+            {
+
+            }
         }
 
         public override string ToString()

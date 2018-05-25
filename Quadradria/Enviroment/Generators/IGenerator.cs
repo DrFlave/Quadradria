@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,6 @@ namespace Quadradria.Enviroment.Generators
     {
         int Seed { get; set; }
         void GenerateChunk(Chunk chunk);
+        Task GenerateMegachunk(Megachunk megachunk, GraphicsDevice graphicsDevice, Action callback);
     }
 }

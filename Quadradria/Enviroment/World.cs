@@ -151,6 +151,7 @@ namespace Quadradria.Enviroment
         public void Save()
         {
             worldLoader.WriteWorld(true);
+            LoadedChunks.Unload();
         }
 
         public int GetNumberOfLoadedMegachunks()

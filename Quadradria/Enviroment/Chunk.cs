@@ -64,13 +64,17 @@ namespace Quadradria.Enviroment
                 for (int j = 0; j < SIZE; j++)
                 {
                     Blocks[i, j].Draw(spriteBatch, i * BLOCK_SIZE, j * BLOCK_SIZE);
+                    if (Blocks[i, j].BlockID == BlockType.Wool)
+                    {
+                        int a = 0;
+                    }
                 }
             }
 
             spriteBatch.End();
             graphicsDevice.SetRenderTarget(null);
 
-            shouldRender = false;
+            //shouldRender = false;
         }
 
         public void Update(World world)

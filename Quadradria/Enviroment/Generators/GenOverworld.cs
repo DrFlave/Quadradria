@@ -1,8 +1,10 @@
-﻿using Quadradria.Utils;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Quadradria.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Quadradria.Enviroment.Generators
@@ -26,12 +28,29 @@ namespace Quadradria.Enviroment.Generators
             dirtDepth = new OpenSimplexNoise((info.seed == 0) ? 2 : info.seed - Math.Sign(info.seed) * 2);
         }
 
+        public Task GenerateMegachunk(Megachunk mc, GraphicsDevice graphicsDevice, Action callback)
+        {
+            return Task.Run(() =>
+            {
+                for (int y = 0; y < Megachunk.SIZE; y++)
+                {
+                    for (int x = 0; x < Megachunk.SIZE; x++)
+                    {
+                        Chunk c = new Chunk(mc.WorldX * Megachunk.SIZE + x, mc.WorldY * Megachunk.SIZE + y, graphicsDevice);
+                        GenerateChunk(c);
+                        mc.SaveChunk(x, y, c.Export());
+                    }
+                }
+
+                callback();
+            });
+
+        }
+
         public void GenerateChunk(Chunk chunk)
         {
             int cx = chunk.pos.X * Chunk.SIZE;
             int cy = chunk.pos.Y * Chunk.SIZE;
-
-            //Console.WriteLine(cx + ";" +  cy);
             
             for (int x = 0; x < Chunk.SIZE; x++)
             {
