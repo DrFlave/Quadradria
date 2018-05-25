@@ -109,11 +109,13 @@ namespace Quadradria
             = "Loaded chunks: " + world.LoadedChunks.GetLoadedChunkNumber()
             + "\nVisible chunks: " + world.LoadedChunks.GetVisibleChunkNumber()
             + "\nLoaded Megachunks: " + world.GetNumberOfLoadedMegachunks()
-            + "\nMemory usage (Process): " + Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "MB"
-            + "\nMouse position (World space): "+ mpos.X + ", " + mpos.Y
+            + "\nMemory usage: " + Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "MB"
+            + "\nMouse position (World space): " + mpos.X + ", " + mpos.Y
             + "\nMouse position (Block): " + Math.Floor(mpos.X) + ", " + Math.Floor(mpos.Y)
+            + "\nMouse position (Chunk): " + Math.Floor(mpos.X / Chunk.SIZE) + ", " + Math.Floor(mpos.Y / Chunk.SIZE)
+            + "\nMouse position (Megachunk): " + Math.Floor(mpos.X / Chunk.SIZE / Megachunk.SIZE) + ", " + Math.Floor(mpos.Y / Chunk.SIZE / Megachunk.SIZE)
             + "\nCamera zoom: " + camera.zoom
-            + "\nCamera position (Center): " + camera.center
+            + "\nCamera position (Center): " + camera.center.X + ", " + camera.center.Y
             + "\nBlock under mouse: " + underMouse;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))

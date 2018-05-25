@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Quadradria.Enviroment
 {
-    public enum UnloadState { MegachunkEmpty, MegachunkNotEmpty }
+    public enum UnloadState { MegachunkEmpty, MegachunkNotEmpty, MegachunkStillGenerating }
 
     class Megachunk
     {
@@ -26,6 +26,8 @@ namespace Quadradria.Enviroment
 
         private int numberOfLoadedChunks = 0;
         private bool isGenerated = false;
+        public bool IsClosing = false;
+        public bool PleaseDontClose = false;
 
         private FileStream fs;
         private BinaryReader reader;
@@ -33,9 +35,11 @@ namespace Quadradria.Enviroment
 
         private int sortedCount = 0;
 
+        private Action onUnloaded;
+
         private List<Task> tasksToDo = new List<Task>();
 
-        public Megachunk(int worldX, int worldY, GraphicsDevice graphicsDevice, IGenerator generator)
+        public Megachunk(int worldX, int worldY, GraphicsDevice graphicsDevice, IGenerator generator, Action onUnloaded)
         {
 
             Directory.CreateDirectory(@"E:\c");
@@ -43,32 +47,26 @@ namespace Quadradria.Enviroment
             this.WorldX = worldX;
             this.WorldY = worldY;
             this.graphicsDevice = graphicsDevice;
+            this.onUnloaded = onUnloaded;
             
-            Log("Opened");
             string path = @"E:\c\q" + worldX + "," + worldY + ".meg";
 
-            fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             reader = new BinaryReader(fs);
             writer = new BinaryWriter(fs);
 
             if (fs.Length != 0)
             {
-                Log("Megachunk is already saved => Importing...");
                 for (int y = 0; y < SIZE; y++)
                 {
                     for (int x = 0; x < SIZE; x++)
                     {
                         index[x, y] = reader.ReadInt64();
-                        if (index[x, y] == 0)
-                        {
-                            Log("There is a null pointer in the index!");
-                        }
                     }
                 }
                 isGenerated = true;
             } else
             {
-                Log("Megachunk is new => Generating...");
                 writer.Write(new Byte[8 * SIZE * SIZE]);
                 writer.BaseStream.Position = 8 * SIZE * SIZE;
                 Generate(generator);
@@ -77,20 +75,22 @@ namespace Quadradria.Enviroment
 
         private void LoadChunk(int x, int y, Chunk c = null)
         {
+            //if (chunks[x, y] != null) return;
+
             if (c == null)
             {
                 c = new Chunk(WorldX * SIZE + x, WorldY * SIZE + y, graphicsDevice);
-                /*for (int i = 0; i < Chunk.SIZE; i++)
+                for (int i = 0; i < Chunk.SIZE; i++)
                 {
                     for (int j = 0; j < Chunk.SIZE; j++)
                     {
                         c.SetBlockAtLocalPosition(i, j, BlockType.Wool, 0);
                     }
-                }*/
+                }
             }
 
+            if (chunks[x, y] == null) numberOfLoadedChunks++;
             chunks[x, y] = c;
-            numberOfLoadedChunks++;
 
             if (!isGenerated) return;
 
@@ -105,15 +105,8 @@ namespace Quadradria.Enviroment
                     {
                         address = index[x, y];
                         if (address < (SIZE * SIZE * 8)) {
-                            if (address == 0)
-                            {
-                                //Log("Adress is zero for chunk " + (x+WorldX*SIZE) + ", " + (y+WorldY*SIZE));
-                            } else
-                            {
-                                Log("File Corrupted: Chunk address is in the index!");
-                            }
                             return;
-                        };
+                        }
                         
                         fs.Seek(address, SeekOrigin.Begin);
 
@@ -146,25 +139,23 @@ namespace Quadradria.Enviroment
             Chunk c = chunks[x, y];
             if (c != null)
             {
-                byte[] data = c.Export();
-                chunks[x, y] = null;
                 numberOfLoadedChunks--;
+                chunks[x, y] = null;
+                if (!isGenerated) return UnloadState.MegachunkStillGenerating;
 
 
-                SaveChunk(x, y, data);
+                byte[] data = c.Export();
+
+                SaveChunk(x, y, data);                
 
                 if (numberOfLoadedChunks <= 0)
                 {
-                    Log("All Chunks are unloaded. Sorting file and close...");
-
                     SortFile(true);
 
                     return UnloadState.MegachunkEmpty;
                 }
-            } else
-            {
-                Log("Chunk does not exists! " + x + (WorldX * SIZE) + ", " + (y + WorldY * SIZE));
             }
+
             return UnloadState.MegachunkNotEmpty;
         }
 
@@ -195,22 +186,18 @@ namespace Quadradria.Enviroment
 
         public void SortFile(bool doCloseAfterFinish = false)
         {
-            //Log("Sorting that file");
+            if (doCloseAfterFinish)
+                IsClosing = true;
+            
             sortedCount++;
             Task.Run(() =>
             {
                 Task[] tasks;
                 lock (tasksToDo)
                 {
-                    if (tasksToDo.Contains(null))
-                    {
-                        Log("Tasks to do contains null");
-                    }
-
                     tasks = tasksToDo.ToArray();
                 }
                 Task.WaitAll(tasks);
-                //Log("Waited for saving tasks to complete");
 
                 lock (fs)
                 {
@@ -230,7 +217,6 @@ namespace Quadradria.Enviroment
                                 long dataLength = reader.ReadInt64();
                                 byte[] data = reader.ReadBytes((int)dataLength);
 
-
                                 outStream.Seek(0, SeekOrigin.End);
                                 long addressNew = outStream.Position;
                                 outWriter.Write((long)data.Length);
@@ -247,6 +233,9 @@ namespace Quadradria.Enviroment
                         if (doCloseAfterFinish)
                         {
                             CloseEverything();
+                        } else
+                        {
+                            IsClosing = false;
                         }
                     }
 
@@ -292,7 +281,6 @@ namespace Quadradria.Enviroment
         {
             Task generatorTask = null;
             generatorTask = generator.GenerateMegachunk(this, graphicsDevice, () => {
-                Log("Generation complete!");
                 isGenerated = true;
                 for (int y = 0; y < SIZE; y++)
                 {
@@ -312,6 +300,15 @@ namespace Quadradria.Enviroment
 
         private void CloseEverything()
         {
+            IsClosing = false;
+            if (PleaseDontClose) {
+                Log("We had the idea to close, but some idiots they we shoudnldndlndt");
+                PleaseDontClose = false;
+                return;
+            }
+
+            onUnloaded?.Invoke();
+
             lock (fs)
             {
                 reader.Dispose();
@@ -319,8 +316,8 @@ namespace Quadradria.Enviroment
 
                 fs.Close();
                 fs.Dispose();
-                Log("Closed");
             }
+
         }
 
         public override string ToString()

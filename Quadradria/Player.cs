@@ -18,14 +18,20 @@ namespace Quadradria
 
         public void Update(float dt)
         {
+            float speed = 80f;
+            if (Keyboard.GetState().IsKeyDown(Keys.RightShift))
+            {
+                speed *= 2;
+            }
+
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                position.Y -= 50f * dt;
+                position.Y -= speed * dt;
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                position.Y += 50f * dt;
+                position.Y += speed * dt;
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                position.X -= 50f * dt;
+                position.X -= speed * dt;
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                position.X += 50f * dt;
+                position.X += speed * dt;
         }
 
         public void Draw(SpriteBatch spriteBatch)

@@ -127,29 +127,6 @@ namespace Quadradria.Enviroment
             entities.Remove(entity);
         }
 
-        public byte[] ExportOld()
-        {
-            if (!isLoaded) return null;
-            byte[] array = new byte[1024];
-            int index, i, j;
-
-            for (i = 0; i < SIZE; i++)
-            {
-                for (j = 0; j < SIZE; j++)
-                {
-                    index = 4 * (i * SIZE + j);
-
-                    Block block = Blocks[j, i];
-                    array[index + 0] = ((byte)(block.BlockID));
-                    array[index + 1] = ((byte)((ushort)block.BlockID >> 8));
-                    array[index + 2] = ((byte)(block.SubID));
-                    array[index + 3] = ((byte)(block.SubID >> 8));
-                }
-            }
-
-            return array;
-        }
-
         public void Import(byte[] data)
         {
             using (MemoryStream stream = new MemoryStream(data))

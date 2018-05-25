@@ -93,7 +93,10 @@ namespace Quadradria.Enviroment
 
         public Megachunk LoadMegachunk(int x, int y)
         {
-            Megachunk mc = new Megachunk(x, y, graphicsDevice, generator);
+            Megachunk mc = null;
+            mc = new Megachunk(x, y, graphicsDevice, generator, () => {
+                megachunks.Remove(x, y);
+            });
             megachunks.Add(x, y, mc);
             return mc;
         }
@@ -107,9 +110,16 @@ namespace Quadradria.Enviroment
 
             //Get the megachunk if in memory
             Megachunk mc = megachunks.Get(mx, my);
+
             if (mc == null)
             {
                 mc = LoadMegachunk(mx, my);
+            } else
+            {
+                if (mc.IsClosing)
+                {
+                    mc.PleaseDontClose = true;
+                }
             }
 
             //Get the chunk from within the megachunk
@@ -124,13 +134,7 @@ namespace Quadradria.Enviroment
             int my = (int)Math.Floor(chunk.pos.Y / (float)Megachunk.SIZE);
 
             Megachunk mc = megachunks.Get(mx, my);
-
-            UnloadState state = mc.UnloadChunk(Tools.Mod(chunk.pos.X, Megachunk.SIZE), Tools.Mod(chunk.pos.Y, Megachunk.SIZE));
-            if (state == UnloadState.MegachunkEmpty)
-            {
-                megachunks.Remove(mx, my);
-            }
-
+            mc.UnloadChunk(Tools.Mod(chunk.pos.X, Megachunk.SIZE), Tools.Mod(chunk.pos.Y, Megachunk.SIZE));
         }
 
         public void WriteWorld(bool lastsave = false)

@@ -41,7 +41,6 @@ namespace Quadradria.Enviroment.Generators
                         Chunk c = new Chunk(mc.WorldX * Megachunk.SIZE + x, mc.WorldY * Megachunk.SIZE + y, graphicsDevice);
                         GenerateChunk(c);
                         tasks[x + y * Megachunk.SIZE] = mc.SaveChunk(x, y, c.Export());
-
                     }
                 }
 
