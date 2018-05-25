@@ -30,6 +30,8 @@ namespace Quadradria.Enviroment.Generators
         {
             int cx = chunk.pos.X * Chunk.SIZE;
             int cy = chunk.pos.Y * Chunk.SIZE;
+
+            //Console.WriteLine(cx + ";" +  cy);
             
             for (int x = 0; x < Chunk.SIZE; x++)
             {
@@ -92,6 +94,8 @@ namespace Quadradria.Enviroment.Generators
                     }
                 }
             }
+
+            chunk.IsGenerated = true;
         }
     }
 }

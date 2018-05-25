@@ -39,6 +39,11 @@ namespace Quadradria.Enviroment
             if (typeInst != null)
                 typeInst.RandomTick(x, y, this, world);
         }
+
+        public override string ToString()
+        {
+            return "" + BlockID + ":" + SubID;
+        }
     }
     
     class BlockTypeDefault

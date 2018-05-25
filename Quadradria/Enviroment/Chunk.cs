@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Quadradria.Entity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,28 +27,29 @@ namespace Quadradria.Enviroment
         GraphicsDevice graphicsDevice;
 
         public bool shouldRender = true;
+        public bool IsGenerated = false;
 
         public Chunk(int x, int y, GraphicsDevice graphicsDevice)
         {
             this.pos = new Point(x, y);
             this.drawPos = new Vector2(x * SIZE, y * SIZE);
             this.graphicsDevice = graphicsDevice;
-
-            renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
         }
 
         public void Load()
         {
             if (isLoaded) return;
+
+            renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
             isLoaded = true;
         }
 
         public void Unload()
         {
             if (!isLoaded) return;
-            isLoaded = false;
 
             renderTarget.Dispose();
+            isLoaded = false;
         }
 
         public void Render(SpriteBatch spriteBatch)
@@ -121,7 +123,7 @@ namespace Quadradria.Enviroment
             entities.Remove(entity);
         }
 
-        public byte[] Export()
+        public byte[] ExportOld()
         {
             if (!isLoaded) return null;
             byte[] array = new byte[1024];
@@ -146,23 +148,101 @@ namespace Quadradria.Enviroment
 
         public void Import(byte[] data)
         {
-            lock (this)
+            using (MemoryStream stream = new MemoryStream(data))
+            using (BinaryReader reader = new BinaryReader(stream))
             {
-                if (data.Length != SIZE * SIZE * 4) return; //!= 1024
+                long entBlockSize;
+                int entityNumber, index, i, j;
 
-                int index, i, j;
-                for (i = 0; i < SIZE; i++)
+                try
                 {
-                    for (j = 0; j < SIZE; j++)
+                    lock (this)
                     {
-                        index = 4 * (i * SIZE + j);
+                        for (i = 0; i < SIZE; i++)
+                        {
+                            for (j = 0; j < SIZE; j++)
+                            {
+                                index = 4 * (i * SIZE + j);
 
-                        Blocks[j, i].Damage = 0;
-                        Blocks[j, i].BlockID = (BlockType)BitConverter.ToUInt16(data, index);
-                        Blocks[j, i].SubID = BitConverter.ToUInt16(data, index + 2);
+                                Blocks[j, i].Damage = 0;
+                                Blocks[j, i].BlockID = (BlockType)reader.ReadUInt16();
+                                Blocks[j, i].SubID = reader.ReadUInt16();
+                            }
+                        }
+
+                        entBlockSize = reader.ReadInt64();
+                        entityNumber = reader.ReadInt32();
+
+                        for (i = 0; i < entityNumber; i++)
+                        {
+                            EntityType type = (EntityType)reader.ReadUInt16();
+                            uint ID = reader.ReadUInt32();
+                            float x = reader.ReadSingle();
+                            float y = reader.ReadSingle();
+                            int len = reader.ReadInt32();
+                            byte[] entData = reader.ReadBytes(len);
+
+
+                            BaseEntity entity = EntityManager.Spawn(type);
+                            entity.Position.X = x;
+                            entity.Position.Y = y;
+                            entity.Import(entData);
+                            entity.Initialize(ID);
+
+                            AddEntity(entity);
+                        }
                     }
+                } catch (Exception e)
+                {
+                    throw new Exception("Corrupted chunk data", e);
                 }
             }
+
+            IsGenerated = true;
+        }
+
+        public byte[] Export()
+        {
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            {
+                lock (this)
+                {
+                    for (int i = 0; i < SIZE; i++)
+                    {
+                        for (int j = 0; j < SIZE; j++)
+                        {
+                            int index = 4 * (i * SIZE + j);
+
+                            Block block = Blocks[j, i];
+                            writer.Write((ushort)block.BlockID);
+                            writer.Write((ushort)block.SubID);
+                        }
+                    }
+
+                    long entsLengthPos = stream.Position;
+                    writer.Write((long)0);
+                    writer.Write((int)entities.Count);
+
+                    foreach (BaseEntity ent in entities)
+                    {
+                        byte[] entData = ent.Export();
+                        writer.Write((ushort)ent.EntType);
+                        writer.Write((uint)ent.ID);
+                        writer.Write((float)ent.Position.X);
+                        writer.Write((float)ent.Position.Y);
+                        writer.Write(entData.Length);
+                        writer.Write(entData);
+                    }
+
+                    long len = stream.Position - entsLengthPos;
+                    stream.Seek(entsLengthPos, SeekOrigin.Begin);
+                    writer.Write((long)len);
+
+                    return stream.ToArray();//stream.GetBuffer();
+                }
+            }
+
         }
     }
 }

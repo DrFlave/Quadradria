@@ -92,6 +92,7 @@
     <Compile Include="Utils\OpenSimplexNoise.cs" />
     <Compile Include="Utils\RectF.cs" />
     <Compile Include="Utils\Rect.cs" />
+    <Compile Include="Utils\Tools.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -8,9 +8,10 @@ namespace Quadradria.Enviroment
 {
     enum BlockType : ushort
     {
-        Air = 0,
-        Dirt = 1,
-        Stone = 2,
+        Error = 0,
+        Air = 1,
+        Dirt = 2,
+        Stone = 3,
         Wool = 4,
         DoorWood = 100
     }

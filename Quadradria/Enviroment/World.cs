@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Quadradria.Entity;
+using Quadradria.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace Quadradria.Enviroment
 
         private string path;
 
-        private int nextEntId = 0;
+        private uint nextEntId = 0;
 
         public World(string path, GraphicsDevice graphicsDevice)
         {
@@ -119,7 +120,7 @@ namespace Quadradria.Enviroment
             chunk.AddEntity(entity);
         }
 
-        public int RequestEntityId()
+        public uint RequestEntityId()
         {
             return nextEntId++;
         }
@@ -136,7 +137,7 @@ namespace Quadradria.Enviroment
             Chunk c = GetChunkAtTilePosition(x, y);
             if (c == null) return null;
 
-            return c.GetBlockAtLocalPosition(Mod(x, Chunk.SIZE), Mod(y, Chunk.SIZE));
+            return c.GetBlockAtLocalPosition(Tools.Mod(x, Chunk.SIZE), Tools.Mod(y, Chunk.SIZE));
         }
 
         public void SetBlockAtPosition(int x, int y, BlockType type, ushort subid)
@@ -144,17 +145,23 @@ namespace Quadradria.Enviroment
             Chunk c = GetChunkAtTilePosition(x, y);
             if (c == null) return;
 
-            c.SetBlockAtLocalPosition(Mod(x, Chunk.SIZE), Mod(y, Chunk.SIZE), type, subid);
-        }
-
-        private int Mod(int x, int m)
-        {
-            return (x % m + m) % m;
+            c.SetBlockAtLocalPosition(Tools.Mod(x, Chunk.SIZE), Tools.Mod(y, Chunk.SIZE), type, subid);
         }
 
         public void Save()
         {
-            worldLoader.WriteWorld();
+            worldLoader.WriteWorld(true);
+        }
+
+        public int GetNumberOfLoadedMegachunks()
+        {
+            return worldLoader.GetNumberOfLoadedMegachunks();
+        }
+
+        public void Unload()
+        {
+            Save();
+            worldLoader.Unload();
         }
 
     }

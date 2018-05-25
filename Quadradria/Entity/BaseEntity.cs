@@ -11,11 +11,11 @@ namespace Quadradria.Entity
 
     abstract class BaseEntity
     {
-        public Vector2 Position { get; set; }
-        public int ID { get; private set; }
+        public Vector2 Position;
+        public uint ID { get; private set; }
         public EntityType EntType;
 
-        public void Initialize(int id)
+        public void Initialize(uint id)
         {
             ID = id;
             Console.WriteLine("Initialized an entity at position " + Position.X + ", " + Position.Y + " with the ID: " + ID);

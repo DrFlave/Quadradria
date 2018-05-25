@@ -91,6 +91,9 @@ namespace Quadradria
 
         protected override void UnloadContent()
         {
+            Console.WriteLine("Unload Content");
+
+            world.Unload();
         }
 
         protected override void Update(GameTime gameTime)
@@ -105,12 +108,13 @@ namespace Quadradria
             debugInformation.Text
             = "Loaded chunks: " + world.LoadedChunks.GetLoadedChunkNumber()
             + "\nVisible chunks: " + world.LoadedChunks.GetVisibleChunkNumber()
+            + "\nLoaded Megachunks: " + world.GetNumberOfLoadedMegachunks()
             + "\nMemory usage (Process): " + Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024 + "MB"
             + "\nMouse position (World space): "+ mpos.X + ", " + mpos.Y
             + "\nMouse position (Block): " + Math.Floor(mpos.X) + ", " + Math.Floor(mpos.Y)
             + "\nCamera zoom: " + camera.zoom
             + "\nCamera position (Center): " + camera.center
-            + "\nBlock under mouse: " + underMouse?.BlockID + ":" + underMouse?.SubID;
+            + "\nBlock under mouse: " + underMouse;
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {

@@ -14,9 +14,19 @@ namespace Quadradria.Enviroment
         private Rect lastDrawRect = new Rect(0, 0, 0, 0);
         private WorldLoader worldLoader;
 
+        private List2D<Chunk> ChunksLoaded = new List2D<Chunk>();
+        private List2D<Chunk> ChunksVisible = new List2D<Chunk>();
+
         public LoadedChunksManager(WorldLoader worldLoader)
         {
             this.worldLoader = worldLoader;
+        }
+
+        public void UnloadChunk(Chunk c)
+        {
+            worldLoader.Unload(c);
+            c.Unload();
+            ChunksLoaded.Remove(c.pos.X, c.pos.Y);
         }
 
         public void UpdateLoadedArea(int x, int y, int width, int height, WorldLoader worldLoader)
@@ -34,10 +44,7 @@ namespace Quadradria.Enviroment
                     {
                         Chunk chunk = ChunksLoaded.Get(j, i);
                         if (chunk == null) continue;
-
-                        worldLoader.WriteChunk(chunk);
-                        chunk.Unload();
-                        ChunksLoaded.Remove(j, i);
+                        UnloadChunk(chunk);
                     }
                     if (!newDrawRect.Contains(j, i) && lastDrawRect.Contains(j, i))
                     {
@@ -51,11 +58,12 @@ namespace Quadradria.Enviroment
             for (int i = newrect.Y; i < newrect.Y + newrect.Height; i++)
             {
                 for (int j = newrect.X; j < newrect.X + newrect.Width; j++)
-                {
+                {             
                     if (!lastRect.Contains(j, i))
                     {
                         Chunk chunk = worldLoader.LoadChunk(j, i);
                         if (chunk == null) continue;
+                        chunk.Load();
                         ChunksLoaded.Add(j, i, chunk);
                     }
 
@@ -72,9 +80,6 @@ namespace Quadradria.Enviroment
             lastRect = newrect;
             lastDrawRect = newDrawRect;
         }
-        
-        private List2D<Chunk> ChunksLoaded = new List2D<Chunk>();
-        private List2D<Chunk> ChunksVisible = new List2D<Chunk>();
 
         public int GetLoadedChunkNumber()
         {

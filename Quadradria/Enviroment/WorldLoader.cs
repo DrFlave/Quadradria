@@ -42,23 +42,21 @@ namespace Quadradria.Enviroment
          * chunks.cdat       //Block Data
          * chunk(1024bytes), chunk...
          *
-         *
+         *qx,y.meg
          * 
          * entData.edat         //Entity Data
          * 
          * */
         
-
-        private FileStream fsChunk;
         private FileStream fsWorld;
-        private BinaryReader ChunkReader;
-        private BinaryWriter ChunkWriter;
         private BinaryReader WorldReader;
         private BinaryWriter WorldWriter;
         private string worldPath;
         private GraphicsDevice graphicsDevice;        
 
         private List2D<long?> chunkIndex = new List2D<long?>();
+
+        private List2D<Megachunk> megachunks = new List2D<Megachunk>();
 
         private WorldInfo worldInfo;
         private IGenerator generator;
@@ -72,14 +70,11 @@ namespace Quadradria.Enviroment
 
             try
             {
-                fsChunk = new FileStream(worldPath + @"\chunks.cdat", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
                 fsWorld = new FileStream(worldPath + @"\world.qwld", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-                ChunkReader = new BinaryReader(fsChunk);
-                ChunkWriter = new BinaryWriter(fsChunk);
                 WorldReader = new BinaryReader(fsWorld);
                 WorldWriter = new BinaryWriter(fsWorld);
 
-                if (fsChunk.Length == 0)
+                if (fsWorld.Length == 0)
                 {
                     WriteWorld();
                 } else
@@ -95,107 +90,50 @@ namespace Quadradria.Enviroment
             generator = new GenOverworld(info);
         }
 
-        
+
+        public Megachunk LoadMegachunk(int x, int y)
+        {
+            Megachunk mc = new Megachunk(x, y, graphicsDevice, generator);
+            megachunks.Add(x, y, mc);
+            return mc;
+        }
+
         public Chunk LoadChunk(int x, int y)
         {
-            Chunk c = new Chunk(x, y, graphicsDevice);
-            if (chunkIndex.Includes(x, y))
+            //Get the megachunk coordinates
+            int mx = (int)Math.Floor(x / (float)Megachunk.SIZE);
+            int my = (int)Math.Floor(y / (float)Megachunk.SIZE);
+
+
+            //Get the megachunk if in memory
+            Megachunk mc = megachunks.Get(mx, my);
+            if (mc == null)
             {
-                ReadChunk(x, y, (bytes) => {
-                    c.Import(bytes);
-                    c.Load();
-                });
-            } else {
-                generator.GenerateChunk(c);
-                c.Load();
+                mc = LoadMegachunk(mx, my);
             }
+
+            //Get the chunk from within the megachunk
+            Chunk c = mc.GetChunk(Tools.Mod(x, Megachunk.SIZE), Tools.Mod(y, Megachunk.SIZE));
+
             return c;
         }
 
-
-        private void ReadChunk(int x, int y, Action<byte[]> callback)
+        public void Unload(Chunk chunk)
         {
-            long? address = chunkIndex.Get(x, y);
-            if (address == null) return;
+            int mx = (int)Math.Floor(chunk.pos.X / (float)Megachunk.SIZE);
+            int my = (int)Math.Floor(chunk.pos.Y / (float)Megachunk.SIZE);
 
-            Task.Run(() => {
-                byte[] bytes;
+            Megachunk mc = megachunks.Get(mx, my);
 
-                lock (fsChunk)
-                {
-                    try
-                    {
-                        ChunkReader.BaseStream.Seek((long)address, SeekOrigin.Begin);
-                        bytes = ChunkReader.ReadBytes(1024);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Error, reading chunk", e);
-                    }
-                }
-                callback(bytes);
-            });
+            UnloadState state = mc.UnloadChunk(Tools.Mod(chunk.pos.X, Megachunk.SIZE), Tools.Mod(chunk.pos.Y, Megachunk.SIZE));
+            if (state == UnloadState.MegachunkEmpty)
+            {
+                megachunks.Remove(mx, my);
+            }
+
         }
 
-        public void WriteChunk(Chunk chunk)
-        {
-            int x = chunk.pos.X;
-            int y = chunk.pos.Y;
-
-            byte[] export = chunk.Export();
-            if (export == null) return;
-            
-            /*
-            bool write = false;
-            if (!chunkIndex.Includes(x, y))
-            {
-                address = fsChunk.Length;
-                chunkIndex.Add(x, y, address);
-                write = true;
-            }
-            else
-            {
-                address = chunkIndex.Get(chunk.pos.X, chunk.pos.Y);
-            }
-            */
-
-
-            Task.Run(() => {
-                lock (fsWorld) lock (fsChunk)
-                {
-                    try
-                    {
-                        long? address;
-
-                        if (!chunkIndex.Includes(x, y))
-                        {
-                            address = fsChunk.Length;
-                            chunkIndex.Add(x, y, address);
-
-                            WorldWriter.BaseStream.Seek(0, SeekOrigin.End);
-                            WorldWriter.Write(x);
-                            WorldWriter.Write(y);
-                            WorldWriter.Write((long)address);
-                        }
-                        else
-                        {
-                            address = chunkIndex.Get(chunk.pos.X, chunk.pos.Y);
-                        }
-
-                        ChunkWriter.BaseStream.Seek((long)address, SeekOrigin.Begin);
-                        ChunkWriter.Write(export);
-                        WorldWriter.Seek(0xAD, SeekOrigin.Begin);
-                        WorldWriter.Write((uint)chunkIndex.Length);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("Error saving chunk", e);
-                    }
-                }
-            });
-        }
-
-        public void WriteWorld()
+        public void WriteWorld(bool lastsave = false)
         {
             uint indexLength = (uint)chunkIndex.Length;
 
@@ -226,7 +164,7 @@ namespace Quadradria.Enviroment
                             WorldWriter.Write((long)chunkW.item);
                         });
 
-                        Directory.CreateDirectory(worldPath + @"\entities");
+                        if (lastsave) Unload();
                     }
                     catch (Exception e)
                     {
@@ -317,17 +255,18 @@ namespace Quadradria.Enviroment
 
         }
 
-        public void Close()
+        public int GetNumberOfLoadedMegachunks()
         {
-            lock (fsWorld)
-            {
-                fsWorld.Close();
-            }
-            lock (fsChunk) {
-                fsChunk.Close(); 
-            }
+            return megachunks.Length;
         }
-        
 
+        public void Unload()
+        {
+            megachunks.ForEach((mc) =>
+            {
+                mc.PutThatDamDataOutToTheDrive();
+            });
+            fsWorld.Close();
+        }
     }
 }
