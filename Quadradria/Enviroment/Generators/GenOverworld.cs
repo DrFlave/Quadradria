@@ -119,7 +119,7 @@ namespace Quadradria.Enviroment.Generators
 
                     if (worldY < -100)
                     {
-                        if (noiseOreCopper.Generate((worldX) * 0.02f, (worldY) * 0.08f) > 0.65) { blockType = BlockType.Cloud; subid = 0; }
+                        if (noise.Generate((worldX) * 0.02f, (worldY) * 0.08f) > 0.65) { blockType = BlockType.Cloud; subid = 0; }
                     }
 
                     chunk.Blocks[x, y] = new Block(blockType, subid);

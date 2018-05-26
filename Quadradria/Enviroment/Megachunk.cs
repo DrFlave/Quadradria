@@ -223,6 +223,8 @@ namespace Quadradria.Enviroment
                                 outWriter.Write(data);
                                 outStream.Seek(y * 8 * SIZE + 8 * x, SeekOrigin.Begin);
                                 outWriter.Write(addressNew);
+
+                                index[x, y] = addressNew;
                             }
                         }
                         
