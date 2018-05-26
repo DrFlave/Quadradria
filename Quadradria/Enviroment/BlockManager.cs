@@ -13,6 +13,7 @@ namespace Quadradria.Enviroment
         Dirt = 2,
         Stone = 3,
         Wool = 4,
+        Cloud = 5,
         Water = 10,
         OreCopper = 20,
         OreTin = 21,
@@ -35,7 +36,8 @@ namespace Quadradria.Enviroment
             BlockTypeList[(int)BlockType.OreCopper] = new BlockTypeDefault(BlockType.OreCopper, "oreCopper", Textures.Blocks.OreCopper);
             BlockTypeList[(int)BlockType.OreTin] = new BlockTypeDefault(BlockType.OreTin, "oreTin", Textures.Blocks.OreTin);
             BlockTypeList[(int)BlockType.Water] = new BlockTypeFluid(BlockType.Water, "water", Textures.Blocks.Water);
-            BlockTypeList[(int)BlockType.GrassBush] = new BlockTypePlant(BlockType.Water, "grassBush", Textures.Blocks.GrassBush);
+            BlockTypeList[(int)BlockType.GrassBush] = new BlockTypeFlower(BlockType.Water, "grassBush", Textures.Blocks.GrassBush);
+            BlockTypeList[(int)BlockType.Cloud] = new BlockTypeDefault(BlockType.Cloud, "cloud", Textures.Blocks.Cloud, false);
         }
     }
 }

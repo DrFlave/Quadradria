@@ -54,8 +54,6 @@ namespace Quadradria.Enviroment
         private string worldPath;
         private GraphicsDevice graphicsDevice;        
 
-        private List2D<long?> chunkIndex = new List2D<long?>();
-
         private List2D<Megachunk> megachunks = new List2D<Megachunk>();
 
         private WorldInfo worldInfo;
@@ -139,8 +137,6 @@ namespace Quadradria.Enviroment
 
         public void WriteWorld(bool lastsave = false)
         {
-            uint indexLength = (uint)chunkIndex.Length;
-
             Task.Run(() => {
                 lock (fsWorld)
                 {
@@ -154,19 +150,12 @@ namespace Quadradria.Enviroment
                         WorldWriter.Write(Encoding.UTF8.GetBytes(worldInfo.Name.PadRight(128, '\0')));
                         WorldWriter.Write((uint)worldInfo.width);
                         WorldWriter.Write((byte)worldInfo.Size);
-                        WorldWriter.Write((ulong)worldInfo.creationTime);
+                        WorldWriter.Write((long)worldInfo.creationTime.ToBinary());
                         WorldWriter.Write((ulong)worldInfo.playTime);
                         WorldWriter.Write((byte)worldInfo.difficulty);
                         WorldWriter.Write((byte)worldInfo.generator);
                         WorldWriter.Write((uint)worldInfo.timeOfDay);
                         WorldWriter.Write((uint)worldInfo.lengthOfDay);
-                        WorldWriter.Write((uint)indexLength);
-
-                        chunkIndex.ForEachWrapper((chunkW) => {
-                            WorldWriter.Write((int)chunkW.x);
-                            WorldWriter.Write((int)chunkW.y);
-                            WorldWriter.Write((long)chunkW.item);
-                        });
 
                         if (lastsave) Unload();
                     }
@@ -206,7 +195,7 @@ namespace Quadradria.Enviroment
 
                         uint width = WorldReader.ReadUInt32();
                         WorldSize worldSize = (WorldSize)WorldReader.ReadByte();
-                        ulong creationTime = WorldReader.ReadUInt64();
+                        DateTime creationTime = DateTime.FromBinary(WorldReader.ReadInt64());
                         ulong playTime = WorldReader.ReadUInt64();
                         Difficulty difficulty = (Difficulty)WorldReader.ReadByte();
                         Generator generator = (Generator)WorldReader.ReadByte();
@@ -219,7 +208,7 @@ namespace Quadradria.Enviroment
                         Console.WriteLine("worldName: {0}", worldName);
                         Console.WriteLine("width: {0}", width.ToString("X"));
                         Console.WriteLine("worldSize: {0}", worldSize.ToString("X"));
-                        Console.WriteLine("creationTime: {0}", creationTime.ToString("X"));
+                        Console.WriteLine("creationTime: {0}", creationTime.ToString());
                         Console.WriteLine("playTime: {0}", playTime.ToString("X"));
                         Console.WriteLine("difficulty: {0}", difficulty.ToString("X"));
                         Console.WriteLine("generator: {0}", generator.ToString("X"));
@@ -236,19 +225,6 @@ namespace Quadradria.Enviroment
                         Info.Size = worldSize;
                         Info.creationTime = creationTime;
                         Info.playTime = playTime;
-
-                        uint chunkIndexSize = WorldReader.ReadUInt32();
-                        Console.WriteLine("chunkIndexSize: {0}", chunkIndexSize);
-                        
-                        
-                        for (int i = 0; i < chunkIndexSize; i++)
-                        {
-                            int x = WorldReader.ReadInt32();
-                            int y = WorldReader.ReadInt32();
-                            long pointer = WorldReader.ReadInt64();
-                            chunkIndex.Add(x, y, pointer);
-                        }
-                        
                     }
                     catch (Exception e)
                     {

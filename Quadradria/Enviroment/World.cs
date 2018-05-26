@@ -14,8 +14,9 @@ namespace Quadradria.Enviroment
     {
         public uint width, timeOfDay, lengthOfDay;
         private string name;
-        public ulong creationTime, playTime;
+        public ulong playTime;
         public long seed;
+        public DateTime creationTime;
         public Generator generator;
         public WorldSize Size;
         public Difficulty difficulty;
@@ -41,7 +42,7 @@ namespace Quadradria.Enviroment
             difficulty = Difficulty.Ultra;
             generator = Generator.Skyblock;
             Size = WorldSize.Small;
-            creationTime = 0x1212121212121212;
+            creationTime = DateTime.Now;//(ulong)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
             playTime = 0x5454545454545454;
         }
     }
@@ -146,6 +147,15 @@ namespace Quadradria.Enviroment
             if (c == null) return;
 
             c.SetBlockAtLocalPosition(Tools.Mod(x, Chunk.SIZE), Tools.Mod(y, Chunk.SIZE), type, subid);
+
+
+            for (int i = x-1; i <= x+1; i++)
+            {
+                for (int j = y-1; j <= y+1; j++)
+                {
+                    GetBlockAtPosition(i, j)?.Update(i, j, this);
+                }
+            }
         }
 
         public void Save()

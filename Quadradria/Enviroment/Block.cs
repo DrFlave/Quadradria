@@ -31,17 +31,18 @@ namespace Quadradria.Enviroment
 
         }
 
-        public void RandomTick(int x, int y, World world)
+        public void RandomTick(int x, int y, World world) //will be triggered randomly. Used for plant grow and stuff.
         {
-            try
-            {
-                BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
+            BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
 
-                typeInst?.RandomTick(x, y, this, world);
-            } catch (Exception e)
-            {
+            typeInst?.RandomTick(x, y, this, world);
+        }
 
-            }
+        public void Update(int x, int y, World world) //triggered when a surrounding block changes
+        {
+            BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
+
+            typeInst?.Update(x, y, this, world);
         }
 
         public override string ToString()
@@ -53,27 +54,44 @@ namespace Quadradria.Enviroment
         {
             BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
 
-            return (bool)typeInst?.IsSolid;
+            return (bool)typeInst?.IsSolid(this);
         }
     }
     
+    //Default Block
     class BlockTypeDefault
     {
         protected string name;
         protected Texture2D texture;
         protected BlockType type;
-        public bool IsSolid = true;
+        protected bool isSolid = true;
 
-        public BlockTypeDefault(BlockType type, string name, Texture2D texture)
+        public byte LightStrength = 0;
+        public byte LightRed = 0;
+        public byte LightGreen = 0;
+        public byte LightBlue = 0;
+
+        public virtual bool IsSolid(Block block)
+        {
+            return isSolid;
+        }
+
+        public BlockTypeDefault(BlockType type, string name, Texture2D texture, bool solid = true)
         {
             this.type = type;
             this.name = name;
             this.texture = texture;
+            this.isSolid = solid;
         }
 
-        public virtual void RandomTick(int x, int y, Block block, World world) //will be triggered randomly. Used for plant grow and stuff.
+        public virtual void RandomTick(int x, int y, Block block, World world)
         {
             
+        }
+
+        public virtual void Update(int x, int y, Block block, World world)
+        {
+
         }
 
         public virtual void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
@@ -83,12 +101,19 @@ namespace Quadradria.Enviroment
 
     }
 
+    //Can be open or closed
     class BlockTypeDoor : BlockTypeDefault
     {
         private Rectangle rectClosed = new Rectangle(0, 0, 32, 32);
         private Rectangle rectOpen = new Rectangle(32, 0, 32, 32);
 
         public BlockTypeDoor(BlockType type, string name, Texture2D texture) : base(type, name, texture) { }
+
+        public override bool IsSolid(Block block)
+        {
+            return block.SubID > 0;
+        }
+
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
             bool open = block.SubID > 0;
@@ -96,6 +121,7 @@ namespace Quadradria.Enviroment
         }
     }
 
+    //Grows to other blocks
     class BlockTypeGrass : BlockTypeDefault
     {
         private Rectangle sourceRight = new Rectangle(0, 0, 16, 16);
@@ -139,7 +165,9 @@ namespace Quadradria.Enviroment
             foreach(Block? b in nexts)
             {
                 if (b != null)
-                subid |= (ushort)(b?.SubID);
+                    subid |= (ushort)(b?.SubID);
+                else
+                    return;
             }
 
             if (subid > 0) subid = 0b1111;
@@ -165,10 +193,11 @@ namespace Quadradria.Enviroment
         }
     }
 
+    //Does nothing
     class BlockTypeAir : BlockTypeDefault
     {
         public BlockTypeAir(BlockType type, string name) : base(type, name, null) {
-            IsSolid = false;
+            isSolid = false;
         }
 
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
@@ -176,6 +205,7 @@ namespace Quadradria.Enviroment
         }
     }
 
+    //Flows
     class BlockTypeFluid : BlockTypeDefault
     {
         public BlockTypeFluid(BlockType type, string name, Texture2D texture) : base(type, name, texture) { }
@@ -185,13 +215,43 @@ namespace Quadradria.Enviroment
         }
     }
 
+    //Looks Nice
+    class BlockTypeFlower : BlockTypeDefault
+    {
+        public BlockTypeFlower(BlockType type, string name, Texture2D texture) : base(type, name, texture) { }
+        public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
+        {
+            isSolid = false;
+            base.Draw(spriteBatch, x, y, block);
+        }
+
+        public override void Update(int x, int y, Block block, World world)
+        {
+            Block? under = world.GetBlockAtPosition(x, y + 1);
+
+            if (under == null || under?.BlockID != BlockType.Dirt)
+            {
+                world.SetBlockAtPosition(x, y, BlockType.Air, 0);
+            }
+
+            base.Update(x, y, block, world);
+        }
+    }
+
+    //Grows
     class BlockTypePlant : BlockTypeDefault
     {
         public BlockTypePlant(BlockType type, string name, Texture2D texture) : base(type, name, texture) { }
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
-            IsSolid = false;
+            isSolid = false;
             base.Draw(spriteBatch, x, y, block);
+        }
+
+        public override void RandomTick(int x, int y, Block block, World world)
+        {
+            block.SubID++;
+            base.RandomTick(x, y, block, world);
         }
     }
 }

@@ -97,15 +97,32 @@ namespace Quadradria.Enviroment.Generators
 
                     if (worldY > height + dirth)
                     {
-                        if (noiseOreCopper.Generate((worldX) * 0.15f, (worldY) * 0.15f) > 0.65) { blockType = BlockType.OreCopper; subid = 0; }
-                        if (noiseOreTin.Generate((worldX) * 0.15f, (worldY) * 0.15f) > 0.65) { blockType = BlockType.OreTin; subid = 0; }
+                        bool cop, tin;
+                        cop = (noiseOreCopper.Generate((worldX) * 0.15f, (worldY) * 0.15f) > 0.65);
+                        tin = (noiseOreTin.Generate((worldX) * 0.15f, (worldY) * 0.15f) > 0.65);
+
+                        if (cop && tin)
+                        {
+                            if ((x + y) % 2 == 0)
+                                cop = false;
+                            else
+                                tin = false;
+                        } 
+
+                        if (cop) { blockType = BlockType.OreCopper; subid = 0; }
+                        if (tin) { blockType = BlockType.OreTin; subid = 0; }
 
                         if (noiseWater.Generate((worldX) * 0.15f, (worldY) * 0.15f) > 0.75) { blockType = BlockType.Water; subid = 0; }
                         if (worldY > height + dirth + 50)
-                        if (noiseWater.Generate((worldX) * 0.03f, (worldY) * 0.03f) > 0.6/*0.62*/) { blockType = BlockType.Water; subid = 0; }
+                        if (noiseWater.Generate((worldX) * 0.03f, (worldY) * 0.03f) > 0.6) { blockType = BlockType.Water; subid = 0; }
                     }
 
-            chunk.Blocks[x, y] = new Block(blockType, subid);
+                    if (worldY < -100)
+                    {
+                        if (noiseOreCopper.Generate((worldX) * 0.02f, (worldY) * 0.08f) > 0.65) { blockType = BlockType.Cloud; subid = 0; }
+                    }
+
+                    chunk.Blocks[x, y] = new Block(blockType, subid);
                 }
             }
 

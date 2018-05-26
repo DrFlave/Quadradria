@@ -26,6 +26,7 @@ namespace Quadradria
             public static Texture2D OreTin;
             public static Texture2D Water;
             public static Texture2D GrassBush;
+            public static Texture2D Cloud;
 
             public static void Load(ContentManager content)
             {
@@ -38,6 +39,7 @@ namespace Quadradria
                 OreTin = content.Load<Texture2D>("Blocks/OreTin");
                 Water = content.Load<Texture2D>("Blocks/Water");
                 GrassBush = content.Load<Texture2D>("Blocks/GrassBush");
+                Cloud = content.Load<Texture2D>("Blocks/Cloud");
             }
         }
 
