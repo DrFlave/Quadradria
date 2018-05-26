@@ -189,7 +189,8 @@ namespace Quadradria.Enviroment
             if (bLeft) subid &= 0b1011;
             if (bBottom) subid &= 0b0111;
 
-            world.SetBlockAtPosition(x, y, type, subid);
+            if (block.SubID != subid)
+                world.SetBlockAtPosition(x, y, type, subid);
         }
     }
 
