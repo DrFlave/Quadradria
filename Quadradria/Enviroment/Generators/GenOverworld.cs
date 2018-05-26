@@ -15,7 +15,11 @@ namespace Quadradria.Enviroment.Generators
         private OpenSimplexNoise noise;
         private OpenSimplexNoise noiseCave1;
         private OpenSimplexNoise noiseCave2;
+        private OpenSimplexNoise noiseOreCopper;
+        private OpenSimplexNoise noiseOreTin;
         private OpenSimplexNoise dirtDepth;
+        private OpenSimplexNoise noiseWater;
+        private OpenSimplexNoise noiseWater2;
         private WorldInfo info;
 
         public GenOverworld(WorldInfo info)
@@ -25,7 +29,11 @@ namespace Quadradria.Enviroment.Generators
             noise = new OpenSimplexNoise(info.seed);
             noiseCave1 = new OpenSimplexNoise(info.seed);
             noiseCave2 = new OpenSimplexNoise((info.seed == 0) ? 1 : info.seed - Math.Sign(info.seed));
+            noiseOreCopper = new OpenSimplexNoise((info.seed == 0) ? 3 : info.seed - Math.Sign(info.seed) * 3);
+            noiseOreTin = new OpenSimplexNoise((info.seed == 0) ? 4 : info.seed - Math.Sign(info.seed) * 4);
             dirtDepth = new OpenSimplexNoise((info.seed == 0) ? 2 : info.seed - Math.Sign(info.seed) * 2);
+            noiseWater = new OpenSimplexNoise((info.seed == 0) ? 5 : info.seed - Math.Sign(info.seed) * 5);
+            noiseWater2 = new OpenSimplexNoise((info.seed == 0) ? 6 : info.seed - Math.Sign(info.seed) * 6);
         }
 
         public Task GenerateMegachunk(Megachunk mc, GraphicsDevice graphicsDevice, Action callback)
@@ -67,13 +75,37 @@ namespace Quadradria.Enviroment.Generators
 
                 for (int y = 0; y < Chunk.SIZE; y++)
                 {
+                    BlockType blockType = BlockType.Air;
+                    ushort subid = 0;
+
                     int worldX = cx + x;
                     int worldY = cy + y;
 
-                    if (worldY < height) chunk.Blocks[x, y] = new Block(BlockType.Air, 0);
-                    else if (worldY == height) chunk.Blocks[x, y] = new Block(BlockType.Dirt, 0b10);
-                    else if (worldY > height && worldY < height + dirth) chunk.Blocks[x, y] = new Block(BlockType.Dirt, 0);
-                    else chunk.Blocks[x, y] = new Block(BlockType.Stone, 0);
+                    if (worldY < height) chunk.Backgrounds[x, y] = new Background(BackgroundType.None);
+                    else if (worldY >= height && worldY <= height + dirth) chunk.Backgrounds[x, y] = new Background(BackgroundType.Dirt);
+                    else chunk.Backgrounds[x, y] = new Background(BackgroundType.Stone);
+
+                    if (worldY < height) { blockType = BlockType.Air; subid = 0; }
+                    else if (worldY == height) { blockType = BlockType.Dirt; subid = 0b10; }
+                    else if (worldY > height && worldY < height + dirth) { blockType = BlockType.Dirt; subid = 0; }
+                    else { blockType = BlockType.Stone; subid = 0; };
+
+                    if (worldY == height - 1)
+                    {
+                        if (Math.Abs(noise.Generate((float)worldX)) > 0.2) { blockType = BlockType.GrassBush; subid = 0; } 
+                    }
+
+                    if (worldY > height + dirth)
+                    {
+                        if (noiseOreCopper.Generate((worldX) * 0.15f, (worldY) * 0.15f) > 0.65) { blockType = BlockType.OreCopper; subid = 0; }
+                        if (noiseOreTin.Generate((worldX) * 0.15f, (worldY) * 0.15f) > 0.65) { blockType = BlockType.OreTin; subid = 0; }
+
+                        if (noiseWater.Generate((worldX) * 0.15f, (worldY) * 0.15f) > 0.75) { blockType = BlockType.Water; subid = 0; }
+                        if (worldY > height + dirth + 50)
+                        if (noiseWater.Generate((worldX) * 0.03f, (worldY) * 0.03f) > 0.6/*0.62*/) { blockType = BlockType.Water; subid = 0; }
+                    }
+
+            chunk.Blocks[x, y] = new Block(blockType, subid);
                 }
             }
 

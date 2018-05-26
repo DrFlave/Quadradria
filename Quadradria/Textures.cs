@@ -22,6 +22,10 @@ namespace Quadradria
             public static Texture2D Wool;
             public static Texture2D DoorWood;
             public static Texture2D Grass;
+            public static Texture2D OreCopper;
+            public static Texture2D OreTin;
+            public static Texture2D Water;
+            public static Texture2D GrassBush;
 
             public static void Load(ContentManager content)
             {
@@ -30,6 +34,22 @@ namespace Quadradria
                 Wool = content.Load<Texture2D>("Blocks/Wool");
                 DoorWood = content.Load<Texture2D>("Blocks/Doors/Wood");
                 Grass = content.Load<Texture2D>("Blocks/Grass");
+                OreCopper = content.Load<Texture2D>("Blocks/OreCopper");
+                OreTin = content.Load<Texture2D>("Blocks/OreTin");
+                Water = content.Load<Texture2D>("Blocks/Water");
+                GrassBush = content.Load<Texture2D>("Blocks/GrassBush");
+            }
+        }
+
+        public static class Backgrounds
+        {
+            public static Texture2D Stone;
+            public static Texture2D Dirt;
+
+            public static void Load(ContentManager content)
+            {
+                Dirt = content.Load<Texture2D>("Backgrounds/Dirt");
+                Stone = content.Load<Texture2D>("Backgrounds/Stone");
             }
         }
 
@@ -73,6 +93,7 @@ namespace Quadradria
             Textures.Solid.SetData<Color>(new Color[1] { Color.White });
 
             Blocks.Load(content);
+            Backgrounds.Load(content);
             Fonts.Load(content);
             Items.Load(content);
             UI.Load(content);

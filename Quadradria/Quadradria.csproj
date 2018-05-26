@@ -62,6 +62,7 @@
     <Compile Include="Entity\BaseEntity.cs" />
     <Compile Include="Entity\EntityManager.cs" />
     <Compile Include="Entity\Human.cs" />
+    <Compile Include="Enviroment\Background.cs" />
     <Compile Include="Enviroment\BlockManager.cs" />
     <Compile Include="Enviroment\Generators\GenOverworld.cs" />
     <Compile Include="Enviroment\Generators\IGenerator.cs" />

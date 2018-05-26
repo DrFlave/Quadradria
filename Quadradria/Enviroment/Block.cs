@@ -27,8 +27,7 @@ namespace Quadradria.Enviroment
         {
             BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
 
-            if (typeInst != null)
-                typeInst.Draw(spriteBatch, x, y, this);
+            typeInst?.Draw(spriteBatch, x, y, this);
 
         }
 
@@ -38,8 +37,7 @@ namespace Quadradria.Enviroment
             {
                 BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
 
-                if (typeInst != null)
-                    typeInst.RandomTick(x, y, this, world);
+                typeInst?.RandomTick(x, y, this, world);
             } catch (Exception e)
             {
 
@@ -50,6 +48,13 @@ namespace Quadradria.Enviroment
         {
             return "" + BlockID + ":" + SubID;
         }
+
+        public bool IsSolid()
+        {
+            BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
+
+            return (bool)typeInst?.IsSolid;
+        }
     }
     
     class BlockTypeDefault
@@ -57,6 +62,7 @@ namespace Quadradria.Enviroment
         protected string name;
         protected Texture2D texture;
         protected BlockType type;
+        public bool IsSolid = true;
 
         public BlockTypeDefault(BlockType type, string name, Texture2D texture)
         {
@@ -72,7 +78,7 @@ namespace Quadradria.Enviroment
 
         public virtual void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
-            spriteBatch.Draw(texture, new Vector2(x, y), Color.White);
+            spriteBatch.Draw(texture, new Vector2(x, y), new Rectangle(x % texture.Width, y % texture.Height, 16, 16), Color.White);
         }
 
     }
@@ -102,6 +108,7 @@ namespace Quadradria.Enviroment
         public BlockTypeGrass(BlockType type, string name, Texture2D textureBase, Texture2D textureFoliage) : base(type, name, textureBase) {
             this.textureFoliage = textureFoliage;
         }
+
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
             base.Draw(spriteBatch, x, y, block);
@@ -144,10 +151,10 @@ namespace Quadradria.Enviroment
             bool gBottom = ((subid & 0b1000) > 0);
             */
 
-            bool bRight = nexts[4]?.BlockID != BlockType.Air;
-            bool bTop = nexts[1]?.BlockID != BlockType.Air;
-            bool bLeft = nexts[3]?.BlockID != BlockType.Air;
-            bool bBottom = nexts[6]?.BlockID != BlockType.Air;
+            bool bRight = (bool)nexts[4]?.IsSolid();
+            bool bTop = (bool)nexts[1]?.IsSolid();
+            bool bLeft = (bool)nexts[3]?.IsSolid();
+            bool bBottom = (bool)nexts[6]?.IsSolid();
 
             if (bRight) subid &= 0b1110;
             if (bTop) subid &= 0b1101;
@@ -160,10 +167,31 @@ namespace Quadradria.Enviroment
 
     class BlockTypeAir : BlockTypeDefault
     {
-        public BlockTypeAir(BlockType type, string name) : base(type, name, null) { }
+        public BlockTypeAir(BlockType type, string name) : base(type, name, null) {
+            IsSolid = false;
+        }
+
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
         {
+        }
+    }
 
+    class BlockTypeFluid : BlockTypeDefault
+    {
+        public BlockTypeFluid(BlockType type, string name, Texture2D texture) : base(type, name, texture) { }
+        public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
+        {
+            base.Draw(spriteBatch, x, y, block);
+        }
+    }
+
+    class BlockTypePlant : BlockTypeDefault
+    {
+        public BlockTypePlant(BlockType type, string name, Texture2D texture) : base(type, name, texture) { }
+        public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)
+        {
+            IsSolid = false;
+            base.Draw(spriteBatch, x, y, block);
         }
     }
 }

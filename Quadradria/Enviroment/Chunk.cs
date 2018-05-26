@@ -21,6 +21,8 @@ namespace Quadradria.Enviroment
         public Vector2 drawPos;
 
         public Block[,] Blocks = new Block[SIZE, SIZE];
+        public Background[,] Backgrounds = new Background[SIZE, SIZE];
+        
         public List<BaseEntity> entities = new List<BaseEntity>();
 
         RenderTarget2D renderTarget;
@@ -57,24 +59,26 @@ namespace Quadradria.Enviroment
             if (!shouldRender || renderTarget == null || !isLoaded) return;
 
             graphicsDevice.SetRenderTarget(renderTarget);
+
+            graphicsDevice.Clear(Color.Transparent);
+
+            
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
 
             for (int i = 0; i < SIZE; i++)
             {
                 for (int j = 0; j < SIZE; j++)
                 {
+                    Backgrounds[i, j].Draw(spriteBatch, i * BLOCK_SIZE, j * BLOCK_SIZE);
                     Blocks[i, j].Draw(spriteBatch, i * BLOCK_SIZE, j * BLOCK_SIZE);
-                    if (Blocks[i, j].BlockID == BlockType.Wool)
-                    {
-                        int a = 0;
-                    }
                 }
             }
 
             spriteBatch.End();
+            
             graphicsDevice.SetRenderTarget(null);
 
-            //shouldRender = false;
+            shouldRender = false;
         }
 
         public void Update(World world)
@@ -148,6 +152,7 @@ namespace Quadradria.Enviroment
                                 Blocks[j, i].Damage = 0;
                                 Blocks[j, i].BlockID = (BlockType)reader.ReadUInt16();
                                 Blocks[j, i].SubID = reader.ReadUInt16();
+                                Backgrounds[j, i].BType = (BackgroundType)reader.ReadUInt16();
                             }
                         }
 
@@ -179,6 +184,7 @@ namespace Quadradria.Enviroment
                 }
             }
 
+            shouldRender = true;
             IsGenerated = true;
         }
 
@@ -198,6 +204,7 @@ namespace Quadradria.Enviroment
                             Block block = Blocks[j, i];
                             writer.Write((ushort)block.BlockID);
                             writer.Write((ushort)block.SubID);
+                            writer.Write((ushort)Backgrounds[j, i].BType);
                         }
                     }
 

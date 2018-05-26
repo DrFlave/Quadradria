@@ -144,13 +144,16 @@ namespace Quadradria
             if (gameTime.ElapsedGameTime.Milliseconds != 0)
                 frameCounter.Text = "FPS: " + Math.Round(1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
 
+
+
             world.Render(spriteBatch);
 
-            graphics.GraphicsDevice.Clear(Color.Black);
+            graphics.GraphicsDevice.Clear(Color.DeepSkyBlue);
 
+            
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
-
             world.Draw(spriteBatch);
+
             spriteBatch.Draw(Textures.Error, camera.GetMousePositionInWorld(), null, Color.White, 0, Vector2.Zero, 1/16, SpriteEffects.None, 0);
 
             spriteBatch.End();
@@ -160,6 +163,7 @@ namespace Quadradria
             UIMaster.Draw(spriteBatch);
 
             spriteBatch.End();
+            
 
 
             base.Draw(gameTime);

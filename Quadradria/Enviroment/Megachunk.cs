@@ -80,13 +80,13 @@ namespace Quadradria.Enviroment
             if (c == null)
             {
                 c = new Chunk(WorldX * SIZE + x, WorldY * SIZE + y, graphicsDevice);
-                for (int i = 0; i < Chunk.SIZE; i++)
+                /*for (int i = 0; i < Chunk.SIZE; i++)
                 {
                     for (int j = 0; j < Chunk.SIZE; j++)
                     {
                         c.SetBlockAtLocalPosition(i, j, BlockType.Wool, 0);
                     }
-                }
+                }*/
             }
 
             if (chunks[x, y] == null) numberOfLoadedChunks++;
