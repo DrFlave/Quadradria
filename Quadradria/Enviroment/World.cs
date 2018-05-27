@@ -107,6 +107,11 @@ namespace Quadradria.Enviroment
             });
         }
 
+        public Texture2D GetLightTexture(int x, int y) //Returns the light texture of a specific chunk
+        {
+            return LoadedChunks.GetLightTexture(x, y);
+        }
+
         public void AddEntity(BaseEntity entity)
         {
             Chunk chunk = GetChunkAtTilePosition((int)Math.Floor(entity.Position.X), (int)Math.Floor(entity.Position.Y));

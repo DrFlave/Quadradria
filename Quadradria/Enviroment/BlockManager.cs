@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,8 +34,8 @@ namespace Quadradria.Enviroment
             BlockTypeList[(int)BlockType.Stone] = new BlockTypeDefault(BlockType.Stone, "stone", Textures.Blocks.Stone);
             BlockTypeList[(int)BlockType.DoorWood] = new BlockTypeDoor(BlockType.DoorWood, "doorWood", Textures.Blocks.DoorWood);
             BlockTypeList[(int)BlockType.Wool] = new BlockTypeDefault(BlockType.Wool, "wool", Textures.Blocks.Wool);
-            BlockTypeList[(int)BlockType.OreCopper] = new BlockTypeDefault(BlockType.OreCopper, "oreCopper", Textures.Blocks.OreCopper);
-            BlockTypeList[(int)BlockType.OreTin] = new BlockTypeDefault(BlockType.OreTin, "oreTin", Textures.Blocks.OreTin);
+            BlockTypeList[(int)BlockType.OreCopper] = new BlockTypeDefault(BlockType.OreCopper, "oreCopper", Textures.Blocks.OreCopper, true, Color.Orange);
+            BlockTypeList[(int)BlockType.OreTin] = new BlockTypeDefault(BlockType.OreTin, "oreTin", Textures.Blocks.OreTin, true, Color.Silver);
             BlockTypeList[(int)BlockType.Water] = new BlockTypeFluid(BlockType.Water, "water", Textures.Blocks.Water);
             BlockTypeList[(int)BlockType.GrassBush] = new BlockTypeFlower(BlockType.Water, "grassBush", Textures.Blocks.GrassBush);
             BlockTypeList[(int)BlockType.Cloud] = new BlockTypeDefault(BlockType.Cloud, "cloud", Textures.Blocks.Cloud, false);

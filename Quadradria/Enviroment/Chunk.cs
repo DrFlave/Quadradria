@@ -22,6 +22,9 @@ namespace Quadradria.Enviroment
 
         public Block[,] Blocks = new Block[SIZE, SIZE];
         public Background[,] Backgrounds = new Background[SIZE, SIZE];
+
+        private Color[] lightMap = new Color[SIZE * SIZE];
+        public Texture2D LightTexture;
         
         public List<BaseEntity> entities = new List<BaseEntity>();
 
@@ -43,6 +46,9 @@ namespace Quadradria.Enviroment
             if (isLoaded) return;
 
             renderTarget = new RenderTarget2D(graphicsDevice, SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE);
+            LightTexture = new Texture2D(graphicsDevice, SIZE, SIZE);
+            LightTexture.SetData<Color>(lightMap);
+
             isLoaded = true;
         }
 
@@ -51,6 +57,7 @@ namespace Quadradria.Enviroment
             if (!isLoaded) return;
 
             renderTarget.Dispose();
+            LightTexture.Dispose();
             isLoaded = false;
         }
 
@@ -61,6 +68,8 @@ namespace Quadradria.Enviroment
             graphicsDevice.SetRenderTarget(renderTarget);
 
             graphicsDevice.Clear(Color.Transparent);
+
+            LightTexture.SetData<Color>(lightMap);
 
             
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
@@ -103,6 +112,11 @@ namespace Quadradria.Enviroment
             });
         }
 
+        public void DrawLight(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(LightTexture, drawPos, Color.White);
+        }
+
         public Block? GetBlockAtLocalPosition(int x, int y)
         {
             if (!isLoaded) return null;
@@ -117,6 +131,22 @@ namespace Quadradria.Enviroment
             Blocks[x, y].SubID = subid;
             Blocks[x, y].Damage = damage;
             shouldRender = true;
+
+            CalculateLight(x, y);
+
+            LightTexture.SetData<Color>(lightMap);
+        }
+
+        public void CalculateLight(int x, int y)
+        {
+            Block block = Blocks[x, y];
+            if (block.IsSolid())
+            {
+                lightMap[y * SIZE + x] = block.GetLight();
+            } else
+            {
+                lightMap[y * SIZE + x] = (Backgrounds[x, y].BType == BackgroundType.None) ? Color.White : Color.Black;
+            }
         }
 
         public void AddEntity(BaseEntity entity)
@@ -156,6 +186,15 @@ namespace Quadradria.Enviroment
                             }
                         }
 
+                        for (i = 0; i < SIZE; i++)
+                        {
+                            for (j = 0; j < SIZE; j++)
+                            {
+                                index = (i * SIZE + j);
+                                CalculateLight(i, j);
+                            }
+                        }
+
                         entBlockSize = reader.ReadInt64();
                         entityNumber = reader.ReadInt32();
 
@@ -177,6 +216,7 @@ namespace Quadradria.Enviroment
 
                             AddEntity(entity);
                         }
+
                     }
                 } catch (Exception e)
                 {

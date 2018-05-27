@@ -56,6 +56,13 @@ namespace Quadradria.Enviroment
 
             return (bool)typeInst?.IsSolid(this);
         }
+
+        public Color GetLight()
+        {
+            BlockTypeDefault typeInst = BlockManager.BlockTypeList[(uint)BlockID];
+            Color? l = typeInst?.GetLight(this);
+            return l == null ? Color.Black : (Color)l;
+        }
     }
     
     //Default Block
@@ -65,23 +72,20 @@ namespace Quadradria.Enviroment
         protected Texture2D texture;
         protected BlockType type;
         protected bool isSolid = true;
-
-        public byte LightStrength = 0;
-        public byte LightRed = 0;
-        public byte LightGreen = 0;
-        public byte LightBlue = 0;
+        protected Color light = Color.Black;
 
         public virtual bool IsSolid(Block block)
         {
             return isSolid;
         }
 
-        public BlockTypeDefault(BlockType type, string name, Texture2D texture, bool solid = true)
+        public BlockTypeDefault(BlockType type, string name, Texture2D texture, bool solid = true, Color? light = null)
         {
             this.type = type;
             this.name = name;
             this.texture = texture;
             this.isSolid = solid;
+            if (light != null) this.light = (Color)light;
         }
 
         public virtual void RandomTick(int x, int y, Block block, World world)
@@ -99,6 +103,10 @@ namespace Quadradria.Enviroment
             spriteBatch.Draw(texture, new Vector2(x, y), new Rectangle(x % texture.Width, y % texture.Height, 16, 16), Color.White);
         }
 
+        public virtual Color GetLight(Block block)
+        {
+            return light;
+        }
     }
 
     //Can be open or closed
@@ -199,6 +207,7 @@ namespace Quadradria.Enviroment
     {
         public BlockTypeAir(BlockType type, string name) : base(type, name, null) {
             isSolid = false;
+            light = Color.White;
         }
 
         public override void Draw(SpriteBatch spriteBatch, int x, int y, Block block)

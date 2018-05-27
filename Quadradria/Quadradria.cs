@@ -28,6 +28,16 @@ namespace Quadradria
         UILabel frameCounter;
         UILabel debugInformation;
 
+        BlendState blendStateMultiply;
+        BlendState blendStateLighten;
+
+        RenderTarget2D rtLight;
+        RenderTarget2D rtLightBlur;
+        RenderTarget2D rtLightSource;
+        Color[] lightSourceColor;
+
+        Effect efGauss;
+
         bool showDebugInformation = true;
 
         public Quadradria()
@@ -77,6 +87,17 @@ namespace Quadradria
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += OnResize;
 
+            blendStateMultiply = new BlendState();
+            blendStateMultiply.ColorBlendFunction = BlendFunction.Add;
+            blendStateMultiply.ColorSourceBlend = Blend.DestinationColor;
+            blendStateMultiply.ColorDestinationBlend = Blend.Zero;
+
+            blendStateLighten = new BlendState();
+            blendStateLighten.ColorBlendFunction = BlendFunction.Max;
+            blendStateLighten.ColorSourceBlend = Blend.SourceColor;
+            blendStateLighten.ColorDestinationBlend = Blend.DestinationColor;
+            
+            RecalcLightRT();
 
             base.Initialize();
 
@@ -86,7 +107,7 @@ namespace Quadradria
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player.Load(Content);
-
+            efGauss = Content.Load<Effect>("Shader/Blur");
         }
 
         protected override void UnloadContent()
@@ -144,28 +165,76 @@ namespace Quadradria
             if (gameTime.ElapsedGameTime.Milliseconds != 0)
                 frameCounter.Text = "FPS: " + Math.Round(1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
 
+            //Lighting
+            GraphicsDevice.SetRenderTarget(rtLight);
+            RectF rect = camera.GetRect();
+            int chunksX = (int)Math.Floor(rect.Width / Chunk.SIZE) + 2;
+            int chunksY = (int)Math.Floor(rect.Height / Chunk.SIZE) + 2;
+            int chunkX = (int)Math.Floor(rect.X / Chunk.SIZE);
+            int chunkY = (int)Math.Floor(rect.Y / Chunk.SIZE);
 
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
+            for (int i = 0; i < chunksX; i++)
+            {
+                for (int j = 0; j < chunksY; j++)
+                {
+                    Texture2D tex = world.GetLightTexture(chunkX + i, chunkY + j);
+                    if (tex != null)
+                        spriteBatch.Draw(tex, new Vector2(i * Chunk.SIZE, j * Chunk.SIZE), Color.White);
+                    else
+                        spriteBatch.Draw(Textures.Error, new Vector2(i * Chunk.SIZE, j * Chunk.SIZE), Color.White);
+                }
+            }
+            spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+
+            rtLight.GetData<Color>(lightSourceColor);
+            rtLightSource.SetData<Color>(lightSourceColor);
+
+            GraphicsDevice.SetRenderTarget(rtLightBlur);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp);
+            spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
+            spriteBatch.End();
+
+            efGauss.Parameters["Size"]?.SetValue(chunksX * Chunk.SIZE);
+            efGauss.Parameters["Direction"]?.SetValue(new Vector2(1, 0));
+            spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp, null, null, efGauss, null);
+            spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
+            spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+
+            GraphicsDevice.SetRenderTarget(rtLight);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp);
+            spriteBatch.Draw(rtLightBlur, Vector2.Zero, Color.White);
+            spriteBatch.End();
+            efGauss.Parameters["Size"]?.SetValue(chunksY * Chunk.SIZE);
+            efGauss.Parameters["Direction"]?.SetValue(new Vector2(0, 1));
+            spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp, null, null, efGauss, null);
+            spriteBatch.Draw(rtLightBlur, Vector2.Zero, Color.White);
+            spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+
+            //World
 
             world.Render(spriteBatch);
-
             graphics.GraphicsDevice.Clear(Color.DeepSkyBlue);
 
-            
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, camera.transform);
             world.Draw(spriteBatch);
-
-            spriteBatch.Draw(Textures.Error, camera.GetMousePositionInWorld(), null, Color.White, 0, Vector2.Zero, 1/16, SpriteEffects.None, 0);
-
             spriteBatch.End();
 
+            spriteBatch.Begin(SpriteSortMode.Immediate, blendStateMultiply, SamplerState.PointClamp, null, null, null, camera.transform);
+            spriteBatch.Draw(rtLight, new Vector2(chunkX * Chunk.SIZE, chunkY * Chunk.SIZE), null, Color.White, 0, Vector2.Zero, 1 ,SpriteEffects.None, 0);
+            spriteBatch.End();
+
+            //UI
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
-
             UIMaster.Draw(spriteBatch);
-
+            spriteBatch.Draw(rtLightSource, new Vector2(4, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
+            spriteBatch.Draw(rtLightBlur, new Vector2(8 + rtLight.Width, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
+            spriteBatch.Draw(rtLight, new Vector2(12 + rtLight.Width * 2, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
             spriteBatch.End();
             
-
-
             base.Draw(gameTime);
         }
 
@@ -173,6 +242,19 @@ namespace Quadradria
         {
             camera.Resize(GraphicsDevice.Viewport);
             UIMaster.Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+            RecalcLightRT();
+        }
+
+        private void RecalcLightRT()
+        {
+            RectF rect = camera.GetRect();
+            int w = (int)(Math.Floor(rect.Width / Chunk.SIZE) + 2) * Chunk.SIZE;
+            int h = (int)(Math.Floor(rect.Height / Chunk.SIZE) + 2) * Chunk.SIZE;
+            rtLight = new RenderTarget2D(GraphicsDevice, w, h);
+            rtLightBlur = new RenderTarget2D(GraphicsDevice, w, h);
+            rtLightSource = new RenderTarget2D(GraphicsDevice, w, h);
+            lightSourceColor = new Color[w * h];
+            Console.WriteLine("New Light RT Dimensions: {0}, {1}", w, h);
         }
     }
 }

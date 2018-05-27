@@ -200,3 +200,9 @@
 /processorParam:TextureFormat=Color
 /build:Blocks/Cloud.png
 
+#begin Shader/Blur.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shader/Blur.fx
+

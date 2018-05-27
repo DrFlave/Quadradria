@@ -1,4 +1,5 @@
-﻿using Quadradria.Utils;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Quadradria.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,6 +113,11 @@ namespace Quadradria.Enviroment
         public void ForEachLoaded(Action<Chunk> func)
         {
             ChunksLoaded.ForEach(func);
+        }
+
+        internal Texture2D GetLightTexture(int x, int y)
+        {
+            return ChunksVisible.Get(x, y)?.LightTexture;
         }
 
         public void ForEachVisible(Action<Chunk> func)
