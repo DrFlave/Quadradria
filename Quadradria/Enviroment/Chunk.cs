@@ -190,7 +190,6 @@ namespace Quadradria.Enviroment
                         {
                             for (j = 0; j < SIZE; j++)
                             {
-                                index = (i * SIZE + j);
                                 CalculateLight(i, j);
                             }
                         }
