@@ -192,7 +192,7 @@ namespace Quadradria
             rtLightSource.SetData<Color>(lightSourceColor);
 
             GraphicsDevice.SetRenderTarget(rtLightBlur);
-            spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
             spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
             spriteBatch.End();
 
@@ -204,7 +204,7 @@ namespace Quadradria
             GraphicsDevice.SetRenderTarget(null);
 
             GraphicsDevice.SetRenderTarget(rtLight);
-            spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
             spriteBatch.Draw(rtLightBlur, Vector2.Zero, Color.White);
             spriteBatch.End();
             efGauss.Parameters["Size"]?.SetValue(chunksY * Chunk.SIZE);

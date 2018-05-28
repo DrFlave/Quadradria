@@ -70,7 +70,7 @@ namespace Quadradria.Enviroment
     {
         protected string name;
         protected Texture2D texture;
-        protected BlockType type;
+        protected BlockType blockType;
         protected bool isSolid = true;
         protected Color light = Color.Black;
 
@@ -81,7 +81,7 @@ namespace Quadradria.Enviroment
 
         public BlockTypeDefault(BlockType type, string name, Texture2D texture, bool solid = true, Color? light = null)
         {
-            this.type = type;
+            this.blockType = type;
             this.name = name;
             this.texture = texture;
             this.isSolid = solid;
@@ -106,6 +106,11 @@ namespace Quadradria.Enviroment
         public virtual Color GetLight(Block block)
         {
             return light;
+        }
+
+        public BlockType GetBlockType()
+        {
+            return blockType;
         }
     }
 
@@ -198,7 +203,7 @@ namespace Quadradria.Enviroment
             if (bBottom) subid &= 0b0111;
 
             if (block.SubID != subid)
-                world.SetBlockAtPosition(x, y, type, subid);
+                world.SetBlockAtPosition(x, y, blockType, subid);
         }
     }
 

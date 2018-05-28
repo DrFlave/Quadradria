@@ -73,6 +73,7 @@
     <Compile Include="Enviroment\WorldLoader.cs" />
     <Compile Include="Enviroment\LoadedChunksManager.cs" />
     <Compile Include="Enviroment\World.cs" />
+    <Compile Include="Inventory\Items.cs" />
     <Compile Include="Inventory\Storage.cs" />
     <Compile Include="Inventory\Item.cs" />
     <Compile Include="Inventory\Slot.cs" />

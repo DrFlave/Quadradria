@@ -28,17 +28,22 @@ namespace Quadradria.Enviroment
 
         public static void Init()
         {
-            BlockTypeList[(int)BlockType.Error] = new BlockTypeDefault(BlockType.Error, "error", Textures.Error);
-            BlockTypeList[(int)BlockType.Air] = new BlockTypeAir(BlockType.Air, "air");
-            BlockTypeList[(int)BlockType.Dirt] = new BlockTypeGrass(BlockType.Dirt, "dirt", Textures.Blocks.Dirt, Textures.Blocks.Grass);
-            BlockTypeList[(int)BlockType.Stone] = new BlockTypeDefault(BlockType.Stone, "stone", Textures.Blocks.Stone);
-            BlockTypeList[(int)BlockType.DoorWood] = new BlockTypeDoor(BlockType.DoorWood, "doorWood", Textures.Blocks.DoorWood);
-            BlockTypeList[(int)BlockType.Wool] = new BlockTypeDefault(BlockType.Wool, "wool", Textures.Blocks.Wool);
-            BlockTypeList[(int)BlockType.OreCopper] = new BlockTypeDefault(BlockType.OreCopper, "oreCopper", Textures.Blocks.OreCopper, true, Color.Orange);
-            BlockTypeList[(int)BlockType.OreTin] = new BlockTypeDefault(BlockType.OreTin, "oreTin", Textures.Blocks.OreTin, true, Color.Silver);
-            BlockTypeList[(int)BlockType.Water] = new BlockTypeFluid(BlockType.Water, "water", Textures.Blocks.Water);
-            BlockTypeList[(int)BlockType.GrassBush] = new BlockTypeFlower(BlockType.Water, "grassBush", Textures.Blocks.GrassBush);
-            BlockTypeList[(int)BlockType.Cloud] = new BlockTypeDefault(BlockType.Cloud, "cloud", Textures.Blocks.Cloud, false);
+            AddBlockType(new BlockTypeDefault(BlockType.Error, "error", Textures.Error));
+            AddBlockType(new BlockTypeAir(BlockType.Air, "air"));
+            AddBlockType(new BlockTypeGrass(BlockType.Dirt, "dirt", Textures.Blocks.Dirt, Textures.Blocks.Grass));
+            AddBlockType(new BlockTypeDefault(BlockType.Stone, "stone", Textures.Blocks.Stone));
+            AddBlockType(new BlockTypeDoor(BlockType.DoorWood, "doorWood", Textures.Blocks.DoorWood));
+            AddBlockType(new BlockTypeDefault(BlockType.Wool, "wool", Textures.Blocks.Wool));
+            AddBlockType(new BlockTypeDefault(BlockType.OreCopper, "oreCopper", Textures.Blocks.OreCopper, true, Color.Orange));
+            AddBlockType(new BlockTypeDefault(BlockType.OreTin, "oreTin", Textures.Blocks.OreTin, true, Color.Silver));
+            AddBlockType(new BlockTypeFluid(BlockType.Water, "water", Textures.Blocks.Water));
+            AddBlockType(new BlockTypeFlower(BlockType.GrassBush, "grassBush", Textures.Blocks.GrassBush));
+            AddBlockType(new BlockTypeDefault(BlockType.Cloud, "cloud", Textures.Blocks.Cloud, false));
+        }
+
+        public static void AddBlockType(BlockTypeDefault blockType)
+        {
+            BlockTypeList[(ushort)blockType.GetBlockType()] = blockType;
         }
     }
 }

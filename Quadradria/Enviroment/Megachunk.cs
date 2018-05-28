@@ -113,12 +113,12 @@ namespace Quadradria.Enviroment
                         dataLength = reader.ReadInt64();
                         data = reader.ReadBytes((int)dataLength);
 
-                        c.Import(data);
                     }
                     catch (Exception e)
                     {
-                        throw new Exception("Was anderes", e);
+                        throw new Exception("File is corrupted", e);
                     }
+                    c.Import(data);
                 }
             });
         }

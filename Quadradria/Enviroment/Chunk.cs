@@ -208,18 +208,21 @@ namespace Quadradria.Enviroment
 
 
                             BaseEntity entity = EntityManager.Spawn(type);
-                            entity.Position.X = x;
-                            entity.Position.Y = y;
-                            entity.Import(entData);
-                            entity.Initialize(ID);
+                            if (entity != null)
+                            {
+                                entity.Position.X = x;
+                                entity.Position.Y = y;
+                                entity.Import(entData);
+                                entity.Initialize(ID);
 
-                            AddEntity(entity);
+                                AddEntity(entity);
+                            }
                         }
 
                     }
                 } catch (Exception e)
                 {
-                    throw new Exception("Corrupted chunk data", e);
+                    throw new Exception("The Chunk data was corrupted.", e);
                 }
             }
 

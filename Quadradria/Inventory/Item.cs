@@ -8,17 +8,19 @@ using System.Threading.Tasks;
 
 namespace Quadradria.Inventory
 {
-    struct ItemType
+    class ItemType
     {
         public string name;
         public int maxStackSize;
+        public ItemID ID;
         public Texture2D texture;
 
-        public ItemType(string name, int maxStackSize, Texture2D texture)
+        public ItemType(ItemID itemId, string name, int maxStackSize, Texture2D texture)
         {
             this.name = name;
             this.maxStackSize = maxStackSize;
             this.texture = texture;
+            this.ID = itemId;
         }
     }
 
@@ -29,9 +31,10 @@ namespace Quadradria.Inventory
         private SpriteFont font = Textures.Fonts.Inventory;
         public Slot slot = null;
 
-        public Item(ItemType type)
+        public Item(ItemType type, int stackSize = 1)
         {
             this.itemType = type;
+            this.stackSize = stackSize;
         }
 
         public int StackSize
@@ -55,8 +58,7 @@ namespace Quadradria.Inventory
 
             amount = Math.Min(stackSize, amount);
 
-            Item item = new Item(itemType);
-            item.stackSize = amount;
+            Item item = new Item(itemType, amount);
             stackSize -= amount;
 
             return item;
