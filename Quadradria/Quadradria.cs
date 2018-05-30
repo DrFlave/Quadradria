@@ -166,6 +166,7 @@ namespace Quadradria
                 frameCounter.Text = "FPS: " + Math.Round(1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
 
             //Lighting
+            //draw source texture
             GraphicsDevice.SetRenderTarget(rtLight);
             RectF rect = camera.GetRect();
             int chunksX = (int)Math.Floor(rect.Width / Chunk.SIZE) + 2;
@@ -191,26 +192,33 @@ namespace Quadradria
             rtLight.GetData<Color>(lightSourceColor);
             rtLightSource.SetData<Color>(lightSourceColor);
 
+            //ToDo: Lighting blur does not effect the blur placed after. So the corners aren't blurred. This is resulting in light sources looking like "stars".
+
+            //---Blur horizontal---
+            //Draw source
             GraphicsDevice.SetRenderTarget(rtLightBlur);
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
             spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
             spriteBatch.End();
-
+            //Blur source
             efGauss.Parameters["Size"]?.SetValue(chunksX * Chunk.SIZE);
             efGauss.Parameters["Direction"]?.SetValue(new Vector2(1, 0));
-            spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp, null, null, efGauss, null);
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, efGauss, null);
             spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
             spriteBatch.End();
             GraphicsDevice.SetRenderTarget(null);
 
+            //---Blur vertical---
+            //Draw horizontal blurred
             GraphicsDevice.SetRenderTarget(rtLight);
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
             spriteBatch.Draw(rtLightBlur, Vector2.Zero, Color.White);
             spriteBatch.End();
+            //Blur horizontal blurred
             efGauss.Parameters["Size"]?.SetValue(chunksY * Chunk.SIZE);
             efGauss.Parameters["Direction"]?.SetValue(new Vector2(0, 1));
             spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp, null, null, efGauss, null);
-            spriteBatch.Draw(rtLightBlur, Vector2.Zero, Color.White);
+            spriteBatch.Draw(rtLightSource, Vector2.Zero, Color.White);
             spriteBatch.End();
             GraphicsDevice.SetRenderTarget(null);
 
