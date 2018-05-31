@@ -36,9 +36,12 @@ namespace Quadradria
         RenderTarget2D rtLightSource;
         Color[] lightSourceColor;
 
+        KeyboardState lastState;
+
         Effect efGauss;
 
         bool showDebugInformation = true;
+        bool enableLighting = true;
 
         public Quadradria()
         {
@@ -119,6 +122,8 @@ namespace Quadradria
 
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState currentState = Keyboard.GetState();
+
             debugInformation.Visible = showDebugInformation;
 
             Vector2 mpos = camera.GetMousePositionInWorld();
@@ -139,16 +144,21 @@ namespace Quadradria
             + "\nCamera position (Center): " + camera.center.X + ", " + camera.center.Y
             + "\nBlock under mouse: " + underMouse;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (currentState.IsKeyDown(Keys.Space))
             {
                 world.SetBlockAtPosition((int)Math.Floor(mpos.X), (int)Math.Floor(mpos.Y), BlockType.Stone, 0);
             }
 
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (!lastState.IsKeyDown(Keys.L) && currentState.IsKeyDown(Keys.L))
+            {
+                enableLighting = !enableLighting;
+            }
+
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || currentState.IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.S)) camera.zoom -= 0.01f;
-            if (Keyboard.GetState().IsKeyDown(Keys.W)) camera.zoom += 0.01f;
+            if (currentState.IsKeyDown(Keys.S)) camera.zoom -= 0.01f;
+            if (currentState.IsKeyDown(Keys.W)) camera.zoom += 0.01f;
 
             player.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             camera.Update(player.position);
@@ -156,6 +166,8 @@ namespace Quadradria
             RectF rect = camera.GetRect();
 
             world.Update(rect.X, rect.Y, rect.Width, rect.Height);
+
+            lastState = currentState;
 
             base.Update(gameTime);
         }
@@ -165,63 +177,66 @@ namespace Quadradria
             if (gameTime.ElapsedGameTime.Milliseconds != 0)
                 frameCounter.Text = "FPS: " + Math.Round(1000 / gameTime.ElapsedGameTime.TotalMilliseconds);
 
-            //Lighting
-            //draw source texture
-            GraphicsDevice.SetRenderTarget(rtLight);
             RectF rect = camera.GetRect();
             int chunksX = (int)Math.Floor(rect.Width / Chunk.SIZE) + 2;
             int chunksY = (int)Math.Floor(rect.Height / Chunk.SIZE) + 2;
             int chunkX = (int)Math.Floor(rect.X / Chunk.SIZE);
             int chunkY = (int)Math.Floor(rect.Y / Chunk.SIZE);
 
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
-            for (int i = 0; i < chunksX; i++)
+            if (enableLighting)
             {
-                for (int j = 0; j < chunksY; j++)
+                //Lighting
+                //draw source texture
+                GraphicsDevice.SetRenderTarget(rtLight);
+
+                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
+                for (int i = 0; i < chunksX; i++)
                 {
-                    Texture2D tex = world.GetLightTexture(chunkX + i, chunkY + j);
-                    if (tex != null)
-                        spriteBatch.Draw(tex, new Vector2(i * Chunk.SIZE, j * Chunk.SIZE), Color.White);
-                    else
-                        spriteBatch.Draw(Textures.Error, new Vector2(i * Chunk.SIZE, j * Chunk.SIZE), Color.White);
+                    for (int j = 0; j < chunksY; j++)
+                    {
+                        Texture2D tex = world.GetLightTexture(chunkX + i, chunkY + j);
+                        if (tex != null)
+                            spriteBatch.Draw(tex, new Vector2(i * Chunk.SIZE, j * Chunk.SIZE), Color.White);
+                        else
+                            spriteBatch.Draw(Textures.Error, new Vector2(i * Chunk.SIZE, j * Chunk.SIZE), Color.White);
+                    }
                 }
+                spriteBatch.End();
+                GraphicsDevice.SetRenderTarget(null);
+
+                rtLight.GetData<Color>(lightSourceColor);
+                rtLightSource.SetData<Color>(lightSourceColor);
+
+                //ToDo: Lighting blur does not effect the blur placed after. So the corners aren't blurred. This is resulting in light sources looking like "stars".
+
+                //---Blur horizontal---
+                //Draw source
+                GraphicsDevice.SetRenderTarget(rtLightBlur);
+                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
+                spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
+                spriteBatch.End();
+                //Blur source
+                efGauss.Parameters["Size"]?.SetValue(chunksX * Chunk.SIZE);
+                efGauss.Parameters["Direction"]?.SetValue(new Vector2(1, 0));
+                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, efGauss, null);
+                spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
+                spriteBatch.End();
+                GraphicsDevice.SetRenderTarget(null);
+
+                //---Blur vertical---
+                //Draw horizontal blurred
+                GraphicsDevice.SetRenderTarget(rtLight);
+                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
+                spriteBatch.Draw(rtLightBlur, Vector2.Zero, Color.White);
+                spriteBatch.End();
+                //Blur horizontal blurred
+                efGauss.Parameters["Size"]?.SetValue(chunksY * Chunk.SIZE);
+                efGauss.Parameters["Direction"]?.SetValue(new Vector2(0, 1));
+                spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp, null, null, efGauss, null);
+                spriteBatch.Draw(rtLightSource, Vector2.Zero, Color.White);
+                spriteBatch.End();
+                GraphicsDevice.SetRenderTarget(null);
             }
-            spriteBatch.End();
-            GraphicsDevice.SetRenderTarget(null);
-
-            rtLight.GetData<Color>(lightSourceColor);
-            rtLightSource.SetData<Color>(lightSourceColor);
-
-            //ToDo: Lighting blur does not effect the blur placed after. So the corners aren't blurred. This is resulting in light sources looking like "stars".
-
-            //---Blur horizontal---
-            //Draw source
-            GraphicsDevice.SetRenderTarget(rtLightBlur);
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
-            spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
-            spriteBatch.End();
-            //Blur source
-            efGauss.Parameters["Size"]?.SetValue(chunksX * Chunk.SIZE);
-            efGauss.Parameters["Direction"]?.SetValue(new Vector2(1, 0));
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, efGauss, null);
-            spriteBatch.Draw(rtLight, Vector2.Zero, Color.White);
-            spriteBatch.End();
-            GraphicsDevice.SetRenderTarget(null);
-
-            //---Blur vertical---
-            //Draw horizontal blurred
-            GraphicsDevice.SetRenderTarget(rtLight);
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp);
-            spriteBatch.Draw(rtLightBlur, Vector2.Zero, Color.White);
-            spriteBatch.End();
-            //Blur horizontal blurred
-            efGauss.Parameters["Size"]?.SetValue(chunksY * Chunk.SIZE);
-            efGauss.Parameters["Direction"]?.SetValue(new Vector2(0, 1));
-            spriteBatch.Begin(SpriteSortMode.BackToFront, blendStateLighten, SamplerState.PointClamp, null, null, efGauss, null);
-            spriteBatch.Draw(rtLightSource, Vector2.Zero, Color.White);
-            spriteBatch.End();
-            GraphicsDevice.SetRenderTarget(null);
-
             //World
 
             world.Render(spriteBatch);
@@ -231,16 +246,22 @@ namespace Quadradria
             world.Draw(spriteBatch);
             spriteBatch.End();
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, blendStateMultiply, SamplerState.PointClamp, null, null, null, camera.transform);
-            spriteBatch.Draw(rtLight, new Vector2(chunkX * Chunk.SIZE, chunkY * Chunk.SIZE), null, Color.White, 0, Vector2.Zero, 1 ,SpriteEffects.None, 0);
-            spriteBatch.End();
+            if (enableLighting)
+            {
+                spriteBatch.Begin(SpriteSortMode.Immediate, blendStateMultiply, SamplerState.PointClamp, null, null, null, camera.transform);
+                spriteBatch.Draw(rtLight, new Vector2(chunkX * Chunk.SIZE, chunkY * Chunk.SIZE), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+                spriteBatch.End();
+            }
 
             //UI
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
             UIMaster.Draw(spriteBatch);
-            spriteBatch.Draw(rtLightSource, new Vector2(4, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
-            spriteBatch.Draw(rtLightBlur, new Vector2(8 + rtLight.Width, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
-            spriteBatch.Draw(rtLight, new Vector2(12 + rtLight.Width * 2, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
+            if (enableLighting)
+            {
+                spriteBatch.Draw(rtLightSource, new Vector2(4, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
+                spriteBatch.Draw(rtLightBlur, new Vector2(8 + rtLight.Width, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
+                spriteBatch.Draw(rtLight, new Vector2(12 + rtLight.Width * 2, GraphicsDevice.Viewport.Height - rtLight.Height - 4), Color.White);
+            }
             spriteBatch.End();
             
             base.Draw(gameTime);
