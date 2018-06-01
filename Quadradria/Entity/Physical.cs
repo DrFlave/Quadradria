@@ -33,6 +33,7 @@ namespace Quadradria.Entity
 
             RectF r = new RectF(hitbox.X, hitbox.Y, hitbox.Width, hitbox.Height);
             Vector2 dir = momentum;
+            float mLength = momentum.Length();
             dir.Normalize();
 
             bool moveX = true;
@@ -48,7 +49,7 @@ namespace Quadradria.Entity
             };
 
             Action<float> a = (float i) => {
-                if(moveX) r.X = newX + dir.X * i;
+                if (moveX) r.X = newX + dir.X * i;
                 
                 for (int y = (int)Math.Floor(r.Y); y <= FloorEx(r.Bottom) && moveX; y++)
                 {
@@ -110,13 +111,13 @@ namespace Quadradria.Entity
                     }
                 }
             };
-
-            for(float i = 0; i < momentum.Length(); i++)
+            
+            for (float i = 0; i <= mLength-1; i++)
             {
-                a(i);
+                a(1);
             }
 
-            a(momentum.Length() - (int)Math.Floor(momentum.Length()));
+            a(mLength - (int)Math.Floor(mLength));
 
             hitbox.X = newX;
             hitbox.Y = newY;
