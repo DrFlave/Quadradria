@@ -90,13 +90,18 @@ namespace Quadradria.Enviroment
             shouldRender = false;
         }
 
-        public void Update(World world)
+        public void Update(GameTime gameTime, World world)
         {
             Random randomTickGenerator = new Random();
             int rx = randomTickGenerator.Next(SIZE);
             int ry = randomTickGenerator.Next(SIZE);
 
             Blocks[rx, ry].RandomTick(rx + pos.X * SIZE, ry + pos.Y * SIZE, world);
+
+            foreach (BaseEntity ent in entities)
+            {
+                ent.Update(gameTime, world);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)

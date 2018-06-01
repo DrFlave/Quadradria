@@ -15,6 +15,8 @@ namespace Quadradria
     {
         public static Texture2D Error;
 
+        public static Texture2D Player;
+
         public static class Blocks
         {
             public static Texture2D Dirt;
@@ -90,6 +92,7 @@ namespace Quadradria
         public static void Load(ContentManager content, GraphicsDevice graphicsDevice)
         {
             Error = content.Load<Texture2D>("Error");
+            Player = content.Load<Texture2D>("player");
 
             Textures.Solid = new Texture2D(graphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Textures.Solid.SetData<Color>(new Color[1] { Color.White });

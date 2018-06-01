@@ -40,5 +40,14 @@ namespace Quadradria.Utils
         {
             return base.GetHashCode();
         }
+
+        public bool Intersects(Rect r)
+        {
+            return (r.X < X + Width) &&
+                   (X < (r.X + r.Width)) &&
+                   (r.Y < Y + Height) &&
+                   (Y < r.Y + r.Height);
+        }
+
     }
 }

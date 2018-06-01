@@ -9,6 +9,8 @@ namespace Quadradria.Utils
     public class RectF
     {
         public float X, Y, Width, Height;
+        public float Right { get => X + Width; set { X = value - Width; } }
+        public float Bottom { get => Y + Height; set { Y = value - Height; } }
 
         public RectF(float x, float y, float width, float height)
         {
@@ -17,6 +19,8 @@ namespace Quadradria.Utils
             this.Width = width;
             this.Height = height;
         }
+
+        public RectF(int s) : this(s, s, s, s) { }
 
         public bool Contains(float x, float y)
         {
@@ -39,6 +43,15 @@ namespace Quadradria.Utils
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+
+        public bool Intersects(RectF r)
+        {
+            return (r.X < X + Width) &&
+                   (X < (r.X + r.Width)) &&
+                   (r.Y < Y + Height) &&
+                   (Y < r.Y + r.Height);
         }
 
     }

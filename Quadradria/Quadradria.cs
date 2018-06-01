@@ -54,7 +54,6 @@ namespace Quadradria
 
         protected override void Initialize()
         {
-            player = new Player();
             Textures.Load(Content, GraphicsDevice);
 
             BlockManager.Init();
@@ -65,11 +64,7 @@ namespace Quadradria
             camera = new Camera(GraphicsDevice.Viewport);
 
             RectF rect = camera.GetRect();
-            world.Update(rect.X, rect.Y, rect.Width, rect.Height);
-
-
-            BaseEntity human = EntityManager.Spawn(EntityType.Human);
-            world.AddEntity(human);
+            //world.Update(null, rect.X, rect.Y, rect.Width, rect.Height);
 
             UIMaster = new UIContainer(0, 0, 300, 300);
             new UIInteractable(0, 0, 1, 1, UIMaster); //makes things defocusable
@@ -109,7 +104,6 @@ namespace Quadradria
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            player.Load(Content);
             efGauss = Content.Load<Effect>("Shader/Blur");
         }
 
@@ -144,7 +138,7 @@ namespace Quadradria
             + "\nCamera position (Center): " + camera.center.X + ", " + camera.center.Y
             + "\nBlock under mouse: " + underMouse;
 
-            if (currentState.IsKeyDown(Keys.Space))
+            if (currentState.IsKeyDown(Keys.LeftAlt))
             {
                 world.SetBlockAtPosition((int)Math.Floor(mpos.X), (int)Math.Floor(mpos.Y), BlockType.Stone, 0);
             }
@@ -154,18 +148,29 @@ namespace Quadradria
                 enableLighting = !enableLighting;
             }
 
+            if (!lastState.IsKeyDown(Keys.P) && currentState.IsKeyDown(Keys.P))
+            {
+                Mob human = (Mob)EntityManager.Spawn(EntityType.Human);
+                human.Position.Y = -10;
+                human.Position.X = 10;
+                world.AddEntity(human);
+                player = new Player(human);
+            }
+
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || currentState.IsKeyDown(Keys.Escape))
                 Exit();
 
             if (currentState.IsKeyDown(Keys.S)) camera.zoom -= 0.01f;
             if (currentState.IsKeyDown(Keys.W)) camera.zoom += 0.01f;
 
-            player.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            camera.Update(player.position);
+            player?.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            if (player != null)
+            camera.Update(player.Position);
 
             RectF rect = camera.GetRect();
 
-            world.Update(rect.X, rect.Y, rect.Width, rect.Height);
+            world.Update(gameTime, rect.X, rect.Y, rect.Width, rect.Height);
 
             lastState = currentState;
 

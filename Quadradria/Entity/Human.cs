@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Quadradria.Enviroment;
 using Quadradria.Inventory;
 using System;
 using System.Collections.Generic;
@@ -15,13 +16,33 @@ namespace Quadradria.Entity
 
         public Human() : base(100, 3)
         {
+            //Position.X = 2;
+            //Position.Y = 8;
+
             EntType = EntityType.Human;
             Inventory = new Storage(10);
+            hitbox.Width = 1.5f;
+            hitbox.Height = 2.5f;
+        }
+
+        public override void Initialize(uint id)
+        {
+            base.Initialize(id); 
+            //Position.Y = 10;
+            //Position.X = 10;
+        }
+
+        public override void Update(GameTime time, World world)
+        {
+            base.Update(time, world);
+
+            //Position.Y--;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Textures.Error, Position, null, Color.White, 0, Vector2.Zero, 1/16f, SpriteEffects.None, 0);
+            spriteBatch.Draw(Textures.Player, new Vector2(hitbox.X, hitbox.Y), color: Color.White, scale: new Vector2(1f/16), rotation: 0);
+            
             base.Draw(spriteBatch);
         }
 

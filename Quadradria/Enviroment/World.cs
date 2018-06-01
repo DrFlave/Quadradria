@@ -56,6 +56,8 @@ namespace Quadradria.Enviroment
 
         private WorldLoader worldLoader;
         public LoadedChunksManager LoadedChunks;
+        private float gravity = 0.025f;
+        public float Gravity { get => gravity; set => gravity = value; }
 
         public WorldInfo Info { get; set; }
 
@@ -79,7 +81,7 @@ namespace Quadradria.Enviroment
             this.path = path;
         }
 
-        public void Update(float x, float y, float width, float height)
+        public void Update(GameTime gameTime, float x, float y, float width, float height)
         {
             int cX = (int)Math.Floor(x / 16);
             int cY = (int)Math.Floor(y / 16);
@@ -89,7 +91,7 @@ namespace Quadradria.Enviroment
             LoadedChunks.UpdateLoadedArea(cX, cY, cW, cH, worldLoader);
             LoadedChunks.ForEachLoaded((chunk) =>
             {
-                chunk.Update(this);
+                chunk.Update(gameTime, this);
             });
         }
 
@@ -117,7 +119,7 @@ namespace Quadradria.Enviroment
             Chunk chunk = GetChunkAtTilePosition((int)Math.Floor(entity.Position.X), (int)Math.Floor(entity.Position.Y));
             if (chunk == null) {
                 //Something went wrong :(
-                Console.WriteLine("Can't create entity because there is no chunk! Entity position: ({0}, {1}), Chunk position: ({2}, {3})");
+                Console.WriteLine("Can't create entity because there is no chunk! Entity position: ({0}, {1}), Chunk position: ({2}, {3})", entity.Position.X, entity.Position.Y, Math.Floor(entity.Position.X / Chunk.SIZE), Math.Floor(entity.Position.Y / Chunk.SIZE));
                 return;
             };
 

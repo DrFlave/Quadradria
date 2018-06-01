@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Quadradria.Enviroment;
+using Quadradria.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +16,9 @@ namespace Quadradria.Entity
         public Vector2 Position;
         public uint ID { get; private set; }
         public EntityType EntType;
+        public RectF hitbox;
 
-        public void Initialize(uint id)
+        public virtual void Initialize(uint id)
         {
             ID = id;
             Console.WriteLine("Initialized an entity at position " + Position.X + ", " + Position.Y + " with the ID: " + ID);
@@ -27,7 +30,15 @@ namespace Quadradria.Entity
 
         }
 
-        public virtual void Update() { }
+        public BaseEntity()
+        {
+            hitbox = new RectF(0);
+        }
+
+        public virtual void Update(GameTime gameTime, World world) {
+            hitbox.X = Position.X - hitbox.Width / 2;
+            hitbox.Y = Position.Y - hitbox.Height / 2;
+        }
 
         public virtual void Draw(SpriteBatch spriteBatch) { }
 
@@ -36,5 +47,10 @@ namespace Quadradria.Entity
         public virtual void Import(byte[] data) { }
 
         public abstract BaseEntity Create();
+
+        public bool PlaceMeeting()
+        {
+            return false;
+        }
     }
 }
