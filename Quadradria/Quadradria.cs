@@ -123,7 +123,7 @@ namespace Quadradria
             Vector2 mpos = camera.GetMousePositionInWorld();
 
             Block? underMouse = world.GetBlockAtPosition((int)Math.Floor(mpos.X), (int)Math.Floor(mpos.Y));
-
+            
             debugInformation.Show();
             debugInformation.Text
             = "Loaded chunks: " + world.LoadedChunks.GetLoadedChunkNumber()
@@ -137,7 +137,7 @@ namespace Quadradria
             + "\nCamera zoom: " + camera.zoom
             + "\nCamera position (Center): " + camera.center.X + ", " + camera.center.Y
             + "\nBlock under mouse: " + underMouse;
-
+            
             if (currentState.IsKeyDown(Keys.LeftAlt))
             {
                 world.SetBlockAtPosition((int)Math.Floor(mpos.X), (int)Math.Floor(mpos.Y), BlockType.Stone, 0);
@@ -166,11 +166,14 @@ namespace Quadradria
 
             player?.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             if (player != null)
-            camera.Update(player.Position);
+                camera.Update(player.Position);
 
             RectF rect = camera.GetRect();
 
             world.Update(gameTime, rect.X, rect.Y, rect.Width, rect.Height);
+
+            if (player != null)
+                camera.Update(player.Position);
 
             lastState = currentState;
 
