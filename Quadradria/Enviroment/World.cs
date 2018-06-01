@@ -123,9 +123,7 @@ namespace Quadradria.Enviroment
                 return;
             };
 
-            entity.Initialize(RequestEntityId());
-
-            chunk.AddEntity(entity);
+            entity.Initialize(RequestEntityId(), chunk);
         }
 
         public uint RequestEntityId()

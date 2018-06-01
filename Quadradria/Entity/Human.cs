@@ -25,13 +25,6 @@ namespace Quadradria.Entity
             hitbox.Height = 2.5f;
         }
 
-        public override void Initialize(uint id)
-        {
-            base.Initialize(id); 
-            //Position.Y = 10;
-            //Position.X = 10;
-        }
-
         public override void Update(GameTime time, World world)
         {
             base.Update(time, world);

@@ -17,17 +17,15 @@ namespace Quadradria.Entity
         public uint ID { get; private set; }
         public EntityType EntType;
         public RectF hitbox;
+        private Chunk chunk;
 
-        public virtual void Initialize(uint id)
+        public virtual void Initialize(uint id, Chunk chunk)
         {
             ID = id;
             Console.WriteLine("Initialized an entity at position " + Position.X + ", " + Position.Y + " with the ID: " + ID);
 
-            /*
-             *  Entities Chunk 50, 12 -> read file: ents.1.0.ents -> gehe alle ents durch und lese wenn sie in 50, 12 sind.
-             * 
-             * */
-
+            this.chunk = chunk;
+            chunk.AddEntity(this);
         }
 
         public BaseEntity()
@@ -38,6 +36,12 @@ namespace Quadradria.Entity
         public virtual void Update(GameTime gameTime, World world) {
             hitbox.X = Position.X - hitbox.Width / 2;
             hitbox.Y = Position.Y - hitbox.Height / 2;
+
+            Chunk c = world.GetChunkAtTilePosition((int)Math.Floor(Position.X), (int)Math.Floor(Position.Y));
+            if (c != chunk && c != null)
+            {
+                UpdateChunk(c);
+            }
         }
 
         public virtual void Draw(SpriteBatch spriteBatch) { }
@@ -51,6 +55,13 @@ namespace Quadradria.Entity
         public bool PlaceMeeting()
         {
             return false;
+        }
+
+        protected void UpdateChunk(Chunk chunk)
+        {
+            this.chunk.RemoveEntity(this);
+            chunk.AddEntity(this);
+            this.chunk = chunk;
         }
     }
 }

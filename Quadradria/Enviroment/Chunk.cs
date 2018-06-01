@@ -26,7 +26,7 @@ namespace Quadradria.Enviroment
         private Color[] lightMap = new Color[SIZE * SIZE];
         public Texture2D LightTexture;
         
-        public List<BaseEntity> entities = new List<BaseEntity>();
+        private List<BaseEntity> entities = new List<BaseEntity>();
 
         RenderTarget2D renderTarget;
         GraphicsDevice graphicsDevice;
@@ -98,7 +98,8 @@ namespace Quadradria.Enviroment
 
             Blocks[rx, ry].RandomTick(rx + pos.X * SIZE, ry + pos.Y * SIZE, world);
 
-            foreach (BaseEntity ent in entities)
+            BaseEntity[] ents = entities.ToArray();
+            foreach (BaseEntity ent in ents)
             {
                 ent.Update(gameTime, world);
             }
@@ -111,10 +112,13 @@ namespace Quadradria.Enviroment
             float scale = 1.0f / BLOCK_SIZE;
             spriteBatch.Draw(renderTarget, drawPos, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0.5f);
 
-            entities.ForEach((entity) =>
+            lock (entities)
             {
-                entity.Draw(spriteBatch);
-            });
+                entities.ForEach((entity) =>
+                {
+                    entity.Draw(spriteBatch);
+                });
+            }
         }
 
         public void DrawLight(SpriteBatch spriteBatch)
@@ -157,13 +161,19 @@ namespace Quadradria.Enviroment
         public void AddEntity(BaseEntity entity)
         {
             if (!isLoaded) return;
-            entities.Add(entity);
+            lock (entities)
+            {
+                entities.Add(entity);
+            }
         }
 
         public void RemoveEntity(BaseEntity entity)
         {
             if (!isLoaded) return;
-            entities.Remove(entity);
+            lock (entities)
+            {
+                entities.Remove(entity);
+            }
         }
 
         public void Import(byte[] data)
@@ -218,7 +228,7 @@ namespace Quadradria.Enviroment
                                 entity.Position.X = x;
                                 entity.Position.Y = y;
                                 entity.Import(entData);
-                                entity.Initialize(ID);
+                                entity.Initialize(ID, this);
 
                                 AddEntity(entity);
                             }
@@ -257,17 +267,20 @@ namespace Quadradria.Enviroment
 
                     long entsLengthPos = stream.Position;
                     writer.Write((long)0);
-                    writer.Write((int)entities.Count);
 
-                    foreach (BaseEntity ent in entities)
+                    lock (entities)
                     {
-                        byte[] entData = ent.Export();
-                        writer.Write((ushort)ent.EntType);
-                        writer.Write((uint)ent.ID);
-                        writer.Write((float)ent.Position.X);
-                        writer.Write((float)ent.Position.Y);
-                        writer.Write(entData.Length);
-                        writer.Write(entData);
+                        writer.Write((int)entities.Count);
+                        foreach (BaseEntity ent in entities)
+                        {
+                            byte[] entData = ent.Export();
+                            writer.Write((ushort)ent.EntType);
+                            writer.Write((uint)ent.ID);
+                            writer.Write((float)ent.Position.X);
+                            writer.Write((float)ent.Position.Y);
+                            writer.Write(entData.Length);
+                            writer.Write(entData);
+                        }
                     }
 
                     long len = stream.Position - entsLengthPos;
